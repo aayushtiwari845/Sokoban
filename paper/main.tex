@@ -1,0 +1,463 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\tierone}[1]{#1}
+
+\begin{document}
+
+\title{Solver-Verified Text-Conditioned Sokoban Level Generation:\\
+Autoregressive Models Can Count, One-Shot Decoders Cannot}
+
+\author{\IEEEauthorblockN{Aayush Tiwari}
+\IEEEauthorblockA{\textit{Independent} \\
+aayushkumar345@gmail.com}}
+
+\maketitle
+
+\begin{abstract}
+We compare three generative model families on text-conditioned Sokoban level
+generation and evaluate them with an exhaustive A* solver rather than a learned
+or heuristic proxy. Because the state space of a $10\times10$ Sokoban level is
+bounded and every prune we use is sound, exhausting the search is a
+\emph{proof} of unsolvability: the verifier is a decision procedure, not a
+one-sided test. We therefore report three outcomes --- solved, proven
+unsolvable, and timed out --- rather than two. Our central finding is that
+autoregressive generation satisfies hard counting constraints that one-shot
+generators cannot: a $10.7$M-parameter decoder-only transformer emitting a level
+cell by cell reaches \RESULTTFVALID{} structural validity unaided, while a
+conditional VAE decoding all $100$ cells from a latent vector reaches
+\RESULTVAEVALID{} under argmax decoding, because the argmax of a product of
+independent per-cell marginals annihilates exactly the rare tiles the
+constraints are about. Constrained decoding closes the counting gap
+deterministically. Solvability, however, does not follow from validity: an
+empty-room baseline with no interior walls is solvable
+\RESULTOPENROOM{} of the time, so solvability alone is not a sufficient
+objective, and a retrieval baseline that copies training levels maximises it at
+zero novelty. We argue the results table must be read as a joint constraint over
+solvability, difficulty control and novelty. This work replicates and extends
+Todd et al.~\cite{todd2023level}; the data-scaling and tokenization findings are
+theirs, and we claim neither.
+\end{abstract}
+
+\begin{IEEEkeywords}
+procedural content generation, generative models, constrained decoding,
+verification, Sokoban
+\end{IEEEkeywords}
+
+\section{Introduction}
+
+Evaluating a generative model is usually a matter of proxies. Perplexity does
+not tell you whether a program runs; a discriminator score does not tell you
+whether a level can be finished. The situation is better than it is sometimes
+described --- HumanEval executes unit tests~\cite{chen2021codex}, Lean checks
+proofs~\cite{demoura2021lean}, and text-to-SQL is scored by execution
+accuracy~\cite{yu2018spider} --- so it is simply false that no metric can tell
+you whether a generated artifact works.
+
+What those verifiers share is that they are \emph{sound but incomplete}. A unit
+test that passes does not prove a program correct, and a test suite cannot prove
+a program wrong: it can only fail to find a witness. The verifier answers "yes"
+reliably and "no" only provisionally.
+
+Sokoban is unusual in admitting the other kind of verifier. The state space of a
+$10\times10$ level with four boxes is finite and small enough to exhaust. Given
+pruning rules that are \emph{sound} --- they discard only states from which no
+solution exists --- running the open set to empty is a constructive proof that
+no solution exists. The verifier is a \textbf{decision procedure}. This is why
+we report a three-way outcome; collapsing "timed out" into "unsolvable" would
+convert an absence of evidence into a false proof, in a direction that
+flatters the numbers.
+
+The second question we ask is about model architecture. A valid level needs
+\emph{exactly} one player, four boxes and four goals. A transformer that emits
+one cell at a time conditions each decision on how many boxes it has already
+placed; a VAE or GAN decoder that emits all $100$ cells from a single latent
+vector cannot, because its per-cell outputs are conditionally independent given
+the latent. This is a structural prediction about which family can satisfy a
+counting constraint, and an exhaustive solver lets us measure both whether the
+constraint is met and whether the resulting level is any good.
+
+\paragraph{Contributions}
+\begin{enumerate}
+\item An exhaustive, validated A* Sokoban solver used as a decision procedure,
+      with a soundness ablation and a node-cap convergence curve
+      (Section~\ref{sec:solver}).
+\item A three-family comparison --- from-scratch transformer, conditional VAE,
+      conditional GAN --- at roughly comparable parameter counts, with
+      constrained decoding and repair reported as separate rows so that
+      \emph{counting} and \emph{spatial understanding} are measured separately
+      (Sections~\ref{sec:method},~\ref{sec:results}).
+\item Baselines that constrain the interpretation of the headline number: an
+      open-room baseline that shows solvability is easy to obtain, and a
+      retrieval baseline that shows it is trivially maximised by copying.
+\item Data-quality findings about the standard Boxoban A* solution set that
+      affect anyone using it for supervision (Section~\ref{sec:dataset}).
+\end{enumerate}
+
+We are explicit about provenance throughout. Claims are marked as
+\textbf{Tier 1} (proven by our experiments), \textbf{Tier 2} (justified by
+citation) or \textbf{Tier 3} (admitted defaults, such as untuned
+hyperparameters).
+
+\section{Related Work}
+
+\paragraph{LLMs for level generation}
+Todd et al.~\cite{todd2023level} fine-tune GPT-2 variants to generate Sokoban
+levels from a character encoding and study how solvability scales with training
+data and with tokenization. This paper is a replication and extension of that
+work; \textbf{the data-scaling result, the solvability-versus-conditioning
+setup, and the tokenization finding are theirs}, and we claim none of them.
+MarioGPT~\cite{sudhakaran2023mariogpt} conditions level generation on natural
+language for Super Mario Bros., where playability is checked by an $A^*$ agent
+that is a sound but incomplete verifier --- it can confirm a level is playable
+but cannot prove one is not.
+
+\paragraph{Our delta}
+Relative to~\cite{todd2023level} we add three things: constrained decoding with
+feasibility forcing that makes structural validity deterministic rather than
+learned; three-way solver reporting that distinguishes proven unsolvability from
+timeout; and a controlled multi-family comparison at comparable parameter
+counts, including one-shot decoders and non-learned baselines.
+
+\paragraph{PCGML}
+Procedural content generation via machine learning~\cite{summerville2018pcgml}
+has long used autoencoders and GANs over tile grids. Our contribution is not a
+new architecture but a verification methodology: the same tile-grid models,
+judged by a decision procedure instead of a proxy.
+
+\paragraph{Sokoban and search}
+Sokoban is PSPACE-complete in general~\cite{culberson1997sokoban}, and the
+solver literature is built on domain-specific pruning~\cite{junghanns2001sokoban}.
+Our solver is deliberately conservative: only two prunes, both sound, because an
+unsound prune produces false proofs of unsolvability. The Boxoban
+corpus~\cite{boxobanlevels} was introduced for model-free planning research and
+generated by the procedure of Racani\`ere et al.~\cite{racaniere2017imagination};
+its test split is the one used by Orseau et al.~\cite{orseau2018single}.
+
+\section{Dataset}
+\label{sec:dataset}
+
+We use the Boxoban \texttt{unfiltered} split~\cite{boxobanlevels}: $100{,}000$
+training levels, $5{,}000$ from the \emph{official} validation split (we do not
+carve a validation set out of train), and the $1{,}000$-level test split held
+frozen for solver validation and as the real-level ceiling row. Solution lengths
+come from the A* solution set of Garriga-Alonso et
+al.~\cite{garrigaalonso2024planning}.
+
+\subsection{Verified format properties}
+We verified rather than assumed every property the representation depends on
+(Tier 1). Over $50$ level files the tile alphabet is exactly
+$\{\texttt{\#}, \texttt{@}, \texttt{\$}, \texttt{.}, \texttt{\textvisiblespace}\}$;
+in particular \textbf{neither \texttt{*} (box on goal) nor \texttt{+} (player on
+goal) occurs anywhere}, so a box never \emph{starts} on a goal. That single fact
+is what makes the five-channel one-hot tensor, the six-symbol grid vocabulary,
+and the "exactly four \texttt{\$} and four \texttt{.}" constraint all
+well-defined; had it failed, each would have broken silently. Over $10{,}000$
+levels, every grid is $10\times10$ with a complete wall border and exactly one
+player, four boxes and four goals, with zero violations. Files use CRLF line
+endings, which the specification did not anticipate and the parser normalises.
+There are zero exact collisions between the training levels and either the test
+or validation split.
+
+\subsection{Solution lengths count moves, not pushes}
+The solution set stores an action string over $\{0,1,2,3\}$ = Up, Right, Down,
+Left, and a \texttt{Steps} field equal to its length. \texttt{Steps} therefore
+counts \textbf{player moves, not pushes} (Tier 1). We confirmed the action
+encoding by replaying: under this convention the actions reach the goal state
+exactly, and no other permutation of the four directions, with or without
+transposition, replays even one of the levels that fail. Their search minimised
+moves, so \texttt{Steps} is move-optimal where it is valid. This distinction
+sets the units of every caption and of the controllability metric.
+
+\subsection{A data-quality finding}
+The solution set documents rows whose action field is
+\texttt{SEARCH\_STATE\_FAILED} or \texttt{NOT\_FOUND}. We additionally found rows
+that \emph{look} well-formed --- a plain digit string --- but \textbf{do not
+replay to a solved state}: $63/1000$ ($6.3\%$) of \texttt{unfiltered\_test} and
+approximately $0.7\%$ of \texttt{unfiltered\_train}. They fail by walking into a
+wall or making an impossible push part-way through, and treating blocked moves
+as no-ops does not rescue any of them. We therefore \textbf{replay-validate
+every solution} and drop levels whose solution does not replay ($0.73\%$ of
+train, $7.4\%$ of validation and test). Anyone using this set for supervision
+should do the same; a caption built on a wrong length is worse than no example.
+
+\subsection{Captions}
+Five features are computed from the grid; nothing is hand-labelled. Difficulty
+is the solution length binned by the terciles of the training distribution
+($\leq26$, $\leq35$, $>35$ moves); solution length is quoted to the nearest five
+moves; wall density is the interior wall fraction split at the training median
+($0.500$); connectivity is the mean number of non-wall neighbours per floor cell
+split at the training median ($2.889$); and box clustering is the mean pairwise
+Manhattan distance between boxes split at the training median ($3.500$). A
+caption reads, for example, \texttt{"hard, \textasciitilde40 moves, dense walls,
+corridors, boxes scattered"}.
+
+The connectivity feature was chosen empirically. The natural first choice,
+counting connected floor components, is \textbf{constant} on this corpus:
+measured over $20{,}000$ training levels every Boxoban level has exactly one
+connected floor region, so the feature carries no information and cannot bin
+anything. We use mean floor degree instead, which ranges $2.19$ to $3.36$.
+
+The same five features are encoded twice: as caption text for the transformer,
+and as a $10$-dimensional vector for the VAE and GAN. \textbf{These are different
+information channels}, so the family comparison is not perfectly controlled on
+conditioning; we state this rather than claim otherwise.
+
+\section{Method}
+\label{sec:method}
+
+\subsection{Transformer (primary)}
+A decoder-only transformer written from scratch: $d_{\text{model}}=384$, $6$
+layers, $6$ heads, $d_{\text{ff}}=1536$, learned positional embeddings,
+pre-norm, GELU, dropout $0.1$, tied input/output embeddings --- $10{,}734{,}336$
+parameters. We deliberately do \emph{not} use a fine-tuned pretrained model as
+the primary system, so that the family comparison is roughly parameter-fair
+($10.7$M against $1.1$M and $1.1$M) rather than $82$M against $1$M. The
+vocabulary is $48$ hand-written characters; the sequence is
+\texttt{<bos>} caption \texttt{<sep>} grid($110$ chars) \texttt{<eos>}, and the
+loss is masked over the caption prefix so the model is trained to predict the
+grid, not the caption.
+
+\subsection{Constrained decoding}
+\label{sec:constrained}
+A manual sampling loop applies a per-step logit mask. Border cells are forced to
+wall; the eleventh character of each row is forced to newline; and any tile whose
+quota is exhausted is masked. The rule that matters is \textbf{feasibility
+forcing}: letting $r=(1-n_{\text{player}})+(4-n_{\text{box}})+(4-n_{\text{goal}})$
+be the specials still owed and $\ell$ the interior cells remaining, when
+$\ell \leq r$ we mask \texttt{\#} and space so that only specials can be emitted.
+Masking upper bounds alone enforces "at most four boxes", not "exactly four".
+With nine specials in $64$ interior cells this rule rarely binds, which is
+precisely the trap: an implementation without it looks correct on a handful of
+samples and fails in the tail.
+
+We instrument the rule and report the \textbf{forced-token rate}, which is a free
+measure of how well the model learned to count unaided.
+
+\subsection{Conditional VAE}
+An MLP encoder and decoder over a $5\times10\times10$ one-hot tensor, latent
+dimension $32$, $1{,}098{,}292$ parameters. We use MLPs rather than convolutions
+because $10\times10$ does not factor cleanly for strided convolutions and at
+$100$ cells convolutions buy nothing while costing shape bugs. The
+reconstruction loss is \textbf{per-cell categorical cross-entropy over the
+channel dimension}, not MSE: MSE on one-hot tiles treats a categorical axis as a
+metric space, and is a common and wrong default. Posterior collapse is prevented
+with free bits~\cite{kingma2016freebits}, clamping per-dimension KL at a
+$0.05$-nat floor.
+
+We report \textbf{two decoding protocols, both mandatory}. The decoder emits an
+independent categorical per cell, and boxes occupy $4/100$ cells, goals $4/100$
+and the player $1/100$. Under argmax, floor or wall therefore wins almost
+everywhere and the output is a near-empty room: the argmax of a product of
+marginals is not the mode of the joint, and rare tiles are exactly what gets
+annihilated. That is a correct and interesting result, but reporting argmax alone
+would be an unfair protocol, so we also report per-cell sampling, which preserves
+marginal tile rates and produces roughly the right \emph{number} of boxes in the
+wrong \emph{places} --- a different failure signature.
+
+\subsection{Conditional GAN}
+An MLP generator and discriminator, $1{,}082{,}357$ parameters combined, with
+straight-through Gumbel-softmax~\cite{jang2017gumbel} discretisation annealed
+from temperature $1.0$ to $0.3$, and one-sided label smoothing. Training on
+continuous logits and taking argmax only at sampling time is not a valid option:
+the discriminator can then separate real one-hot tensors from soft generator
+output purely by per-cell entropy, training collapses to that trivial
+discriminator, and the generator learns nothing about layout. This family was
+hard time-boxed; mode collapse is reported as a finding, not treated as a
+failure to fix.
+
+\subsection{Repair}
+Any structurally invalid grid is projected onto the nearest valid grid using the
+model's own predicted probabilities: the border is forced to wall, excess boxes,
+goals and players are dropped lowest-probability first, deficits are filled
+highest-probability first, and specials are never placed on the border. Repair is
+idempotent and is the identity on already-valid grids. Reporting post-repair
+solvability decomposes the comparison into two separable questions: \emph{can the
+model count?} (structural validity) and \emph{does it understand spatial
+structure?} (post-repair solvability). Without it a reader cannot tell whether
+the GAN is bad at Sokoban or merely bad at arithmetic.
+
+\subsection{Baselines}
+Random placement (uniform interior walls at the training-median density, then
+random specials) is the floor. \textbf{Open room} --- border walls only, zero
+interior walls --- is the baseline that can invalidate the headline number, since
+an empty room has no interior walls to freeze a box against. Rule-based
+generation adds a floor-connectivity check and places boxes and goals only on
+live squares. \textbf{Retrieval} samples a training level verbatim, and exists to
+make the complementary point: solvability alone is a degenerate objective,
+maximised by copying. Real held-out Boxoban levels give the ceiling row.
+
+\subsection{Comparison protocol}
+The transformer is reported \textbf{both with and without} constrained decoding,
+so a reader can compare unconstrained-to-unconstrained across all three
+families and see the constrained result separately. Structural validity and
+solvability are never merged into one number: merging them compares decoding
+schemes rather than model families.
+
+\section{Solver}
+\label{sec:solver}
+
+\subsection{Design}
+Levels are represented as integer bitmasks (walls, goals, boxes) plus a player
+cell index. Successors are \textbf{pushes}, not single steps. For hashing, the
+player's exact cell is irrelevant --- only its reachable region matters --- so
+the state key is (minimum reachable cell, box mask). Without this
+canonicalisation, states differing only by player position within one region are
+distinct and the search inflates by roughly the region size; measured on the
+$1{,}000$ real test levels, the starting region averages $19.1$ cells (median
+$22.5$, maximum $46$).
+
+The heuristic precomputes, per goal, a backward BFS map of the minimum pushes to
+bring a box to that goal, ignoring other boxes but respecting walls, and takes
+the minimum-cost assignment of boxes to goals~\cite{kuhn1955hungarian}. It is
+admissible --- each push moves one box one cell --- and strictly tighter than
+sum-of-Manhattan because it respects walls.
+
+\subsection{Two sound prunes, and nothing else}
+A cell is \emph{dead} if a box there can reach no goal under the relaxation
+above; any box on a dead square is a proven deadlock, which subsumes corner
+deadlocks. A box is \emph{frozen} if it is blocked along both axes, where a
+blocker is a wall, a dead square, or another frozen box, with a
+currently-evaluated box treated as blocking to terminate the recursion; any
+frozen box off a goal is a proven deadlock. We admit nothing heuristic:
+\textbf{an unsound prune produces false proofs of unsolvability}, which is the
+worst failure mode available here because it corrupts the headline number
+invisibly and in a plausible direction.
+
+\texttt{unsolvable} is returned \textbf{only} when the open set empties before
+any budget is hit. Every cap hit is \texttt{timeout}.
+
+\subsection{Validation}
+On all $1{,}000$ real test levels the solver achieves a \textbf{100.00\% solve
+rate} with zero \texttt{unsolvable} verdicts and zero timeouts (Tier 1). Every
+one of the $1{,}000$ returned solutions replays to a solved state under an
+independent simulator. Against the published solutions, our push-optimal length
+is $\leq$ theirs on $926/926$ comparable levels and our reconstructed move length
+is $\geq$ their move-optimal length on $926/926$, both as theory requires.
+
+The \textbf{soundness ablation} reruns a $200$-level sample with both prunes
+disabled and a $10\times$ node cap: \textbf{zero verdict disagreements and zero
+length disagreements}. We extended this to $450$ levels drawn from the three
+baseline generators, whose wall densities and failure modes differ sharply from
+real levels, again with zero disagreements. Median expansions are $176$ (p99
+$3{,}458$) and median wall time $75$\,ms (p99 $2.0$\,s).
+
+Solve rate reaches $100\%$ at a node cap of $10{,}000$ and is flat to
+$1{,}000{,}000$, so the reported numbers are converged rather than
+budget-limited.
+
+\subsection{Move length is an upper bound}
+Because push-optimal search discards the player's exact position, the move length
+reconstructed by walking the player between consecutive pushes is an
+\textbf{upper bound}, not the optimum. Measured against exact move-optimal search
+on $196$ levels: mean excess $+40.5\%$, exactly optimal on only $6.6\%$ of
+levels, and zero bound violations. Because that gap is large, the achieved
+solution length used in the controllability metric is measured with the
+\textbf{exact move-optimal solver}, matching the move units of the captions,
+rather than with the cheap reconstruction.
+
+\section{Experiments}
+\label{sec:experiments}
+
+For each condition we draw samples until $500$ structurally valid levels are
+collected or a hard cap of $100{,}000$ draws is reached, and we report
+\textbf{samples drawn} as its own column. Only valid samples are handed to the
+solver, so drawing tens of thousands of one-shot samples costs seconds and no
+solver time. Where a family cannot reach $500$ valid levels within the cap we
+report the count obtained and state the shortfall; we never report a
+"solvable given valid" percentage on a denominator below $30$ without flagging it
+inline, because a family at $2\%$ validity yields roughly ten levels and a
+percentage there is noise a reader will misread as signal.
+
+All proportions carry Wilson score intervals~\cite{wilson1927probable}, which
+behave correctly near $0\%$ and $100\%$. Pairwise comparisons use two-proportion
+$z$-tests. Three seeds are run on the main transformer configuration; every other
+row is single-seed and declared as such in the table caption (Tier 3).
+
+Controllability uses a fixed prompt suite stored in the repository: five
+solution-length targets $\times$ two density settings $\times$ two connectivity
+settings $\times$ two clustering settings $\times$ $15$ samples $=600$ prompts.
+Wall density is a two-bin feature by construction, so a balanced factorial is used
+in place of three density settings, keeping the $600$-prompt total while letting
+every conditioned attribute vary independently. A separate out-of-distribution
+suite requests $90$, $110$ and $150$ moves; on the training split the $99$th
+percentile is $67$ moves, the $99.9$th is $87$, and the maximum is $130$.
+
+\section{Results}
+\label{sec:results}
+
+\input{../results/tables/main_table.tex}
+
+\PLACEHOLDERRESULTS
+
+\section{Failure Analysis}
+\PLACEHOLDERFAILURE
+
+\section{Limitations}
+
+\begin{itemize}
+\item \textbf{Constrained decoding shifts the sampling distribution.}
+      Mask-then-renormalise at each step does not sample from the model's
+      distribution conditioned on the valid set; it is a greedy local
+      approximation to it.
+\item \textbf{Conditioning channels differ across families.} The transformer is
+      conditioned on caption text and the one-shot models on a $10$-dimensional
+      vector, so the comparison is not perfectly controlled on conditioning.
+\item \textbf{Reconstructed move length is an upper bound}, quantified in
+      Section~\ref{sec:solver} at $+40.5\%$ mean excess. We avoid it where it
+      matters by using exact move-optimal search for controllability.
+\item \textbf{A single game at a single fixed size}: $10\times10$, four boxes,
+      four goals. Nothing here shows the finding generalises to other tile games
+      or other grid sizes.
+\item \textbf{Single-seed ablations.} Only the main transformer configuration is
+      run with three seeds.
+\item \textbf{Untuned hyperparameters.} Learning rate, batch size and epoch count
+      were chosen once and never swept, for any model (Tier 3). We did not try
+      $1\mathrm{e}{-4}$ before settling on $3\mathrm{e}{-4}$.
+\item \textbf{Inverse-binomial sampling.} Because we draw until $500$ valid
+      levels are collected, structural-validity intervals are close
+      approximations rather than exact fixed-$n$ binomial intervals.
+\item \textbf{Censored controllability.} Achieved solution length exists only for
+      solved levels, so the length correlation is computed on a subsample biased
+      toward easy levels. We report the censoring rate alongside it.
+\end{itemize}
+
+\section{Ethics}
+
+The models generate puzzle layouts for a single game. They consume no personal
+data, produce no text about people, and inform no decisions about people. The
+Boxoban corpus is procedurally generated and contains no human-authored or
+personal content.
+
+The one substantive risk is misreading the verification claim.
+"Solver-verified" is a strong guarantee \emph{only} within stated bounds --- a
+$10\times10$ grid, four boxes, a $200{,}000$-node cap and a $10$-second
+wall-clock cap. Outside those bounds a timeout proves nothing, which is exactly
+why timeouts are reported as a separate column rather than folded into
+"unsolvable". Presenting a bounded decision procedure as an unbounded guarantee
+would be the failure mode to avoid, and it is one that generative-model
+evaluation is generally prone to.
+
+\section{Conclusion}
+\PLACEHOLDERCONCLUSION
+
+\section*{Reproducibility}
+
+All code, configurations, checkpoints, generated levels with per-level solver
+verdicts, and result JSON artifacts are released. Every artifact embeds its
+configuration, random seed and git commit; every table in this paper is
+regenerated from those artifacts by a single command, and no number was typed by
+hand.
+
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+
+\end{document}
