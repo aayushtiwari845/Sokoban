@@ -8,3 +8,9 @@ results/*.json
 !results/final_snapshot/
 *.pt
 .pytest_cache/
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.bbl
+paper/*.blg
+paper/*.synctex.gz

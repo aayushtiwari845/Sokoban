@@ -156,6 +156,8 @@ def latex_main_table(ev: Dict, results_dir: str) -> str:
         r"merged. All rows are single-seed except the main transformer "
         r"configuration, which is run with three seeds.}",
         r"\label{tab:main}",
+        r"\footnotesize",
+        r"\setlength{\tabcolsep}{4pt}",
         r"\begin{tabular}{lrrrrrrrr}",
         r"\toprule",
         r"Model & Valid \% & Solv. \% & Solv.\,$|$\,valid \% & Timeout \% & "

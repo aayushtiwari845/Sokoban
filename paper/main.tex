@@ -32,16 +32,20 @@ one-sided test. We therefore report three outcomes --- solved, proven
 unsolvable, and timed out --- rather than two. Our central finding is that
 autoregressive generation satisfies hard counting constraints that one-shot
 generators cannot: a $10.7$M-parameter decoder-only transformer emitting a level
-cell by cell reaches \RESULTTFVALID{} structural validity unaided, while a
-conditional VAE decoding all $100$ cells from a latent vector reaches
-\RESULTVAEVALID{} under argmax decoding, because the argmax of a product of
-independent per-cell marginals annihilates exactly the rare tiles the
+cell by cell reaches $82.6\%$ structural validity unaided, while a conditional
+VAE decoding all $100$ cells from a latent vector produces \textbf{zero} valid
+levels in $100{,}000$ draws under argmax decoding, because the argmax of a
+product of independent per-cell marginals annihilates exactly the rare tiles the
 constraints are about. Constrained decoding closes the counting gap
-deterministically. Solvability, however, does not follow from validity: an
-empty-room baseline with no interior walls is solvable
-\RESULTOPENROOM{} of the time, so solvability alone is not a sufficient
-objective, and a retrieval baseline that copies training levels maximises it at
-zero novelty. We argue the results table must be read as a joint constraint over
+deterministically, at $100\%$ validity. Solvability, however, does not follow
+from validity: an empty-room baseline with no interior walls is solvable
+$23.4\%$ of the time against the transformer's $49.6\%$, so the gap is real but
+solvability alone is not a sufficient objective --- a retrieval baseline that
+copies training levels maximises it at zero novelty. Two results cut against the
+simple story: repairing the VAE's counting errors yields $76.6\%$ solvability,
+\emph{above} the transformer, locating the autoregressive advantage in counting
+rather than in spatial structure; and every family fails to extrapolate,
+producing $\sim\!30$-move levels when asked for $\sim\!116$. We argue the results table must be read as a joint constraint over
 solvability, difficulty control and novelty. This work replicates and extends
 Todd et al.~\cite{todd2023level}; the data-scaling and tokenization findings are
 theirs, and we claim neither.
@@ -396,10 +400,176 @@ percentile is $67$ moves, the $99.9$th is $87$, and the maximum is $130$.
 
 \input{../results/tables/main_table.tex}
 
-\PLACEHOLDERRESULTS
+The main results appear in Table~\ref{tab:main}. We read them as five findings.
+
+\subsection{Autoregressive models can count; one-shot decoders cannot}
+The counting gap is the largest effect in the table, and it is structural rather
+than a matter of capacity. The transformer reaches $82.6\%$ [$80.2$, $84.8$]
+structural validity with no constraint at all, needing $1{,}024$ draws to yield
+$500$ valid levels. The conditional VAE under argmax decoding yields
+\textbf{zero} valid levels in $100{,}000$ draws. Sampling the VAE per cell
+instead of taking the argmax raises validity only to $1.7\%$ [$1.6$, $1.9$],
+requiring $29{,}184$ draws; the GAN reaches $8.6\%$.
+
+Figure~\ref{fig:tiles} shows why, more convincingly than any percentage. The
+transformer's box-count distribution is a spike at four ($87.1\%$ exactly four,
+mean $3.87 \pm 0.34$). The VAE under argmax has mean $1.38 \pm 1.23$ boxes and
+$0.01 \pm 0.12$ goals: the per-cell argmax of a product of marginals picks floor
+or wall almost everywhere, because boxes occupy $4/100$ cells and goals $4/100$.
+Per-cell \emph{sampling} restores the marginal rates almost exactly --- mean
+$3.95 \pm 1.72$ boxes, $4.05 \pm 1.85$ goals --- but only $21.8\%$ of samples
+carry exactly four boxes. That is the signature of the failure: the one-shot
+decoder gets the right \emph{average} number of boxes and the wrong
+\emph{joint}, because its per-cell outputs are conditionally independent given
+the latent.
+
+Constrained decoding closes the gap deterministically at $100\%$ validity, and
+with a very light touch: feasibility forcing fired on $25.0\%$ of levels and
+supplied a mean of only $0.378$ forced tokens per level. The model had largely
+learned to count unaided; forcing supplies the last box.
+
+\subsection{Solvability does not follow from validity}
+Every non-learned baseline is $100\%$ structurally valid by construction and
+still nearly worthless. Random placement is solvable $0.0\%$ of the time and the
+rule-based generator $0.4\%$, despite the latter enforcing floor connectivity
+and placing boxes only on live squares. Interior walls are what kill them: at
+the training-median density the floor becomes a maze of narrow corridors, and a
+box pushed into one freezes against the walls.
+
+The \textbf{open-room} baseline is the row that constrains how the headline
+number may be read. With no interior walls at all it is solvable $23.4\%$
+[$19.9$, $27.3$] of the time. The transformer's $49.6\%$ is significantly higher
+($+26.2$ percentage points, $z = 8.60$, $p < 10^{-16}$), so the headline is not
+an artifact of the task being easy --- but a reader given only ``$49.6\%$
+solvable'' without the open-room row would substantially overestimate what has
+been shown.
+
+The \textbf{retrieval} baseline makes the complementary point: $100\%$ solvable,
+$0\%$ novel, nearest-neighbour distance exactly $0.00$ to the training set.
+Solvability alone is a degenerate objective, maximised by copying. The table has
+to be read as a joint constraint over solvability, difficulty control and
+novelty; no single column of it is an objective.
+
+\subsection{Repair separates counting from spatial understanding}
+The most surprising row is the repaired VAE. Projecting its invalid output onto
+the nearest valid grid yields $76.6\%$ [$72.7$, $80.1$] solvability, well
+\emph{above} the transformer's $49.6\%$, with diversity ($37.8$) close to the
+real-level reference ($38.8$) and no exact copies. The repaired GAN reaches
+$40.2\%$.
+
+This is exactly what the repair experiment was for. The VAE is not bad at
+Sokoban; it is bad at arithmetic. Its per-cell marginals encode where boxes and
+goals plausibly go, and repair reads those marginals off and places the right
+number of tiles at the most probable positions. What autoregressive generation
+buys is the ability to satisfy a counting constraint \emph{while sampling}, not
+a better model of spatial structure. Merging structural validity and solvability
+into one number would have hidden this result completely.
+
+A second, smaller inversion points the same way: the \emph{unconstrained}
+transformer is more solvable given validity ($56.0\%$) than the constrained one
+($49.6\%$; $z = -2.03$, $p = 0.043$). Unconstrained sampling keeps only the
+$82.6\%$ of levels the model got right unaided, which are its more typical and
+more solvable outputs; constrained decoding additionally rescues the levels it
+would have botched, and those are worse levels. This is the distribution shift
+predicted in Section~\ref{sec:constrained} appearing as a measurable cost, and
+it is why both rows are reported. On the overall rate --- solvable out of all
+samples drawn --- constrained decoding still wins, $49.6\%$ against $46.3\%$.
+
+\subsection{Controllability splits along a predictable line}
+Control is reported per attribute, never as one number, and the split is sharp.
+The transformer hits the caption's wall-density bin $88.8\%$ of the time,
+connectivity $80.0\%$ and box clustering $76.3\%$, against a $50\%$ chance rate
+confirmed by two unconditioned controls (real levels score $48.8\%$, $53.2\%$
+and $52.2\%$). But difficulty --- the binned solution length --- is hit only
+$43.3\%$ of the time against a $33\%$ chance rate, and the rank correlation
+between requested and achieved solution length is $\rho = 0.484$.
+
+The dividing line is the one we predicted before running the experiment. Wall
+density, connectivity and clustering are computable directly from the grid, so a
+model that reproduces surface statistics gets them nearly for free. Solution
+length is not computable without search. It is the only conditioned attribute
+that requires the model to have learned something about the puzzle rather than
+about its pixels, and it is the one the model controls worst.
+
+That correlation is also \textbf{censored}: $55.2\%$ of suite samples have no
+achieved length, because they were proven unsolvable, and the surviving
+subsample is biased toward easy levels --- the direction that inflates $\rho$.
+The honest reading is that $0.484$ is an upper bound on a weak effect.
+
+\subsection{Pretraining transfers across a vocabulary boundary}
+The DistilGPT-2 ablation discards the $50257 \times 768$ embedding matrix and
+the tied LM head, so nothing lexical can transfer. It nonetheless reaches
+$63.6\%$ [$59.3$, $67.7$] solvability against the from-scratch model's $49.6\%$,
+needs less rescuing from the constrained decoder ($7.4\%$ of levels against
+$25.0\%$), and controls solution length better ($\rho = 0.673$ against
+$0.484$). Pretrained sequence-modelling machinery does transfer to a domain with
+zero shared vocabulary. The cost is $4.0\times$ the parameters ($43.4$M against
+$10.7$M) and $6.8\times$ the training time ($4479$\,s against $661$\,s), and the
+comparison is single-seed, so we report it as a suggestive ablation rather than
+a headline.
+
+\subsection{Temperature trades solvability against diversity}
+Figure~\ref{fig:pareto} shows a clean monotone trade-off: solvability falls from
+$61.2\%$ at $T = 0.6$ to $34.8\%$ at $T = 1.5$, while diversity rises from
+$35.8$ to a peak of $39.0$ at $T = 1.2$. $T = 1.5$ is Pareto-dominated --- it
+loses solvability without buying diversity back. At $T = 1.0$ the model already
+matches the real-level diversity reference ($38.9$ against $38.8$).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{../figures/fig3_tile_counts.pdf}
+\caption{Tile counts per generated level over raw draws, valid or not. The
+dashed line marks the required count. The transformer's distribution is a spike
+at four; the VAE under argmax collapses to a near-empty room; VAE sampling
+recovers the right marginal rate with the wrong joint.}
+\label{fig:tiles}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{../figures/fig5_temperature_pareto.pdf}
+\caption{Solvability against diversity for the constrained transformer across
+sampling temperatures. Bars are Wilson 95\% intervals.}
+\label{fig:pareto}
+\end{figure}
 
 \section{Failure Analysis}
-\PLACEHOLDERFAILURE
+\paragraph{Extrapolation fails completely}
+The out-of-distribution suite requests solution lengths of $90$, $110$ and $150$
+moves, against a training distribution whose $99$th percentile is $67$ and whose
+maximum is $130$. Every family ignores the request. The constrained transformer
+produces levels averaging $29.5$ achieved moves when asked for $115.8$, with a
+rank correlation of $-0.394$; the repaired VAE averages $42.3$. Real Boxoban
+levels sampled against the same captions average $30.3$, which is the correct
+null --- they are not conditioned at all. Models reproduce the training length
+distribution regardless of what the caption asks. Length conditioning learned
+in-distribution does not extend past the data.
+
+\paragraph{The one-shot failure mode is a plausible, empty room}
+The VAE's argmax output is not noise. It is a clean, empty, unplayable room with
+roughly one box and no goals whatsoever. It fails the constraint in the most
+systematic way available, and it fails \emph{silently}: nothing about the output
+looks malformed, there is simply no puzzle in it. A soft metric comparing tile
+histograms in aggregate would not obviously flag this, which is a small argument
+for verification over proxies.
+
+\paragraph{Hand-written domain knowledge is not a shortcut}
+The rule-based generator --- connectivity checks plus live-square placement ---
+achieves $0.4\%$ solvability, \emph{worse} than an empty room. We checked two
+alternative explanations before accepting that number. It is not an unsound
+prune: re-solving $450$ baseline levels with deadlock pruning disabled at a
+$10\times$ node cap gives identical verdicts. And it is not caused by starting
+in a deadlock: additionally rejecting frozen start states moves the rate by less
+than one point. The levels die after the first push, not before it. Real Boxoban
+levels reach $100\%$ at the same wall density only because they are built by
+reverse play from an already-solved state, which is a fundamentally different
+construction from sampling walls and then dropping boxes onto them.
+
+\paragraph{Constrained decoding has a measurable cost}
+As reported above, forcing validity onto samples the model would otherwise have
+botched lowers solvability-given-validity by $6.4$ points. Constrained decoding
+is not free; it trades sample quality for a guarantee. Whether that trade is
+worth making depends on which column of the table the application cares about.
 
 \section{Limitations}
 
@@ -447,7 +617,31 @@ would be the failure mode to avoid, and it is one that generative-model
 evaluation is generally prone to.
 
 \section{Conclusion}
-\PLACEHOLDERCONCLUSION
+We evaluated three generative model families on text-conditioned Sokoban level
+generation using an exhaustive A* solver as a decision procedure rather than a
+proxy, reporting solved, proven-unsolvable and timed-out separately. The solver
+itself is validated first --- $100.00\%$ solve rate on $1{,}000$ real levels,
+zero false proofs of unsolvability, every returned solution replaying to a
+solved state, and a soundness ablation with zero verdict disagreements across
+four distinct level distributions.
+
+On that footing, three claims hold. Autoregressive generation satisfies hard
+counting constraints that one-shot decoders cannot: $82.6\%$ structural validity
+unaided against \emph{zero} valid levels in $100{,}000$ draws from a VAE under
+argmax, with constrained decoding closing the gap deterministically for a mean
+of $0.378$ forced tokens per level. Solvability does not follow from validity,
+and the open-room baseline at $23.4\%$ shows how much of a headline solvability
+number can come from the task rather than from the model. And the two axes come
+apart in the other direction as well: once its counting errors are repaired, the
+VAE is \emph{more} solvable than the transformer, which locates the
+autoregressive advantage in counting rather than in spatial understanding.
+
+The most interesting negative result is the controllability split. Attributes
+computable from the grid are controlled well; solution length, which requires
+search to evaluate, is controlled weakly ($\rho = 0.484$, on a censored
+subsample) and not at all out of distribution. A model conditioned on ``hard''
+learns what hard levels \emph{look like}, not what makes them hard --- and that
+gap is invisible to any metric that does not run the game.
 
 \section*{Reproducibility}
 
