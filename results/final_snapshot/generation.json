@@ -1,0 +1,239 @@
+{
+  "provenance": {
+    "git_sha": "b2ffd44970787731ee70e757634986091c668b7a",
+    "git_sha_short": "b2ffd44",
+    "git_dirty": true,
+    "seed": 1337,
+    "config": {
+      "config": "configs/main.yaml",
+      "suite": "configs/prompt_suite.json",
+      "out_dir": "results/generated",
+      "manifest": "results/generation.json",
+      "seed": null,
+      "target_valid": 500,
+      "max_drawn": 100000,
+      "only": null
+    },
+    "timestamp_utc": "2026-08-25T20:44:47.847180+00:00",
+    "python": "3.13.7",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "target_valid": 500,
+  "max_drawn": 100000,
+  "conditions": {
+    "random_placement": {
+      "name": "random_placement",
+      "samples_drawn": 512,
+      "n_valid": 512,
+      "n_kept": 500,
+      "generation_time_s": 0.028275399999984074,
+      "generation_time_per_sample_ms": 0.055225390624968895,
+      "reached_target": true,
+      "notes": ""
+    },
+    "open_room": {
+      "name": "open_room",
+      "samples_drawn": 512,
+      "n_valid": 512,
+      "n_kept": 500,
+      "generation_time_s": 0.009665300000051502,
+      "generation_time_per_sample_ms": 0.01887753906260059,
+      "reached_target": true,
+      "notes": ""
+    },
+    "rule_based": {
+      "name": "rule_based",
+      "samples_drawn": 512,
+      "n_valid": 512,
+      "n_kept": 500,
+      "generation_time_s": 30.799081600000136,
+      "generation_time_per_sample_ms": 60.154456250000266,
+      "reached_target": true,
+      "notes": ""
+    },
+    "retrieval": {
+      "name": "retrieval",
+      "samples_drawn": 512,
+      "n_valid": 512,
+      "n_kept": 500,
+      "generation_time_s": 0.0035233999997217325,
+      "generation_time_per_sample_ms": 0.006881640624456509,
+      "reached_target": true,
+      "notes": ""
+    },
+    "real_boxoban": {
+      "name": "real_boxoban",
+      "samples_drawn": 512,
+      "n_valid": 512,
+      "n_kept": 500,
+      "generation_time_s": 0.0031137999994825805,
+      "generation_time_per_sample_ms": 0.006081640623989415,
+      "reached_target": true,
+      "notes": ""
+    },
+    "transformer_constrained": {
+      "name": "transformer_constrained",
+      "samples_drawn": 512,
+      "n_valid": 512,
+      "n_kept": 500,
+      "generation_time_s": 27.040866999999707,
+      "generation_time_per_sample_ms": 52.81419335937443,
+      "reached_target": true,
+      "notes": "",
+      "model_params": 10734336,
+      "forcing": {
+        "n_sequences": 1232,
+        "n_sequences_with_forcing": 308,
+        "forced_sequence_rate": 0.25,
+        "mean_forced_tokens_per_level": 0.3782467532467532,
+        "max_forced_tokens_per_level": 5.0,
+        "mean_quota_masked_tokens_per_level": 34.40827922077922
+      }
+    },
+    "transformer_unconstrained": {
+      "name": "transformer_unconstrained",
+      "samples_drawn": 1024,
+      "n_valid": 846,
+      "n_kept": 500,
+      "generation_time_s": 24.391663500000504,
+      "generation_time_per_sample_ms": 23.819983886719243,
+      "reached_target": true,
+      "notes": "",
+      "model_params": 10734336
+    },
+    "transformer_constrained_t0.6": {
+      "name": "transformer_constrained_t0.6",
+      "samples_drawn": 512,
+      "n_valid": 512,
+      "n_kept": 500,
+      "generation_time_s": 23.781011500000204,
+      "generation_time_per_sample_ms": 46.4472880859379,
+      "reached_target": true,
+      "notes": "",
+      "model_params": 10734336,
+      "temperature": 0.6
+    },
+    "transformer_constrained_t0.8": {
+      "name": "transformer_constrained_t0.8",
+      "samples_drawn": 512,
+      "n_valid": 512,
+      "n_kept": 500,
+      "generation_time_s": 25.299108299999716,
+      "generation_time_per_sample_ms": 49.412320898436946,
+      "reached_target": true,
+      "notes": "",
+      "model_params": 10734336,
+      "temperature": 0.8
+    },
+    "transformer_constrained_t1.0": {
+      "name": "transformer_constrained_t1.0",
+      "samples_drawn": 512,
+      "n_valid": 512,
+      "n_kept": 500,
+      "generation_time_s": 26.659634699999515,
+      "generation_time_per_sample_ms": 52.06959902343655,
+      "reached_target": true,
+      "notes": "",
+      "model_params": 10734336,
+      "temperature": 1.0
+    },
+    "transformer_constrained_t1.2": {
+      "name": "transformer_constrained_t1.2",
+      "samples_drawn": 512,
+      "n_valid": 512,
+      "n_kept": 500,
+      "generation_time_s": 26.844497999999476,
+      "generation_time_per_sample_ms": 52.430660156248976,
+      "reached_target": true,
+      "notes": "",
+      "model_params": 10734336,
+      "temperature": 1.2
+    },
+    "transformer_constrained_t1.5": {
+      "name": "transformer_constrained_t1.5",
+      "samples_drawn": 512,
+      "n_valid": 512,
+      "n_kept": 500,
+      "generation_time_s": 26.029161500000555,
+      "generation_time_per_sample_ms": 50.838206054688584,
+      "reached_target": true,
+      "notes": "",
+      "model_params": 10734336,
+      "temperature": 1.5
+    },
+    "distilgpt2_constrained": {
+      "name": "distilgpt2_constrained",
+      "samples_drawn": 512,
+      "n_valid": 512,
+      "n_kept": 500,
+      "generation_time_s": 39.815091100000245,
+      "generation_time_per_sample_ms": 77.76384980468798,
+      "reached_target": true,
+      "notes": "",
+      "model_params": 43352064,
+      "forcing": {
+        "n_sequences": 1232,
+        "n_sequences_with_forcing": 91,
+        "forced_sequence_rate": 0.07386363636363637,
+        "mean_forced_tokens_per_level": 0.09983766233766234,
+        "max_forced_tokens_per_level": 3.0,
+        "mean_quota_masked_tokens_per_level": 35.56087662337662
+      }
+    },
+    "vae_argmax": {
+      "name": "vae_argmax",
+      "samples_drawn": 100000,
+      "n_valid": 0,
+      "n_kept": 0,
+      "generation_time_s": 1.806438800000251,
+      "generation_time_per_sample_ms": 0.01806438800000251,
+      "reached_target": false,
+      "notes": "SHORTFALL: only 0 valid levels in 100,000 draws (cap 100,000)",
+      "model_params": 1098292
+    },
+    "vae_sample": {
+      "name": "vae_sample",
+      "samples_drawn": 29184,
+      "n_valid": 500,
+      "n_kept": 500,
+      "generation_time_s": 0.6067184000003181,
+      "generation_time_per_sample_ms": 0.02078941885966002,
+      "reached_target": true,
+      "notes": "",
+      "model_params": 1098292
+    },
+    "vae_repaired": {
+      "name": "vae_repaired",
+      "samples_drawn": 512,
+      "n_valid": 512,
+      "n_kept": 500,
+      "generation_time_s": 0.06613600000127917,
+      "generation_time_per_sample_ms": 0.12917187500249838,
+      "reached_target": true,
+      "notes": "",
+      "model_params": 1098292
+    },
+    "gan_raw": {
+      "name": "gan_raw",
+      "samples_drawn": 6144,
+      "n_valid": 531,
+      "n_kept": 500,
+      "generation_time_s": 0.19507460000022547,
+      "generation_time_per_sample_ms": 0.031750423177120034,
+      "reached_target": true,
+      "notes": "",
+      "model_params": 1082357
+    },
+    "gan_repaired": {
+      "name": "gan_repaired",
+      "samples_drawn": 512,
+      "n_valid": 512,
+      "n_kept": 500,
+      "generation_time_s": 0.04973460000110208,
+      "generation_time_per_sample_ms": 0.0971378906271525,
+      "reached_target": true,
+      "notes": "",
+      "model_params": 1082357
+    }
+  }
+}

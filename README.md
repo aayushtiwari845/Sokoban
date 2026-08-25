@@ -76,15 +76,17 @@ Computed over **raw draws**, valid or not: restricting to valid levels would def
 | Open room | 37.5 | 50.0 | 50.0 | 49.7 | 0.057 | 83.5 | 99 |
 | Rule-based | 39.8 | 50.0 | 50.0 | 49.0 | -- | 99.7 | 2 |
 | Retrieval | 32.7 | 49.0 | 51.5 | 51.2 | 0.021 | 0.8 | 595 |
-| Conditional GAN (raw) | 53.3 | 75.6 | 64.4 | 60.0 | -0.289 | 51.1 | 22 |
+| Conditional GAN (raw) | 53.3 | 75.6 | 64.4 | 60.0 | -0.289 (n=22, NOISE) | 51.1 | 22 |
 | Conditional GAN (repaired) | 39.0 | 85.7 | 64.0 | 53.8 | 0.074 | 59.8 | 241 |
 | Conditional VAE (argmax) | -- | -- | -- | -- | -- | -- | 0 |
-| Conditional VAE (sampled) | 50.0 | 100.0 | 87.5 | 87.5 | 0.866 | 62.5 | 3 |
+| Conditional VAE (sampled) | 50.0 | 100.0 | 87.5 | 87.5 | 0.866 (n=3, NOISE) | 62.5 | 3 |
 | Conditional VAE (repaired) | 46.2 | 88.5 | 74.2 | 82.3 | 0.389 | 27.0 | 438 |
 | Transformer (unconstrained) | 41.3 | 88.3 | 84.9 | 78.6 | 0.516 | 47.8 | 249 |
 | Transformer (constrained) | 43.3 | 88.8 | 80.0 | 76.3 | 0.484 | 55.2 | 269 |
 | DistilGPT-2 (constrained, ablation) | 53.5 | 91.5 | 85.5 | 86.2 | 0.673 | 37.8 | 373 |
 | Real Boxoban levels | 31.0 | 48.8 | 53.2 | 52.2 | -0.048 | 1.2 | 593 |
+
+Correlations computed on fewer than 30 levels are marked NOISE inline; they are reported for completeness, not as evidence.
 
 Wall density, connectivity and box clustering are computable directly from the grid, so a model that reproduces surface statistics will score well on them.  **Solution length is not computable without search**, so it is the only attribute that tests real understanding.
 
@@ -97,7 +99,7 @@ Achieved solution length uses the exact move-optimal solver (`cost_mode="moves"`
 | Model | OOD length Spearman | OOD censoring % | Mean requested | Mean achieved | n |
 |---|---|---|---|---|---|
 | Random placement | -- | 100.0 | -- | -- | 0 |
-| Open room | -0.047 | 77.5 | 116.7 | 26.9 | 27 |
+| Open room | -0.047 (n=27, NOISE) | 77.5 | 116.7 | 26.9 | 27 |
 | Rule-based | -- | 100.0 | -- | -- | 0 |
 | Retrieval | 0.099 | 7.5 | 116.1 | 32.5 | 111 |
 | Conditional GAN (raw) | -- | 77.8 | -- | -- | 2 |
@@ -105,7 +107,7 @@ Achieved solution length uses the exact move-optimal solver (`cost_mode="moves"`
 | Conditional VAE (argmax) | -- | -- | -- | -- | 0 |
 | Conditional VAE (sampled) | -- | 66.7 | -- | -- | 1 |
 | Conditional VAE (repaired) | -0.059 | 55.0 | 117.8 | 42.3 | 54 |
-| Transformer (unconstrained) | 0.394 | 63.9 | 96.2 | 37.7 | 13 |
+| Transformer (unconstrained) | 0.394 (n=13, NOISE) | 63.9 | 96.2 | 37.7 | 13 |
 | Transformer (constrained) | -0.394 | 60.0 | 115.8 | 29.5 | 48 |
 | DistilGPT-2 (constrained, ablation) | -0.274 | 51.7 | 120.0 | 30.4 | 58 |
 | Real Boxoban levels | 0.131 | 0.8 | 116.9 | 30.3 | 119 |
@@ -131,6 +133,30 @@ Out-of-distribution requests ask for solution lengths of 90, 110 and 150 moves. 
 | Transformer (constrained) vs Transformer (unconstrained) | -6.4 | -2.03 | 4.27e-02 |
 | Transformer (unconstrained) vs Conditional VAE (sampled) | +26.0 | 8.30 | 0.00e+00 |
 | Transformer (constrained) vs Real Boxoban levels | -50.4 | -18.35 | 0.00e+00 |
+
+## Seed variance, and what it licenses
+
+The primary transformer configuration was trained **three times**, changing only
+the seed, then sampled and solved identically. Every other row in this
+repository is a single run.
+
+| Metric | Mean +/- sd | Per-seed |
+|---|---|---|
+| Structural validity % | 100.0 +/- 0.0 | 100.0, 100.0, 100.0 |
+| Solvable \| valid % | 42.7 +/- 7.0 | 46.6, 34.6, 47.0 |
+| Diversity | 38.59 +/- 0.31 | 38.92, 38.30, 38.57 |
+| Validation loss | 0.3565 +/- 0.0049 | 0.3546, 0.3621, 0.3529 |
+
+Structural validity is perfectly stable, because constrained decoding guarantees
+it. Solvability is **not**: it moves by +/- 7.0 points across seeds while
+validation loss moves by only +/- 0.0049, so **validation loss is a poor
+proxy for the property actually being evaluated**.
+
+That spread bounds what the main table can support. The gap over the baselines
+survives easily (even the worst seed beats open room by a wide margin), but no
+difference smaller than roughly 15 points between two single-seed rows should be
+read as established -- including our own DistilGPT-2 ablation.
+
 
 ## Solver validation (GATE 2)
 

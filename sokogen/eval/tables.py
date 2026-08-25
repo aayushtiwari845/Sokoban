@@ -156,8 +156,10 @@ def latex_main_table(ev: Dict, results_dir: str) -> str:
         r"merged. All rows are single-seed except the main transformer "
         r"configuration, which is run with three seeds.}",
         r"\label{tab:main}",
-        r"\footnotesize",
         r"\setlength{\tabcolsep}{4pt}",
+        # resizebox guarantees the nine-column table fits \textwidth in the
+        # two-column IEEE layout however wide the interval strings become.
+        r"\resizebox{\textwidth}{!}{%",
         r"\begin{tabular}{lrrrrrrrr}",
         r"\toprule",
         r"Model & Valid \% & Solv. \% & Solv.\,$|$\,valid \% & Timeout \% & "
@@ -169,7 +171,7 @@ def latex_main_table(ev: Dict, results_dir: str) -> str:
             f"{r['display']} & {r['struct_valid']} & {r['solvable_all']} & "
             f"{r['solvable_valid']} & {r['timeout']} & {r['samples_drawn']} & "
             f"{r['novel_pct']} & {r['diversity']} & {r['params']} \\\\")
-    out += [r"\bottomrule", r"\end{tabular}", r"\end{table*}"]
+    out += [r"\bottomrule", r"\end{tabular}}", r"\end{table*}"]
     return "\n".join(out).replace("_", r"\_")
 
 

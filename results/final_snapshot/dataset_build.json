@@ -1,0 +1,115 @@
+{
+  "provenance": {
+    "git_sha": "af1375f19d5293a294043f97519aa19e7ce114a0",
+    "git_sha_short": "af1375f",
+    "git_dirty": false,
+    "seed": 1337,
+    "config": {
+      "levels_root": "data_raw/boxoban-levels",
+      "solutions_root": "data_raw/astar-solutions",
+      "out_dir": "data",
+      "results": "results/dataset_build.json",
+      "seed": 1337,
+      "n_train": 100000,
+      "n_val": 5000,
+      "n_test": 1000
+    },
+    "timestamp_utc": "2026-08-25T18:06:36.341884+00:00",
+    "python": "3.13.7",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "split_stats": {
+    "train": {
+      "total": 100000,
+      "dropped_no_valid_solution": 734,
+      "kept": 99266
+    },
+    "val": {
+      "total": 5000,
+      "dropped_no_valid_solution": 373,
+      "kept": 4627
+    },
+    "test": {
+      "total": 1000,
+      "dropped_no_valid_solution": 74,
+      "kept": 926
+    }
+  },
+  "caption_bins": {
+    "difficulty_terciles": [
+      26.0,
+      35.0
+    ],
+    "density_median": 0.5,
+    "degree_median": 2.888888888888889,
+    "clustering_median": 3.5,
+    "length_min": 4.0,
+    "length_max": 130.0
+  },
+  "balance": {
+    "train": {
+      "n_rows": 99266,
+      "difficulty": {
+        "hard": 31517,
+        "easy": 35411,
+        "medium": 32338
+      },
+      "density": {
+        "dense walls": 47661,
+        "open room": 51605
+      },
+      "connectivity": {
+        "corridors": 50261,
+        "single chamber": 49005
+      },
+      "clustering": {
+        "boxes clustered": 52767,
+        "boxes scattered": 46499
+      }
+    },
+    "val": {
+      "n_rows": 4627,
+      "difficulty": {
+        "easy": 1679,
+        "medium": 1530,
+        "hard": 1418
+      },
+      "density": {
+        "dense walls": 2238,
+        "open room": 2389
+      },
+      "connectivity": {
+        "single chamber": 2212,
+        "corridors": 2415
+      },
+      "clustering": {
+        "boxes clustered": 2460,
+        "boxes scattered": 2167
+      }
+    },
+    "test": {
+      "n_rows": 926,
+      "difficulty": {
+        "easy": 352,
+        "hard": 263,
+        "medium": 311
+      },
+      "density": {
+        "open room": 469,
+        "dense walls": 457
+      },
+      "connectivity": {
+        "single chamber": 467,
+        "corridors": 459
+      },
+      "clustering": {
+        "boxes scattered": 413,
+        "boxes clustered": 513
+      }
+    }
+  },
+  "vocab_size": 48,
+  "max_len": 178,
+  "longest_sequence_observed": 176,
+  "connectivity_feature_note": "The spec offered 'count of connected floor components' or 'mean corridor width'.  Measured over 20,000 training levels every Boxoban level has exactly ONE floor component, so the component count is constant and cannot bin anything.  We use mean floor degree (non-wall neighbours per floor cell) instead."
+}

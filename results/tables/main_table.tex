@@ -2,8 +2,8 @@
 \centering
 \caption{Structural validity and solver-verified solvability across model families. Percentages carry Wilson 95\% confidence intervals. Structural validity and solvability are reported separately and never merged. All rows are single-seed except the main transformer configuration, which is run with three seeds.}
 \label{tab:main}
-\footnotesize
 \setlength{\tabcolsep}{4pt}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{lrrrrrrrr}
 \toprule
 Model & Valid \% & Solv. \% & Solv.\,$|$\,valid \% & Timeout \% & Draws & Novel \% & Diversity & Params \\
@@ -22,5 +22,5 @@ Transformer (constrained) & 100.0 [99.3, 100.0] & 49.6 [45.2, 54.0] & 49.6 [45.2
 DistilGPT-2 (constrained, ablation) & 100.0 [99.3, 100.0] & 63.6 [59.4, 67.8] & 63.6 [59.3, 67.7] & 0.0 & 512 & 100.0 & 38.69 & 43,352,064 \\
 Real Boxoban levels & 100.0 [99.3, 100.0] & 100.0 [100.0, 100.0] & 100.0 [99.2, 100.0] & 0.0 & 512 & 100.0 & 38.76 & -- \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table*}

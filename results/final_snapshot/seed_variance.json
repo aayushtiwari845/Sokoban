@@ -1,0 +1,260 @@
+{
+  "provenance": {
+    "git_sha": "749c9244ab9aae34307cfdf2d20d571cde7e9ce9",
+    "git_sha_short": "749c924",
+    "git_dirty": false,
+    "seed": 1337,
+    "config": {
+      "config": "configs/main.yaml",
+      "suite": "configs/prompt_suite.json",
+      "out": "results/seed_variance.json",
+      "target_valid": 500,
+      "workers": null
+    },
+    "timestamp_utc": "2026-08-25T21:49:35.477819+00:00",
+    "python": "3.13.7",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "n_seeds": 3,
+  "per_seed": {
+    "1337": {
+      "val_loss": 0.3545535297934324,
+      "samples_drawn": 512,
+      "structural_validity": {
+        "k": 512,
+        "n": 512,
+        "pct": 100.0,
+        "ci_lo_pct": 99.25530242771171,
+        "ci_hi_pct": 100.0
+      },
+      "solvable_given_valid": {
+        "k": 233,
+        "n": 500,
+        "pct": 46.6,
+        "ci_lo_pct": 42.27007774569099,
+        "ci_hi_pct": 50.981767769447586
+      },
+      "outcomes": {
+        "n": 500,
+        "counts": {
+          "solved": 233,
+          "unsolvable": 267,
+          "timeout": 0
+        },
+        "solved": {
+          "k": 233,
+          "n": 500,
+          "pct": 46.6,
+          "ci_lo_pct": 42.27007774569099,
+          "ci_hi_pct": 50.981767769447586
+        },
+        "unsolvable": {
+          "k": 267,
+          "n": 500,
+          "pct": 53.400000000000006,
+          "ci_lo_pct": 49.01823223055243,
+          "ci_hi_pct": 57.72992225430903
+        },
+        "timeout": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        }
+      },
+      "diversity": {
+        "mean": 38.92034468937876,
+        "std": 7.4756322727366165,
+        "median": 39.0,
+        "n_pairs": 124750,
+        "n": 500
+      },
+      "forcing": {
+        "n_sequences": 512,
+        "n_sequences_with_forcing": 124,
+        "forced_sequence_rate": 0.2421875,
+        "mean_forced_tokens_per_level": 0.33984375,
+        "max_forced_tokens_per_level": 3.0,
+        "mean_quota_masked_tokens_per_level": 34.279296875
+      }
+    },
+    "1338": {
+      "val_loss": 0.36207862906536376,
+      "samples_drawn": 512,
+      "structural_validity": {
+        "k": 512,
+        "n": 512,
+        "pct": 100.0,
+        "ci_lo_pct": 99.25530242771171,
+        "ci_hi_pct": 100.0
+      },
+      "solvable_given_valid": {
+        "k": 173,
+        "n": 500,
+        "pct": 34.599999999999994,
+        "ci_lo_pct": 30.562123178807926,
+        "ci_hi_pct": 38.87270650740789
+      },
+      "outcomes": {
+        "n": 500,
+        "counts": {
+          "solved": 173,
+          "unsolvable": 327,
+          "timeout": 0
+        },
+        "solved": {
+          "k": 173,
+          "n": 500,
+          "pct": 34.599999999999994,
+          "ci_lo_pct": 30.562123178807926,
+          "ci_hi_pct": 38.87270650740789
+        },
+        "unsolvable": {
+          "k": 327,
+          "n": 500,
+          "pct": 65.4,
+          "ci_lo_pct": 61.127293492592116,
+          "ci_hi_pct": 69.43787682119209
+        },
+        "timeout": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        }
+      },
+      "diversity": {
+        "mean": 38.296048096192386,
+        "std": 7.990056120410293,
+        "median": 39.0,
+        "n_pairs": 124750,
+        "n": 500
+      },
+      "forcing": {
+        "n_sequences": 512,
+        "n_sequences_with_forcing": 284,
+        "forced_sequence_rate": 0.5546875,
+        "mean_forced_tokens_per_level": 0.9453125,
+        "max_forced_tokens_per_level": 7.0,
+        "mean_quota_masked_tokens_per_level": 32.4375
+      }
+    },
+    "1339": {
+      "val_loss": 0.3528812672642567,
+      "samples_drawn": 512,
+      "structural_validity": {
+        "k": 512,
+        "n": 512,
+        "pct": 100.0,
+        "ci_lo_pct": 99.25530242771171,
+        "ci_hi_pct": 100.0
+      },
+      "solvable_given_valid": {
+        "k": 235,
+        "n": 500,
+        "pct": 47.0,
+        "ci_lo_pct": 42.66480518519465,
+        "ci_hi_pct": 51.38094085757467
+      },
+      "outcomes": {
+        "n": 500,
+        "counts": {
+          "solved": 235,
+          "unsolvable": 265,
+          "timeout": 0
+        },
+        "solved": {
+          "k": 235,
+          "n": 500,
+          "pct": 47.0,
+          "ci_lo_pct": 42.66480518519465,
+          "ci_hi_pct": 51.38094085757467
+        },
+        "unsolvable": {
+          "k": 265,
+          "n": 500,
+          "pct": 53.0,
+          "ci_lo_pct": 48.61905914242533,
+          "ci_hi_pct": 57.335194814805355
+        },
+        "timeout": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        }
+      },
+      "diversity": {
+        "mean": 38.56860120240481,
+        "std": 7.660563671088188,
+        "median": 39.0,
+        "n_pairs": 124750,
+        "n": 500
+      },
+      "forcing": {
+        "n_sequences": 512,
+        "n_sequences_with_forcing": 109,
+        "forced_sequence_rate": 0.212890625,
+        "mean_forced_tokens_per_level": 0.3203125,
+        "max_forced_tokens_per_level": 7.0,
+        "mean_quota_masked_tokens_per_level": 35.732421875
+      }
+    }
+  },
+  "summary": {
+    "seeds": [
+      1337,
+      1338,
+      1339
+    ],
+    "structural_validity_pct": {
+      "values": [
+        100.0,
+        100.0,
+        100.0
+      ],
+      "mean": 100.0,
+      "sd": 0.0
+    },
+    "solvable_given_valid_pct": {
+      "values": [
+        46.6,
+        34.599999999999994,
+        47.0
+      ],
+      "mean": 42.73333333333333,
+      "sd": 7.046512139586037
+    },
+    "diversity": {
+      "values": [
+        38.92034468937876,
+        38.296048096192386,
+        38.56860120240481
+      ],
+      "mean": 38.59499799599198,
+      "sd": 0.3129842681346631
+    },
+    "val_loss": {
+      "values": [
+        0.3545535297934324,
+        0.36207862906536376,
+        0.3528812672642567
+      ],
+      "mean": 0.356504475374351,
+      "sd": 0.004899235401559606
+    },
+    "forced_sequence_rate": {
+      "values": [
+        24.21875,
+        55.46875,
+        21.2890625
+      ],
+      "mean": 33.658854166666664,
+      "sd": 18.944641311134717
+    }
+  },
+  "note": "Three independent training runs of the primary transformer configuration. Every other row in the paper is single-seed and its caption says so."
+}

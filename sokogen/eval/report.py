@@ -168,6 +168,53 @@ def _fmt_solver(solver_json: str) -> str:
         t_med=1000 * s["time_median_s"], t_p99=s["time_p99_s"])
 
 
+SEED_SECTION = """
+## Seed variance, and what it licenses
+
+The primary transformer configuration was trained **three times**, changing only
+the seed, then sampled and solved identically. Every other row in this
+repository is a single run.
+
+| Metric | Mean +/- sd | Per-seed |
+|---|---|---|
+| Structural validity % | {sv_mean:.1f} +/- {sv_sd:.1f} | {sv_vals} |
+| Solvable \\| valid % | {so_mean:.1f} +/- {so_sd:.1f} | {so_vals} |
+| Diversity | {dv_mean:.2f} +/- {dv_sd:.2f} | {dv_vals} |
+| Validation loss | {vl_mean:.4f} +/- {vl_sd:.4f} | {vl_vals} |
+
+Structural validity is perfectly stable, because constrained decoding guarantees
+it. Solvability is **not**: it moves by +/- {so_sd:.1f} points across seeds while
+validation loss moves by only +/- {vl_sd:.4f}, so **validation loss is a poor
+proxy for the property actually being evaluated**.
+
+That spread bounds what the main table can support. The gap over the baselines
+survives easily (even the worst seed beats open room by a wide margin), but no
+difference smaller than roughly 15 points between two single-seed rows should be
+read as established -- including our own DistilGPT-2 ablation.
+"""
+
+
+def _fmt_seeds(seed_json: str) -> str:
+    with open(seed_json, "r", encoding="utf-8") as fh:
+        d = json.load(fh)
+    s = d["summary"]
+
+    def vals(key, nd):
+        return ", ".join(f"{v:.{nd}f}" for v in s[key]["values"])
+
+    return SEED_SECTION.format(
+        sv_mean=s["structural_validity_pct"]["mean"],
+        sv_sd=s["structural_validity_pct"]["sd"],
+        sv_vals=vals("structural_validity_pct", 1),
+        so_mean=s["solvable_given_valid_pct"]["mean"],
+        so_sd=s["solvable_given_valid_pct"]["sd"],
+        so_vals=vals("solvable_given_valid_pct", 1),
+        dv_mean=s["diversity"]["mean"], dv_sd=s["diversity"]["sd"],
+        dv_vals=vals("diversity", 2),
+        vl_mean=s["val_loss"]["mean"], vl_sd=s["val_loss"]["sd"],
+        vl_vals=vals("val_loss", 4))
+
+
 def write_readme(evaluation_json: str, results_dir: str, out_path: str,
                  solver_json: Optional[str] = None) -> str:
     with open(evaluation_json, "r", encoding="utf-8") as fh:
@@ -196,6 +243,10 @@ def write_readme(evaluation_json: str, results_dir: str, out_path: str,
     comp = T.markdown_comparisons(ev)
     if comp:
         parts += ["\n## Pairwise significance\n", comp]
+
+    seed_json = os.path.join(results_dir, "seed_variance.json")
+    if os.path.exists(seed_json):
+        parts.append(_fmt_seeds(seed_json))
 
     if solver_json and os.path.exists(solver_json):
         parts.append(_fmt_solver(solver_json))

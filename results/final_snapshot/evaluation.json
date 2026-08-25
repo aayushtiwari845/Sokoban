@@ -1,0 +1,5073 @@
+{
+  "provenance": {
+    "git_sha": "b2ffd44970787731ee70e757634986091c668b7a",
+    "git_sha_short": "b2ffd44",
+    "git_dirty": true,
+    "seed": 1337,
+    "config": {
+      "config": "configs/main.yaml",
+      "gen_dir": "results/generated",
+      "manifest": "results/generation.json",
+      "out": "results/evaluation.json",
+      "seed": null,
+      "workers": null,
+      "max_train_nn": 100000
+    },
+    "timestamp_utc": "2026-08-25T21:17:30.364432+00:00",
+    "python": "3.13.7",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "config": {
+    "seed": 1337,
+    "paths": {
+      "levels_root": "data_raw/boxoban-levels",
+      "solutions_root": "data_raw/astar-solutions",
+      "data_dir": "data",
+      "results_dir": "results",
+      "figures_dir": "figures",
+      "checkpoints_dir": "checkpoints"
+    },
+    "data": {
+      "n_train": 100000,
+      "n_val": 5000,
+      "n_test": 1000
+    },
+    "solver": {
+      "node_cap": 200000,
+      "time_cap_s": 10.0,
+      "cost_mode": "pushes",
+      "length_cost_mode": "moves"
+    },
+    "transformer": {
+      "d_model": 384,
+      "n_layers": 6,
+      "n_heads": 6,
+      "d_ff": 1536,
+      "dropout": 0.1,
+      "tie_embeddings": true,
+      "lr": 0.0003,
+      "weight_decay": 0.01,
+      "warmup_steps": 200,
+      "batch_size": 64,
+      "epochs": 3,
+      "grad_clip": 1.0,
+      "precision": "bf16"
+    },
+    "distilgpt2": {
+      "lr": 0.0003,
+      "batch_size": 32,
+      "epochs": 3
+    },
+    "vae": {
+      "latent_dim": 32,
+      "hidden": 512,
+      "free_bits": 0.05,
+      "lr": 0.001,
+      "batch_size": 128,
+      "epochs": 20,
+      "kl_weight": 1.0
+    },
+    "gan": {
+      "z_dim": 64,
+      "hidden": 512,
+      "lr": 0.0002,
+      "betas": [
+        0.5,
+        0.999
+      ],
+      "batch_size": 128,
+      "epochs": 20,
+      "label_smoothing": 0.9,
+      "gumbel_tau_start": 1.0,
+      "gumbel_tau_end": 0.3,
+      "time_box_hours": 3.0
+    },
+    "evaluation": {
+      "n_valid_target": 500,
+      "max_samples_drawn": 100000,
+      "min_denominator_flag": 30,
+      "temperatures": [
+        0.6,
+        0.8,
+        1.0,
+        1.2,
+        1.5
+      ],
+      "main_seeds": [
+        1337,
+        1338,
+        1339
+      ]
+    }
+  },
+  "caption_bins": {
+    "difficulty_terciles": [
+      26.0,
+      35.0
+    ],
+    "density_median": 0.5,
+    "degree_median": 2.888888888888889,
+    "clustering_median": 3.5,
+    "length_min": 4.0,
+    "length_max": 130.0
+  },
+  "conditions": {
+    "random_placement": {
+      "name": "random_placement",
+      "samples_drawn": 512,
+      "n_valid_seen": 512,
+      "n_evaluated": 500,
+      "reached_target": true,
+      "structural_validity": {
+        "k": 512,
+        "n": 512,
+        "pct": 100.0,
+        "ci_lo_pct": 99.25530242771171,
+        "ci_hi_pct": 100.0
+      },
+      "structural_validity_note": "Sampling stops once the valid target is reached, so this is an inverse-binomial rather than fixed-n proportion; the Wilson interval is a close approximation but not exact.",
+      "generation_time_s": 0.028275399999984074,
+      "generation_time_per_sample_ms": 0.055225390624968895,
+      "model_params": null,
+      "forcing": null,
+      "tile_counts_raw_draws": {
+        "player": {
+          "mean": 1.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "1": 512
+          },
+          "n": 512
+        },
+        "box": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        },
+        "goal": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        }
+      },
+      "solver_time_total_s": 0.4301226999996288,
+      "outcomes": {
+        "n": 500,
+        "counts": {
+          "solved": 0,
+          "unsolvable": 500,
+          "timeout": 0
+        },
+        "solved": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        },
+        "unsolvable": {
+          "k": 500,
+          "n": 500,
+          "pct": 100.0,
+          "ci_lo_pct": 99.23756595384478,
+          "ci_hi_pct": 100.0
+        },
+        "timeout": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        }
+      },
+      "solvable_given_valid": {
+        "k": 0,
+        "n": 500,
+        "pct": 0.0,
+        "ci_lo_pct": 0.0,
+        "ci_hi_pct": 0.7624340461552241
+      },
+      "solvable_overall": {
+        "pct": 0.0,
+        "ci_lo_pct": 0.0,
+        "ci_hi_pct": 0.0,
+        "method": "delta method on P(valid) x P(solvable|valid)"
+      },
+      "solver_cost": {
+        "time_per_level_ms_median": 0.05354999939299887,
+        "time_per_level_ms_mean": 0.05985019999570795,
+        "nodes_median": 0.0,
+        "nodes_p99": 0.0
+      },
+      "novelty": {
+        "n": 500,
+        "exact_copy": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        },
+        "novel_pct": 100.0,
+        "symmetry_aware": true,
+        "nn_distance": {
+          "mean": 23.97,
+          "std": 1.6053348560347154,
+          "median": 24.0,
+          "min": 17,
+          "max": 28,
+          "deciles": [
+            17.0,
+            22.0,
+            23.0,
+            23.0,
+            24.0,
+            24.0,
+            25.0,
+            25.0,
+            25.0,
+            26.0,
+            28.0
+          ]
+        }
+      },
+      "diversity": {
+        "mean": 39.20034468937876,
+        "std": 3.5377107111206834,
+        "median": 39.0,
+        "n_pairs": 124750,
+        "n": 500
+      },
+      "controllability": {
+        "density": {
+          "bin_accuracy": {
+            "k": 300,
+            "n": 600,
+            "pct": 50.0,
+            "ci_lo_pct": 46.01198639241893,
+            "ci_hi_pct": 53.98801360758107
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "clustering": {
+          "bin_accuracy": {
+            "k": 297,
+            "n": 600,
+            "pct": 49.5,
+            "ci_lo_pct": 45.515365380000695,
+            "ci_hi_pct": 53.490996321013014
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "connectivity": {
+          "bin_accuracy": {
+            "k": 300,
+            "n": 600,
+            "pct": 50.0,
+            "ci_lo_pct": 46.01198639241893,
+            "ci_hi_pct": 53.98801360758107
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "difficulty": {
+          "bin_accuracy": {
+            "k": 240,
+            "n": 600,
+            "pct": 40.0,
+            "ci_lo_pct": 36.15565979992341,
+            "ci_hi_pct": 43.97157422035062
+          },
+          "n": 600,
+          "directly_computable_from_grid": false
+        },
+        "solution_length": {
+          "n_requested": 600,
+          "n_with_achieved_length": 0,
+          "censoring_rate": 1.0,
+          "censoring_note": "Achieved length exists only for solved levels; timeouts and proven-unsolvable levels have none, so this correlation is computed on a subsample biased toward easy levels."
+        },
+        "n_samples": 600,
+        "n_invalid_excluded": 0,
+        "invalid_exclusion_rate": 0.0,
+        "note": "Bin accuracy is computed on structurally valid samples only; invalid levels have no well-defined tile statistics. The exclusion rate is reported so the reader can see how much of the sample that removes.",
+        "outcomes": {
+          "n": 600,
+          "counts": {
+            "solved": 0,
+            "unsolvable": 600,
+            "timeout": 0
+          },
+          "solved": {
+            "k": 0,
+            "n": 600,
+            "pct": 0.0,
+            "ci_lo_pct": 0.0,
+            "ci_hi_pct": 0.636170101370071
+          },
+          "unsolvable": {
+            "k": 600,
+            "n": 600,
+            "pct": 100.0,
+            "ci_lo_pct": 99.36382989862994,
+            "ci_hi_pct": 100.0
+          },
+          "timeout": {
+            "k": 0,
+            "n": 600,
+            "pct": 0.0,
+            "ci_lo_pct": 0.0,
+            "ci_hi_pct": 0.636170101370071
+          }
+        }
+      },
+      "ood": {
+        "density": {
+          "bin_accuracy": {
+            "k": 60,
+            "n": 120,
+            "pct": 50.0,
+            "ci_lo_pct": 41.19387054110838,
+            "ci_hi_pct": 58.80612945889161
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "clustering": {
+          "bin_accuracy": {
+            "k": 60,
+            "n": 120,
+            "pct": 50.0,
+            "ci_lo_pct": 41.19387054110838,
+            "ci_hi_pct": 58.80612945889161
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "connectivity": {
+          "bin_accuracy": {
+            "k": 60,
+            "n": 120,
+            "pct": 50.0,
+            "ci_lo_pct": 41.19387054110838,
+            "ci_hi_pct": 58.80612945889161
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "difficulty": {
+          "bin_accuracy": {
+            "k": 0,
+            "n": 120,
+            "pct": 0.0,
+            "ci_lo_pct": 0.0,
+            "ci_hi_pct": 3.1019166418703485
+          },
+          "n": 120,
+          "directly_computable_from_grid": false
+        },
+        "solution_length": {
+          "n_requested": 120,
+          "n_with_achieved_length": 0,
+          "censoring_rate": 1.0,
+          "censoring_note": "Achieved length exists only for solved levels; timeouts and proven-unsolvable levels have none, so this correlation is computed on a subsample biased toward easy levels."
+        },
+        "n_samples": 120,
+        "n_invalid_excluded": 0,
+        "invalid_exclusion_rate": 0.0,
+        "note": "Bin accuracy is computed on structurally valid samples only; invalid levels have no well-defined tile statistics. The exclusion rate is reported so the reader can see how much of the sample that removes.",
+        "outcomes": {
+          "n": 120,
+          "counts": {
+            "solved": 0,
+            "unsolvable": 120,
+            "timeout": 0
+          },
+          "solved": {
+            "k": 0,
+            "n": 120,
+            "pct": 0.0,
+            "ci_lo_pct": 0.0,
+            "ci_hi_pct": 3.1019166418703485
+          },
+          "unsolvable": {
+            "k": 120,
+            "n": 120,
+            "pct": 100.0,
+            "ci_lo_pct": 96.89808335812967,
+            "ci_hi_pct": 100.0
+          },
+          "timeout": {
+            "k": 0,
+            "n": 120,
+            "pct": 0.0,
+            "ci_lo_pct": 0.0,
+            "ci_hi_pct": 3.1019166418703485
+          }
+        }
+      }
+    },
+    "open_room": {
+      "name": "open_room",
+      "samples_drawn": 512,
+      "n_valid_seen": 512,
+      "n_evaluated": 500,
+      "reached_target": true,
+      "structural_validity": {
+        "k": 512,
+        "n": 512,
+        "pct": 100.0,
+        "ci_lo_pct": 99.25530242771171,
+        "ci_hi_pct": 100.0
+      },
+      "structural_validity_note": "Sampling stops once the valid target is reached, so this is an inverse-binomial rather than fixed-n proportion; the Wilson interval is a close approximation but not exact.",
+      "generation_time_s": 0.009665300000051502,
+      "generation_time_per_sample_ms": 0.01887753906260059,
+      "model_params": null,
+      "forcing": null,
+      "tile_counts_raw_draws": {
+        "player": {
+          "mean": 1.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "1": 512
+          },
+          "n": 512
+        },
+        "box": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        },
+        "goal": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        }
+      },
+      "solver_time_total_s": 4.7108499000005395,
+      "outcomes": {
+        "n": 500,
+        "counts": {
+          "solved": 117,
+          "unsolvable": 383,
+          "timeout": 0
+        },
+        "solved": {
+          "k": 117,
+          "n": 500,
+          "pct": 23.400000000000002,
+          "ci_lo_pct": 19.90046985940334,
+          "ci_hi_pct": 27.305145053151243
+        },
+        "unsolvable": {
+          "k": 383,
+          "n": 500,
+          "pct": 76.6,
+          "ci_lo_pct": 72.69485494684876,
+          "ci_hi_pct": 80.09953014059667
+        },
+        "timeout": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        }
+      },
+      "solvable_given_valid": {
+        "k": 117,
+        "n": 500,
+        "pct": 23.400000000000002,
+        "ci_lo_pct": 19.90046985940334,
+        "ci_hi_pct": 27.305145053151243
+      },
+      "solvable_overall": {
+        "pct": 23.400000000000002,
+        "ci_lo_pct": 19.68897924985591,
+        "ci_hi_pct": 27.11102075014409,
+        "method": "delta method on P(valid) x P(solvable|valid)"
+      },
+      "solver_cost": {
+        "time_per_level_ms_median": 0.3333000004204223,
+        "time_per_level_ms_mean": 87.35601020011018,
+        "nodes_median": 0.0,
+        "nodes_p99": 5936.699999999995
+      },
+      "push_length": {
+        "mean": 12.675213675213675,
+        "std": 3.2392598601412623,
+        "median": 13.0,
+        "min": 7,
+        "max": 22
+      },
+      "novelty": {
+        "n": 500,
+        "exact_copy": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        },
+        "novel_pct": 100.0,
+        "symmetry_aware": true,
+        "nn_distance": {
+          "mean": 20.778,
+          "std": 1.022113496633324,
+          "median": 21.0,
+          "min": 17,
+          "max": 23,
+          "deciles": [
+            17.0,
+            20.0,
+            20.0,
+            20.0,
+            21.0,
+            21.0,
+            21.0,
+            21.0,
+            22.0,
+            22.0,
+            23.0
+          ]
+        }
+      },
+      "diversity": {
+        "mean": 16.2203126252505,
+        "std": 1.4779418278653698,
+        "median": 16.0,
+        "n_pairs": 124750,
+        "n": 500
+      },
+      "controllability": {
+        "density": {
+          "bin_accuracy": {
+            "k": 300,
+            "n": 600,
+            "pct": 50.0,
+            "ci_lo_pct": 46.01198639241893,
+            "ci_hi_pct": 53.98801360758107
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "clustering": {
+          "bin_accuracy": {
+            "k": 298,
+            "n": 600,
+            "pct": 49.666666666666664,
+            "ci_lo_pct": 45.680861685797005,
+            "ci_hi_pct": 53.656712781545465
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "connectivity": {
+          "bin_accuracy": {
+            "k": 300,
+            "n": 600,
+            "pct": 50.0,
+            "ci_lo_pct": 46.01198639241893,
+            "ci_hi_pct": 53.98801360758107
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "difficulty": {
+          "bin_accuracy": {
+            "k": 225,
+            "n": 600,
+            "pct": 37.5,
+            "ci_lo_pct": 33.71732494683258,
+            "ci_hi_pct": 41.44171757850994
+          },
+          "n": 600,
+          "directly_computable_from_grid": false
+        },
+        "solution_length": {
+          "n_requested": 600,
+          "n_with_achieved_length": 99,
+          "censoring_rate": 0.835,
+          "censoring_note": "Achieved length exists only for solved levels; timeouts and proven-unsolvable levels have none, so this correlation is computed on a subsample biased toward easy levels.",
+          "spearman": 0.05693644345816161,
+          "spearman_p": 0.5756362958936844,
+          "pearson": 0.05213031242762581,
+          "mean_requested": 34.5959595959596,
+          "mean_achieved": 26.242424242424242,
+          "mean_abs_error": 14.757575757575758
+        },
+        "n_samples": 600,
+        "n_invalid_excluded": 0,
+        "invalid_exclusion_rate": 0.0,
+        "note": "Bin accuracy is computed on structurally valid samples only; invalid levels have no well-defined tile statistics. The exclusion rate is reported so the reader can see how much of the sample that removes.",
+        "outcomes": {
+          "n": 600,
+          "counts": {
+            "solved": 99,
+            "unsolvable": 468,
+            "timeout": 33
+          },
+          "solved": {
+            "k": 99,
+            "n": 600,
+            "pct": 16.5,
+            "ci_lo_pct": 13.744910047022483,
+            "ci_hi_pct": 19.68132392089547
+          },
+          "unsolvable": {
+            "k": 468,
+            "n": 600,
+            "pct": 78.0,
+            "ci_lo_pct": 74.51303445000342,
+            "ci_hi_pct": 81.13071029322934
+          },
+          "timeout": {
+            "k": 33,
+            "n": 600,
+            "pct": 5.5,
+            "ci_lo_pct": 3.9428138486360025,
+            "ci_hi_pct": 7.623377541583362
+          }
+        }
+      },
+      "ood": {
+        "density": {
+          "bin_accuracy": {
+            "k": 60,
+            "n": 120,
+            "pct": 50.0,
+            "ci_lo_pct": 41.19387054110838,
+            "ci_hi_pct": 58.80612945889161
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "clustering": {
+          "bin_accuracy": {
+            "k": 56,
+            "n": 120,
+            "pct": 46.666666666666664,
+            "ci_lo_pct": 37.982917045799006,
+            "ci_hi_pct": 55.5572107303257
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "connectivity": {
+          "bin_accuracy": {
+            "k": 60,
+            "n": 120,
+            "pct": 50.0,
+            "ci_lo_pct": 41.19387054110838,
+            "ci_hi_pct": 58.80612945889161
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "difficulty": {
+          "bin_accuracy": {
+            "k": 0,
+            "n": 120,
+            "pct": 0.0,
+            "ci_lo_pct": 0.0,
+            "ci_hi_pct": 3.1019166418703485
+          },
+          "n": 120,
+          "directly_computable_from_grid": false
+        },
+        "solution_length": {
+          "n_requested": 120,
+          "n_with_achieved_length": 27,
+          "censoring_rate": 0.775,
+          "censoring_note": "Achieved length exists only for solved levels; timeouts and proven-unsolvable levels have none, so this correlation is computed on a subsample biased toward easy levels.",
+          "spearman": -0.04735868548145638,
+          "spearman_p": 0.8145425144752662,
+          "pearson": -0.10321361796260174,
+          "mean_requested": 116.66666666666667,
+          "mean_achieved": 26.88888888888889,
+          "mean_abs_error": 89.77777777777777
+        },
+        "n_samples": 120,
+        "n_invalid_excluded": 0,
+        "invalid_exclusion_rate": 0.0,
+        "note": "Bin accuracy is computed on structurally valid samples only; invalid levels have no well-defined tile statistics. The exclusion rate is reported so the reader can see how much of the sample that removes.",
+        "outcomes": {
+          "n": 120,
+          "counts": {
+            "solved": 27,
+            "unsolvable": 86,
+            "timeout": 7
+          },
+          "solved": {
+            "k": 27,
+            "n": 120,
+            "pct": 22.5,
+            "ci_lo_pct": 15.949154668383533,
+            "ci_hi_pct": 30.75689948464516
+          },
+          "unsolvable": {
+            "k": 86,
+            "n": 120,
+            "pct": 71.66666666666667,
+            "ci_lo_pct": 63.029797546945964,
+            "ci_hi_pct": 78.95937190824355
+          },
+          "timeout": {
+            "k": 7,
+            "n": 120,
+            "pct": 5.833333333333333,
+            "ci_lo_pct": 2.8541010000220295,
+            "ci_hi_pct": 11.552592033630113
+          }
+        }
+      }
+    },
+    "rule_based": {
+      "name": "rule_based",
+      "samples_drawn": 512,
+      "n_valid_seen": 512,
+      "n_evaluated": 500,
+      "reached_target": true,
+      "structural_validity": {
+        "k": 512,
+        "n": 512,
+        "pct": 100.0,
+        "ci_lo_pct": 99.25530242771171,
+        "ci_hi_pct": 100.0
+      },
+      "structural_validity_note": "Sampling stops once the valid target is reached, so this is an inverse-binomial rather than fixed-n proportion; the Wilson interval is a close approximation but not exact.",
+      "generation_time_s": 30.799081600000136,
+      "generation_time_per_sample_ms": 60.154456250000266,
+      "model_params": null,
+      "forcing": null,
+      "tile_counts_raw_draws": {
+        "player": {
+          "mean": 1.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "1": 512
+          },
+          "n": 512
+        },
+        "box": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        },
+        "goal": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        }
+      },
+      "solver_time_total_s": 0.5141889999995328,
+      "outcomes": {
+        "n": 500,
+        "counts": {
+          "solved": 2,
+          "unsolvable": 498,
+          "timeout": 0
+        },
+        "solved": {
+          "k": 2,
+          "n": 500,
+          "pct": 0.4,
+          "ci_lo_pct": 0.10976305226827934,
+          "ci_hi_pct": 1.4465715215177033
+        },
+        "unsolvable": {
+          "k": 498,
+          "n": 500,
+          "pct": 99.6,
+          "ci_lo_pct": 98.5534284784823,
+          "ci_hi_pct": 99.89023694773172
+        },
+        "timeout": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        }
+      },
+      "solvable_given_valid": {
+        "k": 2,
+        "n": 500,
+        "pct": 0.4,
+        "ci_lo_pct": 0.10976305226827934,
+        "ci_hi_pct": 1.4465715215177033
+      },
+      "solvable_overall": {
+        "pct": 0.4,
+        "ci_lo_pct": 0.0,
+        "ci_hi_pct": 0.9532618620508738,
+        "method": "delta method on P(valid) x P(solvable|valid)"
+      },
+      "solver_cost": {
+        "time_per_level_ms_median": 0.10695000037230784,
+        "time_per_level_ms_mean": 0.43572959997618455,
+        "nodes_median": 0.0,
+        "nodes_p99": 80.16999999999985
+      },
+      "push_length": {
+        "mean": 11.5,
+        "std": 1.5,
+        "median": 11.5,
+        "min": 10,
+        "max": 13
+      },
+      "novelty": {
+        "n": 500,
+        "exact_copy": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        },
+        "novel_pct": 100.0,
+        "symmetry_aware": true,
+        "nn_distance": {
+          "mean": 21.552,
+          "std": 1.6695196914082808,
+          "median": 22.0,
+          "min": 17,
+          "max": 26,
+          "deciles": [
+            17.0,
+            19.0,
+            20.0,
+            21.0,
+            21.0,
+            22.0,
+            22.0,
+            23.0,
+            23.0,
+            24.0,
+            26.0
+          ]
+        }
+      },
+      "diversity": {
+        "mean": 38.140032064128256,
+        "std": 3.80259459979034,
+        "median": 38.0,
+        "n_pairs": 124750,
+        "n": 500
+      },
+      "controllability": {
+        "density": {
+          "bin_accuracy": {
+            "k": 300,
+            "n": 600,
+            "pct": 50.0,
+            "ci_lo_pct": 46.01198639241893,
+            "ci_hi_pct": 53.98801360758107
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "clustering": {
+          "bin_accuracy": {
+            "k": 294,
+            "n": 600,
+            "pct": 49.0,
+            "ci_lo_pct": 45.01914070080844,
+            "ci_hi_pct": 52.99358270121897
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "connectivity": {
+          "bin_accuracy": {
+            "k": 300,
+            "n": 600,
+            "pct": 50.0,
+            "ci_lo_pct": 46.01198639241893,
+            "ci_hi_pct": 53.98801360758107
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "difficulty": {
+          "bin_accuracy": {
+            "k": 239,
+            "n": 600,
+            "pct": 39.83333333333333,
+            "ci_lo_pct": 35.99277270832651,
+            "ci_hi_pct": 43.80324854561875
+          },
+          "n": 600,
+          "directly_computable_from_grid": false
+        },
+        "solution_length": {
+          "n_requested": 600,
+          "n_with_achieved_length": 2,
+          "censoring_rate": 0.9966666666666667,
+          "censoring_note": "Achieved length exists only for solved levels; timeouts and proven-unsolvable levels have none, so this correlation is computed on a subsample biased toward easy levels."
+        },
+        "n_samples": 600,
+        "n_invalid_excluded": 0,
+        "invalid_exclusion_rate": 0.0,
+        "note": "Bin accuracy is computed on structurally valid samples only; invalid levels have no well-defined tile statistics. The exclusion rate is reported so the reader can see how much of the sample that removes.",
+        "outcomes": {
+          "n": 600,
+          "counts": {
+            "solved": 2,
+            "unsolvable": 598,
+            "timeout": 0
+          },
+          "solved": {
+            "k": 2,
+            "n": 600,
+            "pct": 0.33333333333333337,
+            "ci_lo_pct": 0.09145966868046472,
+            "ci_hi_pct": 1.2071359653471396
+          },
+          "unsolvable": {
+            "k": 598,
+            "n": 600,
+            "pct": 99.66666666666667,
+            "ci_lo_pct": 98.79286403465287,
+            "ci_hi_pct": 99.90854033131954
+          },
+          "timeout": {
+            "k": 0,
+            "n": 600,
+            "pct": 0.0,
+            "ci_lo_pct": 0.0,
+            "ci_hi_pct": 0.636170101370071
+          }
+        }
+      },
+      "ood": {
+        "density": {
+          "bin_accuracy": {
+            "k": 60,
+            "n": 120,
+            "pct": 50.0,
+            "ci_lo_pct": 41.19387054110838,
+            "ci_hi_pct": 58.80612945889161
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "clustering": {
+          "bin_accuracy": {
+            "k": 60,
+            "n": 120,
+            "pct": 50.0,
+            "ci_lo_pct": 41.19387054110838,
+            "ci_hi_pct": 58.80612945889161
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "connectivity": {
+          "bin_accuracy": {
+            "k": 60,
+            "n": 120,
+            "pct": 50.0,
+            "ci_lo_pct": 41.19387054110838,
+            "ci_hi_pct": 58.80612945889161
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "difficulty": {
+          "bin_accuracy": {
+            "k": 0,
+            "n": 120,
+            "pct": 0.0,
+            "ci_lo_pct": 0.0,
+            "ci_hi_pct": 3.1019166418703485
+          },
+          "n": 120,
+          "directly_computable_from_grid": false
+        },
+        "solution_length": {
+          "n_requested": 120,
+          "n_with_achieved_length": 0,
+          "censoring_rate": 1.0,
+          "censoring_note": "Achieved length exists only for solved levels; timeouts and proven-unsolvable levels have none, so this correlation is computed on a subsample biased toward easy levels."
+        },
+        "n_samples": 120,
+        "n_invalid_excluded": 0,
+        "invalid_exclusion_rate": 0.0,
+        "note": "Bin accuracy is computed on structurally valid samples only; invalid levels have no well-defined tile statistics. The exclusion rate is reported so the reader can see how much of the sample that removes.",
+        "outcomes": {
+          "n": 120,
+          "counts": {
+            "solved": 0,
+            "unsolvable": 120,
+            "timeout": 0
+          },
+          "solved": {
+            "k": 0,
+            "n": 120,
+            "pct": 0.0,
+            "ci_lo_pct": 0.0,
+            "ci_hi_pct": 3.1019166418703485
+          },
+          "unsolvable": {
+            "k": 120,
+            "n": 120,
+            "pct": 100.0,
+            "ci_lo_pct": 96.89808335812967,
+            "ci_hi_pct": 100.0
+          },
+          "timeout": {
+            "k": 0,
+            "n": 120,
+            "pct": 0.0,
+            "ci_lo_pct": 0.0,
+            "ci_hi_pct": 3.1019166418703485
+          }
+        }
+      }
+    },
+    "retrieval": {
+      "name": "retrieval",
+      "samples_drawn": 512,
+      "n_valid_seen": 512,
+      "n_evaluated": 500,
+      "reached_target": true,
+      "structural_validity": {
+        "k": 512,
+        "n": 512,
+        "pct": 100.0,
+        "ci_lo_pct": 99.25530242771171,
+        "ci_hi_pct": 100.0
+      },
+      "structural_validity_note": "Sampling stops once the valid target is reached, so this is an inverse-binomial rather than fixed-n proportion; the Wilson interval is a close approximation but not exact.",
+      "generation_time_s": 0.0035233999997217325,
+      "generation_time_per_sample_ms": 0.006881640624456509,
+      "model_params": null,
+      "forcing": null,
+      "tile_counts_raw_draws": {
+        "player": {
+          "mean": 1.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "1": 512
+          },
+          "n": 512
+        },
+        "box": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        },
+        "goal": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        }
+      },
+      "solver_time_total_s": 2.9099979999991774,
+      "outcomes": {
+        "n": 500,
+        "counts": {
+          "solved": 500,
+          "unsolvable": 0,
+          "timeout": 0
+        },
+        "solved": {
+          "k": 500,
+          "n": 500,
+          "pct": 100.0,
+          "ci_lo_pct": 99.23756595384478,
+          "ci_hi_pct": 100.0
+        },
+        "unsolvable": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        },
+        "timeout": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        }
+      },
+      "solvable_given_valid": {
+        "k": 500,
+        "n": 500,
+        "pct": 100.0,
+        "ci_lo_pct": 99.23756595384478,
+        "ci_hi_pct": 100.0
+      },
+      "solvable_overall": {
+        "pct": 100.0,
+        "ci_lo_pct": 100.0,
+        "ci_hi_pct": 100.0,
+        "method": "delta method on P(valid) x P(solvable|valid)"
+      },
+      "solver_cost": {
+        "time_per_level_ms_median": 31.358649999674526,
+        "time_per_level_ms_mean": 73.63539020006647,
+        "nodes_median": 183.0,
+        "nodes_p99": 3357.079999999997
+      },
+      "push_length": {
+        "mean": 12.378,
+        "std": 4.781120789103743,
+        "median": 12.0,
+        "min": 4,
+        "max": 38
+      },
+      "novelty": {
+        "n": 500,
+        "exact_copy": {
+          "k": 500,
+          "n": 500,
+          "pct": 100.0,
+          "ci_lo_pct": 99.23756595384478,
+          "ci_hi_pct": 100.0
+        },
+        "novel_pct": 0.0,
+        "symmetry_aware": true,
+        "nn_distance": {
+          "mean": 0.0,
+          "std": 0.0,
+          "median": 0.0,
+          "min": 0,
+          "max": 0,
+          "deciles": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "diversity": {
+        "mean": 38.73283366733467,
+        "std": 7.719511034230341,
+        "median": 39.0,
+        "n_pairs": 124750,
+        "n": 500
+      },
+      "controllability": {
+        "density": {
+          "bin_accuracy": {
+            "k": 294,
+            "n": 600,
+            "pct": 49.0,
+            "ci_lo_pct": 45.01914070080844,
+            "ci_hi_pct": 52.99358270121897
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "clustering": {
+          "bin_accuracy": {
+            "k": 307,
+            "n": 600,
+            "pct": 51.16666666666667,
+            "ci_lo_pct": 47.17230993999969,
+            "ci_hi_pct": 55.14617942430168
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "connectivity": {
+          "bin_accuracy": {
+            "k": 309,
+            "n": 600,
+            "pct": 51.5,
+            "ci_lo_pct": 47.50422742911774,
+            "ci_hi_pct": 55.47668746784117
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "difficulty": {
+          "bin_accuracy": {
+            "k": 196,
+            "n": 600,
+            "pct": 32.666666666666664,
+            "ci_lo_pct": 29.0346007615219,
+            "ci_hi_pct": 36.519271540286404
+          },
+          "n": 600,
+          "directly_computable_from_grid": false
+        },
+        "solution_length": {
+          "n_requested": 600,
+          "n_with_achieved_length": 595,
+          "censoring_rate": 0.008333333333333304,
+          "censoring_note": "Achieved length exists only for solved levels; timeouts and proven-unsolvable levels have none, so this correlation is computed on a subsample biased toward easy levels.",
+          "spearman": 0.02106917931412697,
+          "spearman_p": 0.6080151700956803,
+          "pearson": 0.018071669955995455,
+          "mean_requested": 35.05042016806723,
+          "mean_achieved": 31.922689075630252,
+          "mean_abs_error": 15.090756302521008
+        },
+        "n_samples": 600,
+        "n_invalid_excluded": 0,
+        "invalid_exclusion_rate": 0.0,
+        "note": "Bin accuracy is computed on structurally valid samples only; invalid levels have no well-defined tile statistics. The exclusion rate is reported so the reader can see how much of the sample that removes.",
+        "outcomes": {
+          "n": 600,
+          "counts": {
+            "solved": 595,
+            "unsolvable": 0,
+            "timeout": 5
+          },
+          "solved": {
+            "k": 595,
+            "n": 600,
+            "pct": 99.16666666666667,
+            "ci_lo_pct": 98.06422645978722,
+            "ci_hi_pct": 99.64353960719889
+          },
+          "unsolvable": {
+            "k": 0,
+            "n": 600,
+            "pct": 0.0,
+            "ci_lo_pct": 0.0,
+            "ci_hi_pct": 0.636170101370071
+          },
+          "timeout": {
+            "k": 5,
+            "n": 600,
+            "pct": 0.8333333333333334,
+            "ci_lo_pct": 0.35646039280112,
+            "ci_hi_pct": 1.9357735402127831
+          }
+        }
+      },
+      "ood": {
+        "density": {
+          "bin_accuracy": {
+            "k": 66,
+            "n": 120,
+            "pct": 55.00000000000001,
+            "ci_lo_pct": 46.08154341968757,
+            "ci_hi_pct": 63.60826491612539
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "clustering": {
+          "bin_accuracy": {
+            "k": 60,
+            "n": 120,
+            "pct": 50.0,
+            "ci_lo_pct": 41.19387054110838,
+            "ci_hi_pct": 58.80612945889161
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "connectivity": {
+          "bin_accuracy": {
+            "k": 60,
+            "n": 120,
+            "pct": 50.0,
+            "ci_lo_pct": 41.19387054110838,
+            "ci_hi_pct": 58.80612945889161
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "difficulty": {
+          "bin_accuracy": {
+            "k": 41,
+            "n": 120,
+            "pct": 34.166666666666664,
+            "ci_lo_pct": 26.290438368564516,
+            "ci_hi_pct": 43.02516856802777
+          },
+          "n": 120,
+          "directly_computable_from_grid": false
+        },
+        "solution_length": {
+          "n_requested": 120,
+          "n_with_achieved_length": 111,
+          "censoring_rate": 0.07499999999999996,
+          "censoring_note": "Achieved length exists only for solved levels; timeouts and proven-unsolvable levels have none, so this correlation is computed on a subsample biased toward easy levels.",
+          "spearman": 0.09883321361443836,
+          "spearman_p": 0.30206532451780227,
+          "pearson": 0.13261035070625513,
+          "mean_requested": 116.12612612612612,
+          "mean_achieved": 32.549549549549546,
+          "mean_abs_error": 83.57657657657657
+        },
+        "n_samples": 120,
+        "n_invalid_excluded": 0,
+        "invalid_exclusion_rate": 0.0,
+        "note": "Bin accuracy is computed on structurally valid samples only; invalid levels have no well-defined tile statistics. The exclusion rate is reported so the reader can see how much of the sample that removes.",
+        "outcomes": {
+          "n": 120,
+          "counts": {
+            "solved": 111,
+            "unsolvable": 0,
+            "timeout": 9
+          },
+          "solved": {
+            "k": 111,
+            "n": 120,
+            "pct": 92.5,
+            "ci_lo_pct": 86.35908239400624,
+            "ci_hi_pct": 96.00428846040397
+          },
+          "unsolvable": {
+            "k": 0,
+            "n": 120,
+            "pct": 0.0,
+            "ci_lo_pct": 0.0,
+            "ci_hi_pct": 3.1019166418703485
+          },
+          "timeout": {
+            "k": 9,
+            "n": 120,
+            "pct": 7.5,
+            "ci_lo_pct": 3.995711539596028,
+            "ci_hi_pct": 13.640917605993769
+          }
+        }
+      }
+    },
+    "gan_raw": {
+      "name": "gan_raw",
+      "samples_drawn": 6144,
+      "n_valid_seen": 531,
+      "n_evaluated": 500,
+      "reached_target": true,
+      "structural_validity": {
+        "k": 531,
+        "n": 6144,
+        "pct": 8.642578125,
+        "ci_lo_pct": 7.965551693147402,
+        "ci_hi_pct": 9.371288659029611
+      },
+      "structural_validity_note": "Sampling stops once the valid target is reached, so this is an inverse-binomial rather than fixed-n proportion; the Wilson interval is a close approximation but not exact.",
+      "generation_time_s": 0.19507460000022547,
+      "generation_time_per_sample_ms": 0.031750423177120034,
+      "model_params": 1082357,
+      "forcing": null,
+      "tile_counts_raw_draws": {
+        "player": {
+          "mean": 0.6765,
+          "std": 0.6970277971501567,
+          "exact_rate": 0.4425,
+          "histogram": {
+            "0": 891,
+            "1": 885,
+            "2": 207,
+            "3": 14,
+            "4": 3
+          },
+          "n": 2000
+        },
+        "box": {
+          "mean": 3.933,
+          "std": 0.8862905844022038,
+          "exact_rate": 0.48,
+          "histogram": {
+            "1": 7,
+            "2": 84,
+            "3": 485,
+            "4": 960,
+            "5": 390,
+            "6": 72,
+            "7": 2
+          },
+          "n": 2000
+        },
+        "goal": {
+          "mean": 3.7185,
+          "std": 0.9440644840263825,
+          "exact_rate": 0.4045,
+          "histogram": {
+            "1": 19,
+            "2": 144,
+            "3": 650,
+            "4": 809,
+            "5": 326,
+            "6": 50,
+            "7": 2
+          },
+          "n": 2000
+        }
+      },
+      "solver_time_total_s": 2.3912460999999894,
+      "outcomes": {
+        "n": 500,
+        "counts": {
+          "solved": 251,
+          "unsolvable": 249,
+          "timeout": 0
+        },
+        "solved": {
+          "k": 251,
+          "n": 500,
+          "pct": 50.2,
+          "ci_lo_pct": 45.832636322986225,
+          "ci_hi_pct": 54.564313940829166
+        },
+        "unsolvable": {
+          "k": 249,
+          "n": 500,
+          "pct": 49.8,
+          "ci_lo_pct": 45.43568605917084,
+          "ci_hi_pct": 54.16736367701378
+        },
+        "timeout": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        }
+      },
+      "solvable_given_valid": {
+        "k": 251,
+        "n": 500,
+        "pct": 50.2,
+        "ci_lo_pct": 45.832636322986225,
+        "ci_hi_pct": 54.564313940829166
+      },
+      "solvable_overall": {
+        "pct": 4.33857421875,
+        "ci_lo_pct": 3.821002671840912,
+        "ci_hi_pct": 4.856145765659088,
+        "method": "delta method on P(valid) x P(solvable|valid)"
+      },
+      "solver_cost": {
+        "time_per_level_ms_median": 9.613350000108767,
+        "time_per_level_ms_mean": 43.03249580002375,
+        "nodes_median": 63.0,
+        "nodes_p99": 1892.5099999999995
+      },
+      "push_length": {
+        "mean": 9.98406374501992,
+        "std": 2.8199179546286395,
+        "median": 10.0,
+        "min": 4,
+        "max": 20
+      },
+      "novelty": {
+        "n": 500,
+        "exact_copy": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        },
+        "novel_pct": 100.0,
+        "symmetry_aware": true,
+        "nn_distance": {
+          "mean": 11.634,
+          "std": 2.9846346510083945,
+          "median": 11.5,
+          "min": 6,
+          "max": 22,
+          "deciles": [
+            6.0,
+            8.0,
+            9.0,
+            10.0,
+            10.0,
+            11.5,
+            12.0,
+            13.0,
+            14.0,
+            16.0,
+            22.0
+          ]
+        }
+      },
+      "diversity": {
+        "mean": 34.17802004008016,
+        "std": 11.249464393734085,
+        "median": 36.0,
+        "n_pairs": 124750,
+        "n": 500
+      },
+      "controllability": {
+        "density": {
+          "bin_accuracy": {
+            "k": 34,
+            "n": 45,
+            "pct": 75.55555555555556,
+            "ci_lo_pct": 61.326619942979654,
+            "ci_hi_pct": 85.76452056622827
+          },
+          "n": 45,
+          "directly_computable_from_grid": true
+        },
+        "clustering": {
+          "bin_accuracy": {
+            "k": 27,
+            "n": 45,
+            "pct": 60.0,
+            "ci_lo_pct": 45.45185459035139,
+            "ci_hi_pct": 72.97511343499083
+          },
+          "n": 45,
+          "directly_computable_from_grid": true
+        },
+        "connectivity": {
+          "bin_accuracy": {
+            "k": 29,
+            "n": 45,
+            "pct": 64.44444444444444,
+            "ci_lo_pct": 49.83581419637687,
+            "ci_hi_pct": 76.78091739578413
+          },
+          "n": 45,
+          "directly_computable_from_grid": true
+        },
+        "difficulty": {
+          "bin_accuracy": {
+            "k": 24,
+            "n": 45,
+            "pct": 53.333333333333336,
+            "ci_lo_pct": 39.077454740125376,
+            "ci_hi_pct": 67.0648679349887
+          },
+          "n": 45,
+          "directly_computable_from_grid": false
+        },
+        "solution_length": {
+          "n_requested": 45,
+          "n_with_achieved_length": 22,
+          "censoring_rate": 0.5111111111111111,
+          "censoring_note": "Achieved length exists only for solved levels; timeouts and proven-unsolvable levels have none, so this correlation is computed on a subsample biased toward easy levels.",
+          "spearman": -0.2887660025114365,
+          "spearman_p": 0.1924566622949181,
+          "pearson": -0.2790095406612094,
+          "mean_requested": 30.454545454545453,
+          "mean_achieved": 22.59090909090909,
+          "mean_abs_error": 13.5
+        },
+        "n_samples": 600,
+        "n_invalid_excluded": 555,
+        "invalid_exclusion_rate": 0.925,
+        "note": "Bin accuracy is computed on structurally valid samples only; invalid levels have no well-defined tile statistics. The exclusion rate is reported so the reader can see how much of the sample that removes.",
+        "outcomes": {
+          "n": 45,
+          "counts": {
+            "solved": 22,
+            "unsolvable": 23,
+            "timeout": 0
+          },
+          "solved": {
+            "k": 22,
+            "n": 45,
+            "pct": 48.888888888888886,
+            "ci_lo_pct": 34.9570237528785,
+            "ci_hi_pct": 62.99553535541681
+          },
+          "unsolvable": {
+            "k": 23,
+            "n": 45,
+            "pct": 51.11111111111111,
+            "ci_lo_pct": 37.00446464458318,
+            "ci_hi_pct": 65.0429762471215
+          },
+          "timeout": {
+            "k": 0,
+            "n": 45,
+            "pct": 0.0,
+            "ci_lo_pct": 0.0,
+            "ci_hi_pct": 7.865159873288836
+          }
+        }
+      },
+      "ood": {
+        "density": {
+          "bin_accuracy": {
+            "k": 9,
+            "n": 9,
+            "pct": 100.0,
+            "ci_lo_pct": 70.08549515804559,
+            "ci_hi_pct": 100.0
+          },
+          "n": 9,
+          "directly_computable_from_grid": true
+        },
+        "clustering": {
+          "bin_accuracy": {
+            "k": 6,
+            "n": 9,
+            "pct": 66.66666666666666,
+            "ci_lo_pct": 35.420213558039634,
+            "ci_hi_pct": 87.9416181613089
+          },
+          "n": 9,
+          "directly_computable_from_grid": true
+        },
+        "connectivity": {
+          "bin_accuracy": {
+            "k": 7,
+            "n": 9,
+            "pct": 77.77777777777779,
+            "ci_lo_pct": 45.25889691069889,
+            "ci_hi_pct": 93.67748928821533
+          },
+          "n": 9,
+          "directly_computable_from_grid": true
+        },
+        "difficulty": {
+          "bin_accuracy": {
+            "k": 0,
+            "n": 9,
+            "pct": 0.0,
+            "ci_lo_pct": 0.0,
+            "ci_hi_pct": 29.914504841954408
+          },
+          "n": 9,
+          "directly_computable_from_grid": false
+        },
+        "solution_length": {
+          "n_requested": 9,
+          "n_with_achieved_length": 2,
+          "censoring_rate": 0.7777777777777778,
+          "censoring_note": "Achieved length exists only for solved levels; timeouts and proven-unsolvable levels have none, so this correlation is computed on a subsample biased toward easy levels."
+        },
+        "n_samples": 120,
+        "n_invalid_excluded": 111,
+        "invalid_exclusion_rate": 0.925,
+        "note": "Bin accuracy is computed on structurally valid samples only; invalid levels have no well-defined tile statistics. The exclusion rate is reported so the reader can see how much of the sample that removes.",
+        "outcomes": {
+          "n": 9,
+          "counts": {
+            "solved": 2,
+            "unsolvable": 7,
+            "timeout": 0
+          },
+          "solved": {
+            "k": 2,
+            "n": 9,
+            "pct": 22.22222222222222,
+            "ci_lo_pct": 6.322510711784671,
+            "ci_hi_pct": 54.74110308930111
+          },
+          "unsolvable": {
+            "k": 7,
+            "n": 9,
+            "pct": 77.77777777777779,
+            "ci_lo_pct": 45.25889691069889,
+            "ci_hi_pct": 93.67748928821533
+          },
+          "timeout": {
+            "k": 0,
+            "n": 9,
+            "pct": 0.0,
+            "ci_lo_pct": 0.0,
+            "ci_hi_pct": 29.914504841954408
+          }
+        }
+      }
+    },
+    "gan_repaired": {
+      "name": "gan_repaired",
+      "samples_drawn": 512,
+      "n_valid_seen": 512,
+      "n_evaluated": 500,
+      "reached_target": true,
+      "structural_validity": {
+        "k": 512,
+        "n": 512,
+        "pct": 100.0,
+        "ci_lo_pct": 99.25530242771171,
+        "ci_hi_pct": 100.0
+      },
+      "structural_validity_note": "Sampling stops once the valid target is reached, so this is an inverse-binomial rather than fixed-n proportion; the Wilson interval is a close approximation but not exact.",
+      "generation_time_s": 0.04973460000110208,
+      "generation_time_per_sample_ms": 0.0971378906271525,
+      "model_params": 1082357,
+      "forcing": null,
+      "tile_counts_raw_draws": {
+        "player": {
+          "mean": 1.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "1": 512
+          },
+          "n": 512
+        },
+        "box": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        },
+        "goal": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        }
+      },
+      "solver_time_total_s": 2.050513199999841,
+      "outcomes": {
+        "n": 500,
+        "counts": {
+          "solved": 201,
+          "unsolvable": 299,
+          "timeout": 0
+        },
+        "solved": {
+          "k": 201,
+          "n": 500,
+          "pct": 40.2,
+          "ci_lo_pct": 35.9928740326145,
+          "ci_hi_pct": 44.55656304043193
+        },
+        "unsolvable": {
+          "k": 299,
+          "n": 500,
+          "pct": 59.8,
+          "ci_lo_pct": 55.44343695956807,
+          "ci_hi_pct": 64.0071259673855
+        },
+        "timeout": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        }
+      },
+      "solvable_given_valid": {
+        "k": 201,
+        "n": 500,
+        "pct": 40.2,
+        "ci_lo_pct": 35.9928740326145,
+        "ci_hi_pct": 44.55656304043193
+      },
+      "solvable_overall": {
+        "pct": 40.2,
+        "ci_lo_pct": 35.90231393980435,
+        "ci_hi_pct": 44.497686060195655,
+        "method": "delta method on P(valid) x P(solvable|valid)"
+      },
+      "solver_cost": {
+        "time_per_level_ms_median": 0.21674999970855424,
+        "time_per_level_ms_mean": 34.30936919996748,
+        "nodes_median": 0.0,
+        "nodes_p99": 2979.569999999998
+      },
+      "push_length": {
+        "mean": 10.134328358208956,
+        "std": 3.4231965032906135,
+        "median": 9.0,
+        "min": 5,
+        "max": 24
+      },
+      "novelty": {
+        "n": 500,
+        "exact_copy": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        },
+        "novel_pct": 100.0,
+        "symmetry_aware": true,
+        "nn_distance": {
+          "mean": 12.596,
+          "std": 3.555388023830873,
+          "median": 13.0,
+          "min": 5,
+          "max": 23,
+          "deciles": [
+            5.0,
+            8.0,
+            9.0,
+            10.0,
+            11.0,
+            13.0,
+            14.0,
+            15.0,
+            16.0,
+            17.0,
+            23.0
+          ]
+        }
+      },
+      "diversity": {
+        "mean": 36.78889779559118,
+        "std": 10.234559560938024,
+        "median": 38.0,
+        "n_pairs": 124750,
+        "n": 500
+      },
+      "controllability": {
+        "density": {
+          "bin_accuracy": {
+            "k": 514,
+            "n": 600,
+            "pct": 85.66666666666667,
+            "ci_lo_pct": 82.63567150822607,
+            "ci_hi_pct": 88.24386048612996
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "clustering": {
+          "bin_accuracy": {
+            "k": 323,
+            "n": 600,
+            "pct": 53.833333333333336,
+            "ci_lo_pct": 49.83259602663047,
+            "ci_hi_pct": 57.78529759893115
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "connectivity": {
+          "bin_accuracy": {
+            "k": 384,
+            "n": 600,
+            "pct": 64.0,
+            "ci_lo_pct": 60.081407298521285,
+            "ci_hi_pct": 67.7404650730951
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "difficulty": {
+          "bin_accuracy": {
+            "k": 234,
+            "n": 600,
+            "pct": 39.0,
+            "ci_lo_pct": 35.17904261149445,
+            "ci_hi_pct": 42.96091481080698
+          },
+          "n": 600,
+          "directly_computable_from_grid": false
+        },
+        "solution_length": {
+          "n_requested": 600,
+          "n_with_achieved_length": 241,
+          "censoring_rate": 0.5983333333333334,
+          "censoring_note": "Achieved length exists only for solved levels; timeouts and proven-unsolvable levels have none, so this correlation is computed on a subsample biased toward easy levels.",
+          "spearman": 0.07401388216157717,
+          "spearman_p": 0.25237439607382256,
+          "pearson": 0.08814379210058249,
+          "mean_requested": 35.04149377593361,
+          "mean_achieved": 23.69709543568465,
+          "mean_abs_error": 15.186721991701244
+        },
+        "n_samples": 600,
+        "n_invalid_excluded": 0,
+        "invalid_exclusion_rate": 0.0,
+        "note": "Bin accuracy is computed on structurally valid samples only; invalid levels have no well-defined tile statistics. The exclusion rate is reported so the reader can see how much of the sample that removes.",
+        "outcomes": {
+          "n": 600,
+          "counts": {
+            "solved": 241,
+            "unsolvable": 351,
+            "timeout": 8
+          },
+          "solved": {
+            "k": 241,
+            "n": 600,
+            "pct": 40.166666666666664,
+            "ci_lo_pct": 36.318593682748684,
+            "ci_hi_pct": 44.1398531038541
+          },
+          "unsolvable": {
+            "k": 351,
+            "n": 600,
+            "pct": 58.5,
+            "ci_lo_pct": 54.515589209326635,
+            "ci_hi_pct": 62.37626187344044
+          },
+          "timeout": {
+            "k": 8,
+            "n": 600,
+            "pct": 1.3333333333333335,
+            "ci_lo_pct": 0.6771354149386742,
+            "ci_hi_pct": 2.608736817061528
+          }
+        }
+      },
+      "ood": {
+        "density": {
+          "bin_accuracy": {
+            "k": 98,
+            "n": 120,
+            "pct": 81.66666666666667,
+            "ci_lo_pct": 73.79908648282967,
+            "ci_hi_pct": 87.56969964398577
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "clustering": {
+          "bin_accuracy": {
+            "k": 76,
+            "n": 120,
+            "pct": 63.33333333333333,
+            "ci_lo_pct": 54.42242408550699,
+            "ci_hi_pct": 71.41706480999423
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "connectivity": {
+          "bin_accuracy": {
+            "k": 86,
+            "n": 120,
+            "pct": 71.66666666666667,
+            "ci_lo_pct": 63.029797546945964,
+            "ci_hi_pct": 78.95937190824355
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "difficulty": {
+          "bin_accuracy": {
+            "k": 4,
+            "n": 120,
+            "pct": 3.3333333333333335,
+            "ci_lo_pct": 1.30375510983506,
+            "ci_hi_pct": 8.258033755910601
+          },
+          "n": 120,
+          "directly_computable_from_grid": false
+        },
+        "solution_length": {
+          "n_requested": 120,
+          "n_with_achieved_length": 45,
+          "censoring_rate": 0.625,
+          "censoring_note": "Achieved length exists only for solved levels; timeouts and proven-unsolvable levels have none, so this correlation is computed on a subsample biased toward easy levels.",
+          "spearman": -0.13125816395797588,
+          "spearman_p": 0.3900889692452345,
+          "pearson": -0.0669450001523658,
+          "mean_requested": 117.11111111111111,
+          "mean_achieved": 24.91111111111111,
+          "mean_abs_error": 92.2
+        },
+        "n_samples": 120,
+        "n_invalid_excluded": 0,
+        "invalid_exclusion_rate": 0.0,
+        "note": "Bin accuracy is computed on structurally valid samples only; invalid levels have no well-defined tile statistics. The exclusion rate is reported so the reader can see how much of the sample that removes.",
+        "outcomes": {
+          "n": 120,
+          "counts": {
+            "solved": 45,
+            "unsolvable": 71,
+            "timeout": 4
+          },
+          "solved": {
+            "k": 45,
+            "n": 120,
+            "pct": 37.5,
+            "ci_lo_pct": 29.352429786446805,
+            "ci_hi_pct": 46.42304937402079
+          },
+          "unsolvable": {
+            "k": 71,
+            "n": 120,
+            "pct": 59.166666666666664,
+            "ci_lo_pct": 50.22078316314156,
+            "ci_hi_pct": 67.54386545251553
+          },
+          "timeout": {
+            "k": 4,
+            "n": 120,
+            "pct": 3.3333333333333335,
+            "ci_lo_pct": 1.30375510983506,
+            "ci_hi_pct": 8.258033755910601
+          }
+        }
+      }
+    },
+    "vae_argmax": {
+      "name": "vae_argmax",
+      "samples_drawn": 100000,
+      "n_valid_seen": 0,
+      "n_evaluated": 0,
+      "reached_target": false,
+      "structural_validity": {
+        "k": 0,
+        "n": 100000,
+        "pct": 0.0,
+        "ci_lo_pct": 0.0,
+        "ci_hi_pct": 0.0038413112583039633
+      },
+      "structural_validity_note": "Sampling stops once the valid target is reached, so this is an inverse-binomial rather than fixed-n proportion; the Wilson interval is a close approximation but not exact.",
+      "generation_time_s": 1.806438800000251,
+      "generation_time_per_sample_ms": 0.01806438800000251,
+      "model_params": 1098292,
+      "forcing": null,
+      "tile_counts_raw_draws": {
+        "player": {
+          "mean": 0.005,
+          "std": 0.07053367989832944,
+          "exact_rate": 0.005,
+          "histogram": {
+            "0": 1990,
+            "1": 10
+          },
+          "n": 2000
+        },
+        "box": {
+          "mean": 1.378,
+          "std": 1.2345509305006417,
+          "exact_rate": 0.047,
+          "histogram": {
+            "0": 566,
+            "1": 642,
+            "2": 417,
+            "3": 253,
+            "4": 94,
+            "5": 23,
+            "6": 5
+          },
+          "n": 2000
+        },
+        "goal": {
+          "mean": 0.009,
+          "std": 0.117978811657009,
+          "exact_rate": 0.0,
+          "histogram": {
+            "0": 1986,
+            "1": 11,
+            "2": 2,
+            "3": 1
+          },
+          "n": 2000
+        }
+      },
+      "notes": "SHORTFALL: only 0 valid levels in 100,000 draws (cap 100,000)",
+      "solver_time_total_s": 2.70000055024866e-06,
+      "outcomes": {
+        "n": 0,
+        "counts": {
+          "solved": 0,
+          "unsolvable": 0,
+          "timeout": 0
+        },
+        "solved": {
+          "k": 0,
+          "n": 0,
+          "pct": NaN,
+          "ci_lo_pct": NaN,
+          "ci_hi_pct": NaN
+        },
+        "unsolvable": {
+          "k": 0,
+          "n": 0,
+          "pct": NaN,
+          "ci_lo_pct": NaN,
+          "ci_hi_pct": NaN
+        },
+        "timeout": {
+          "k": 0,
+          "n": 0,
+          "pct": NaN,
+          "ci_lo_pct": NaN,
+          "ci_hi_pct": NaN
+        }
+      },
+      "solvable_given_valid": {
+        "k": 0,
+        "n": 0,
+        "pct": NaN,
+        "ci_lo_pct": NaN,
+        "ci_hi_pct": NaN
+      },
+      "solvable_overall": {
+        "pct": null,
+        "ci_lo_pct": null,
+        "ci_hi_pct": null
+      },
+      "small_denominator_flag": "DENOMINATOR 0 < 30: this percentage is noise, not signal",
+      "controllability": {
+        "solution_length": {
+          "n_requested": 0,
+          "n_with_achieved_length": 0,
+          "censoring_rate": null,
+          "censoring_note": "Achieved length exists only for solved levels; timeouts and proven-unsolvable levels have none, so this correlation is computed on a subsample biased toward easy levels."
+        },
+        "n_samples": 600,
+        "n_invalid_excluded": 600,
+        "invalid_exclusion_rate": 1.0,
+        "note": "Bin accuracy is computed on structurally valid samples only; invalid levels have no well-defined tile statistics. The exclusion rate is reported so the reader can see how much of the sample that removes.",
+        "outcomes": {
+          "n": 0,
+          "counts": {
+            "solved": 0,
+            "unsolvable": 0,
+            "timeout": 0
+          },
+          "solved": {
+            "k": 0,
+            "n": 0,
+            "pct": NaN,
+            "ci_lo_pct": NaN,
+            "ci_hi_pct": NaN
+          },
+          "unsolvable": {
+            "k": 0,
+            "n": 0,
+            "pct": NaN,
+            "ci_lo_pct": NaN,
+            "ci_hi_pct": NaN
+          },
+          "timeout": {
+            "k": 0,
+            "n": 0,
+            "pct": NaN,
+            "ci_lo_pct": NaN,
+            "ci_hi_pct": NaN
+          }
+        }
+      },
+      "ood": {
+        "solution_length": {
+          "n_requested": 0,
+          "n_with_achieved_length": 0,
+          "censoring_rate": null,
+          "censoring_note": "Achieved length exists only for solved levels; timeouts and proven-unsolvable levels have none, so this correlation is computed on a subsample biased toward easy levels."
+        },
+        "n_samples": 120,
+        "n_invalid_excluded": 120,
+        "invalid_exclusion_rate": 1.0,
+        "note": "Bin accuracy is computed on structurally valid samples only; invalid levels have no well-defined tile statistics. The exclusion rate is reported so the reader can see how much of the sample that removes.",
+        "outcomes": {
+          "n": 0,
+          "counts": {
+            "solved": 0,
+            "unsolvable": 0,
+            "timeout": 0
+          },
+          "solved": {
+            "k": 0,
+            "n": 0,
+            "pct": NaN,
+            "ci_lo_pct": NaN,
+            "ci_hi_pct": NaN
+          },
+          "unsolvable": {
+            "k": 0,
+            "n": 0,
+            "pct": NaN,
+            "ci_lo_pct": NaN,
+            "ci_hi_pct": NaN
+          },
+          "timeout": {
+            "k": 0,
+            "n": 0,
+            "pct": NaN,
+            "ci_lo_pct": NaN,
+            "ci_hi_pct": NaN
+          }
+        }
+      }
+    },
+    "vae_sample": {
+      "name": "vae_sample",
+      "samples_drawn": 29184,
+      "n_valid_seen": 500,
+      "n_evaluated": 500,
+      "reached_target": true,
+      "structural_validity": {
+        "k": 500,
+        "n": 29184,
+        "pct": 1.7132675438596492,
+        "ci_lo_pct": 1.5706170694097434,
+        "ci_hi_pct": 1.8686282075558436
+      },
+      "structural_validity_note": "Sampling stops once the valid target is reached, so this is an inverse-binomial rather than fixed-n proportion; the Wilson interval is a close approximation but not exact.",
+      "generation_time_s": 0.6067184000003181,
+      "generation_time_per_sample_ms": 0.02078941885966002,
+      "model_params": 1098292,
+      "forcing": null,
+      "tile_counts_raw_draws": {
+        "player": {
+          "mean": 1.0165,
+          "std": 1.0046032799070486,
+          "exact_rate": 0.3545,
+          "histogram": {
+            "0": 734,
+            "1": 709,
+            "2": 390,
+            "3": 129,
+            "4": 34,
+            "5": 3,
+            "6": 1
+          },
+          "n": 2000
+        },
+        "box": {
+          "mean": 3.951,
+          "std": 1.7215106737978711,
+          "exact_rate": 0.2175,
+          "histogram": {
+            "0": 19,
+            "1": 93,
+            "2": 305,
+            "3": 435,
+            "4": 435,
+            "5": 344,
+            "6": 224,
+            "7": 96,
+            "8": 29,
+            "9": 15,
+            "10": 4,
+            "11": 1
+          },
+          "n": 2000
+        },
+        "goal": {
+          "mean": 4.051,
+          "std": 1.8534829376069262,
+          "exact_rate": 0.2005,
+          "histogram": {
+            "0": 20,
+            "1": 122,
+            "2": 258,
+            "3": 440,
+            "4": 401,
+            "5": 333,
+            "6": 218,
+            "7": 138,
+            "8": 46,
+            "9": 13,
+            "10": 7,
+            "11": 2,
+            "12": 2
+          },
+          "n": 2000
+        }
+      },
+      "solver_time_total_s": 3.6170875000007072,
+      "outcomes": {
+        "n": 500,
+        "counts": {
+          "solved": 150,
+          "unsolvable": 350,
+          "timeout": 0
+        },
+        "solved": {
+          "k": 150,
+          "n": 500,
+          "pct": 30.0,
+          "ci_lo_pct": 26.14819321406983,
+          "ci_hi_pct": 34.156780404392265
+        },
+        "unsolvable": {
+          "k": 350,
+          "n": 500,
+          "pct": 70.0,
+          "ci_lo_pct": 65.84321959560772,
+          "ci_hi_pct": 73.85180678593018
+        },
+        "timeout": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        }
+      },
+      "solvable_given_valid": {
+        "k": 150,
+        "n": 500,
+        "pct": 30.0,
+        "ci_lo_pct": 26.14819321406983,
+        "ci_hi_pct": 34.156780404392265
+      },
+      "solvable_overall": {
+        "pct": 0.5139802631578948,
+        "ci_lo_pct": 0.4319379470739637,
+        "ci_hi_pct": 0.5960225792418258,
+        "method": "delta method on P(valid) x P(solvable|valid)"
+      },
+      "solver_cost": {
+        "time_per_level_ms_median": 0.21735000063927146,
+        "time_per_level_ms_mean": 48.17616519997682,
+        "nodes_median": 0.0,
+        "nodes_p99": 4304.159999999991
+      },
+      "push_length": {
+        "mean": 10.826666666666666,
+        "std": 3.377862572035096,
+        "median": 10.0,
+        "min": 5,
+        "max": 27
+      },
+      "novelty": {
+        "n": 500,
+        "exact_copy": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        },
+        "novel_pct": 100.0,
+        "symmetry_aware": true,
+        "nn_distance": {
+          "mean": 12.836,
+          "std": 3.291368104603312,
+          "median": 13.0,
+          "min": 4,
+          "max": 22,
+          "deciles": [
+            4.0,
+            9.0,
+            10.0,
+            11.0,
+            12.0,
+            13.0,
+            14.0,
+            15.0,
+            16.0,
+            17.0,
+            22.0
+          ]
+        }
+      },
+      "diversity": {
+        "mean": 38.543935871743486,
+        "std": 7.617955104872665,
+        "median": 39.0,
+        "n_pairs": 124750,
+        "n": 500
+      },
+      "controllability": {
+        "density": {
+          "bin_accuracy": {
+            "k": 8,
+            "n": 8,
+            "pct": 100.0,
+            "ci_lo_pct": 67.55924351161198,
+            "ci_hi_pct": 100.0
+          },
+          "n": 8,
+          "directly_computable_from_grid": true
+        },
+        "clustering": {
+          "bin_accuracy": {
+            "k": 7,
+            "n": 8,
+            "pct": 87.5,
+            "ci_lo_pct": 52.91118177871464,
+            "ci_hi_pct": 97.75825085499433
+          },
+          "n": 8,
+          "directly_computable_from_grid": true
+        },
+        "connectivity": {
+          "bin_accuracy": {
+            "k": 7,
+            "n": 8,
+            "pct": 87.5,
+            "ci_lo_pct": 52.91118177871464,
+            "ci_hi_pct": 97.75825085499433
+          },
+          "n": 8,
+          "directly_computable_from_grid": true
+        },
+        "difficulty": {
+          "bin_accuracy": {
+            "k": 4,
+            "n": 8,
+            "pct": 50.0,
+            "ci_lo_pct": 21.521606221387756,
+            "ci_hi_pct": 78.47839377861224
+          },
+          "n": 8,
+          "directly_computable_from_grid": false
+        },
+        "solution_length": {
+          "n_requested": 8,
+          "n_with_achieved_length": 3,
+          "censoring_rate": 0.625,
+          "censoring_note": "Achieved length exists only for solved levels; timeouts and proven-unsolvable levels have none, so this correlation is computed on a subsample biased toward easy levels.",
+          "spearman": 0.8660254037844387,
+          "spearman_p": 0.33333333333333326,
+          "pearson": 0.6546536707079772,
+          "mean_requested": 48.333333333333336,
+          "mean_achieved": 35.0,
+          "mean_abs_error": 13.333333333333334
+        },
+        "n_samples": 600,
+        "n_invalid_excluded": 592,
+        "invalid_exclusion_rate": 0.9866666666666667,
+        "note": "Bin accuracy is computed on structurally valid samples only; invalid levels have no well-defined tile statistics. The exclusion rate is reported so the reader can see how much of the sample that removes.",
+        "outcomes": {
+          "n": 8,
+          "counts": {
+            "solved": 3,
+            "unsolvable": 4,
+            "timeout": 1
+          },
+          "solved": {
+            "k": 3,
+            "n": 8,
+            "pct": 37.5,
+            "ci_lo_pct": 13.684428582359743,
+            "ci_hi_pct": 69.42576053973727
+          },
+          "unsolvable": {
+            "k": 4,
+            "n": 8,
+            "pct": 50.0,
+            "ci_lo_pct": 21.521606221387756,
+            "ci_hi_pct": 78.47839377861224
+          },
+          "timeout": {
+            "k": 1,
+            "n": 8,
+            "pct": 12.5,
+            "ci_lo_pct": 2.241749145005667,
+            "ci_hi_pct": 47.08881822128535
+          }
+        }
+      },
+      "ood": {
+        "density": {
+          "bin_accuracy": {
+            "k": 3,
+            "n": 3,
+            "pct": 100.0,
+            "ci_lo_pct": 43.85029682449546,
+            "ci_hi_pct": 100.0
+          },
+          "n": 3,
+          "directly_computable_from_grid": true
+        },
+        "clustering": {
+          "bin_accuracy": {
+            "k": 2,
+            "n": 3,
+            "pct": 66.66666666666666,
+            "ci_lo_pct": 20.76596008020477,
+            "ci_hi_pct": 93.85080552796038
+          },
+          "n": 3,
+          "directly_computable_from_grid": true
+        },
+        "connectivity": {
+          "bin_accuracy": {
+            "k": 2,
+            "n": 3,
+            "pct": 66.66666666666666,
+            "ci_lo_pct": 20.76596008020477,
+            "ci_hi_pct": 93.85080552796038
+          },
+          "n": 3,
+          "directly_computable_from_grid": true
+        },
+        "difficulty": {
+          "bin_accuracy": {
+            "k": 1,
+            "n": 3,
+            "pct": 33.33333333333333,
+            "ci_lo_pct": 6.149194472039621,
+            "ci_hi_pct": 79.23403991979522
+          },
+          "n": 3,
+          "directly_computable_from_grid": false
+        },
+        "solution_length": {
+          "n_requested": 3,
+          "n_with_achieved_length": 1,
+          "censoring_rate": 0.6666666666666667,
+          "censoring_note": "Achieved length exists only for solved levels; timeouts and proven-unsolvable levels have none, so this correlation is computed on a subsample biased toward easy levels."
+        },
+        "n_samples": 120,
+        "n_invalid_excluded": 117,
+        "invalid_exclusion_rate": 0.975,
+        "note": "Bin accuracy is computed on structurally valid samples only; invalid levels have no well-defined tile statistics. The exclusion rate is reported so the reader can see how much of the sample that removes.",
+        "outcomes": {
+          "n": 3,
+          "counts": {
+            "solved": 1,
+            "unsolvable": 2,
+            "timeout": 0
+          },
+          "solved": {
+            "k": 1,
+            "n": 3,
+            "pct": 33.33333333333333,
+            "ci_lo_pct": 6.149194472039621,
+            "ci_hi_pct": 79.23403991979522
+          },
+          "unsolvable": {
+            "k": 2,
+            "n": 3,
+            "pct": 66.66666666666666,
+            "ci_lo_pct": 20.76596008020477,
+            "ci_hi_pct": 93.85080552796038
+          },
+          "timeout": {
+            "k": 0,
+            "n": 3,
+            "pct": 0.0,
+            "ci_lo_pct": 0.0,
+            "ci_hi_pct": 56.14970317550454
+          }
+        }
+      }
+    },
+    "vae_repaired": {
+      "name": "vae_repaired",
+      "samples_drawn": 512,
+      "n_valid_seen": 512,
+      "n_evaluated": 500,
+      "reached_target": true,
+      "structural_validity": {
+        "k": 512,
+        "n": 512,
+        "pct": 100.0,
+        "ci_lo_pct": 99.25530242771171,
+        "ci_hi_pct": 100.0
+      },
+      "structural_validity_note": "Sampling stops once the valid target is reached, so this is an inverse-binomial rather than fixed-n proportion; the Wilson interval is a close approximation but not exact.",
+      "generation_time_s": 0.06613600000127917,
+      "generation_time_per_sample_ms": 0.12917187500249838,
+      "model_params": 1098292,
+      "forcing": null,
+      "tile_counts_raw_draws": {
+        "player": {
+          "mean": 1.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "1": 512
+          },
+          "n": 512
+        },
+        "box": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        },
+        "goal": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        }
+      },
+      "solver_time_total_s": 4.736407500000496,
+      "outcomes": {
+        "n": 500,
+        "counts": {
+          "solved": 383,
+          "unsolvable": 117,
+          "timeout": 0
+        },
+        "solved": {
+          "k": 383,
+          "n": 500,
+          "pct": 76.6,
+          "ci_lo_pct": 72.69485494684876,
+          "ci_hi_pct": 80.09953014059667
+        },
+        "unsolvable": {
+          "k": 117,
+          "n": 500,
+          "pct": 23.400000000000002,
+          "ci_lo_pct": 19.90046985940334,
+          "ci_hi_pct": 27.305145053151243
+        },
+        "timeout": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        }
+      },
+      "solvable_given_valid": {
+        "k": 383,
+        "n": 500,
+        "pct": 76.6,
+        "ci_lo_pct": 72.69485494684876,
+        "ci_hi_pct": 80.09953014059667
+      },
+      "solvable_overall": {
+        "pct": 76.6,
+        "ci_lo_pct": 72.88897924985591,
+        "ci_hi_pct": 80.3110207501441,
+        "method": "delta method on P(valid) x P(solvable|valid)"
+      },
+      "solver_cost": {
+        "time_per_level_ms_median": 29.54184999998688,
+        "time_per_level_ms_mean": 109.19691399995281,
+        "nodes_median": 153.0,
+        "nodes_p99": 5047.469999999995
+      },
+      "push_length": {
+        "mean": 11.882506527415144,
+        "std": 4.832903109318105,
+        "median": 11.0,
+        "min": 4,
+        "max": 32
+      },
+      "novelty": {
+        "n": 500,
+        "exact_copy": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        },
+        "novel_pct": 100.0,
+        "symmetry_aware": true,
+        "nn_distance": {
+          "mean": 11.08,
+          "std": 2.7021472942828266,
+          "median": 11.0,
+          "min": 4,
+          "max": 18,
+          "deciles": [
+            4.0,
+            7.0,
+            9.0,
+            10.0,
+            10.0,
+            11.0,
+            12.0,
+            13.0,
+            14.0,
+            14.0,
+            18.0
+          ]
+        }
+      },
+      "diversity": {
+        "mean": 37.81728256513026,
+        "std": 8.639453305455788,
+        "median": 38.0,
+        "n_pairs": 124750,
+        "n": 500
+      },
+      "controllability": {
+        "density": {
+          "bin_accuracy": {
+            "k": 531,
+            "n": 600,
+            "pct": 88.5,
+            "ci_lo_pct": 85.69878624438965,
+            "ci_hi_pct": 90.8113627775554
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "clustering": {
+          "bin_accuracy": {
+            "k": 494,
+            "n": 600,
+            "pct": 82.33333333333334,
+            "ci_lo_pct": 79.07874378257218,
+            "ci_hi_pct": 85.17653288520852
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "connectivity": {
+          "bin_accuracy": {
+            "k": 445,
+            "n": 600,
+            "pct": 74.16666666666667,
+            "ci_lo_pct": 70.51828984726697,
+            "ci_hi_pct": 77.50756127040418
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "difficulty": {
+          "bin_accuracy": {
+            "k": 277,
+            "n": 600,
+            "pct": 46.166666666666664,
+            "ci_lo_pct": 42.214702401068855,
+            "ci_hi_pct": 50.16740397336954
+          },
+          "n": 600,
+          "directly_computable_from_grid": false
+        },
+        "solution_length": {
+          "n_requested": 600,
+          "n_with_achieved_length": 438,
+          "censoring_rate": 0.27,
+          "censoring_note": "Achieved length exists only for solved levels; timeouts and proven-unsolvable levels have none, so this correlation is computed on a subsample biased toward easy levels.",
+          "spearman": 0.3891676054171903,
+          "spearman_p": 2.7412251897454734e-17,
+          "pearson": 0.36778337454714916,
+          "mean_requested": 34.337899543378995,
+          "mean_achieved": 30.08675799086758,
+          "mean_abs_error": 11.789954337899543
+        },
+        "n_samples": 600,
+        "n_invalid_excluded": 0,
+        "invalid_exclusion_rate": 0.0,
+        "note": "Bin accuracy is computed on structurally valid samples only; invalid levels have no well-defined tile statistics. The exclusion rate is reported so the reader can see how much of the sample that removes.",
+        "outcomes": {
+          "n": 600,
+          "counts": {
+            "solved": 438,
+            "unsolvable": 148,
+            "timeout": 14
+          },
+          "solved": {
+            "k": 438,
+            "n": 600,
+            "pct": 73.0,
+            "ci_lo_pct": 69.30962642114221,
+            "ci_hi_pct": 76.39773533222754
+          },
+          "unsolvable": {
+            "k": 148,
+            "n": 600,
+            "pct": 24.666666666666668,
+            "ci_lo_pct": 21.385820500291867,
+            "ci_hi_pct": 28.269839017735638
+          },
+          "timeout": {
+            "k": 14,
+            "n": 600,
+            "pct": 2.3333333333333335,
+            "ci_lo_pct": 1.394915794810269,
+            "ci_hi_pct": 3.8782330351625323
+          }
+        }
+      },
+      "ood": {
+        "density": {
+          "bin_accuracy": {
+            "k": 100,
+            "n": 120,
+            "pct": 83.33333333333334,
+            "ci_lo_pct": 75.65471860673773,
+            "ci_hi_pct": 88.9440036320154
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "clustering": {
+          "bin_accuracy": {
+            "k": 89,
+            "n": 120,
+            "pct": 74.16666666666667,
+            "ci_lo_pct": 65.67146994175665,
+            "ci_hi_pct": 81.16260368133936
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "connectivity": {
+          "bin_accuracy": {
+            "k": 87,
+            "n": 120,
+            "pct": 72.5,
+            "ci_lo_pct": 63.907034172423195,
+            "ci_hi_pct": 79.69710333873515
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "difficulty": {
+          "bin_accuracy": {
+            "k": 29,
+            "n": 120,
+            "pct": 24.166666666666668,
+            "ci_lo_pct": 17.38584121753525,
+            "ci_hi_pct": 32.5501490474311
+          },
+          "n": 120,
+          "directly_computable_from_grid": false
+        },
+        "solution_length": {
+          "n_requested": 120,
+          "n_with_achieved_length": 54,
+          "censoring_rate": 0.55,
+          "censoring_note": "Achieved length exists only for solved levels; timeouts and proven-unsolvable levels have none, so this correlation is computed on a subsample biased toward easy levels.",
+          "spearman": -0.05902714287539777,
+          "spearman_p": 0.6715806170697406,
+          "pearson": -0.05400391803535802,
+          "mean_requested": 117.77777777777777,
+          "mean_achieved": 42.2962962962963,
+          "mean_abs_error": 75.48148148148148
+        },
+        "n_samples": 120,
+        "n_invalid_excluded": 0,
+        "invalid_exclusion_rate": 0.0,
+        "note": "Bin accuracy is computed on structurally valid samples only; invalid levels have no well-defined tile statistics. The exclusion rate is reported so the reader can see how much of the sample that removes.",
+        "outcomes": {
+          "n": 120,
+          "counts": {
+            "solved": 54,
+            "unsolvable": 47,
+            "timeout": 19
+          },
+          "solved": {
+            "k": 54,
+            "n": 120,
+            "pct": 45.0,
+            "ci_lo_pct": 36.39173508387461,
+            "ci_hi_pct": 53.91845658031244
+          },
+          "unsolvable": {
+            "k": 47,
+            "n": 120,
+            "pct": 39.166666666666664,
+            "ci_lo_pct": 30.899196972332565,
+            "ci_hi_pct": 48.10621830007269
+          },
+          "timeout": {
+            "k": 19,
+            "n": 120,
+            "pct": 15.833333333333332,
+            "ci_lo_pct": 10.376977359410052,
+            "ci_hi_pct": 23.409332345868023
+          }
+        }
+      }
+    },
+    "transformer_unconstrained": {
+      "name": "transformer_unconstrained",
+      "samples_drawn": 1024,
+      "n_valid_seen": 846,
+      "n_evaluated": 500,
+      "reached_target": true,
+      "structural_validity": {
+        "k": 846,
+        "n": 1024,
+        "pct": 82.6171875,
+        "ci_lo_pct": 80.17532317222641,
+        "ci_hi_pct": 84.81524461110055
+      },
+      "structural_validity_note": "Sampling stops once the valid target is reached, so this is an inverse-binomial rather than fixed-n proportion; the Wilson interval is a close approximation but not exact.",
+      "generation_time_s": 24.391663500000504,
+      "generation_time_per_sample_ms": 23.819983886719243,
+      "model_params": 10734336,
+      "forcing": null,
+      "tile_counts_raw_draws": {
+        "player": {
+          "mean": 0.99609375,
+          "std": 0.11686152579415306,
+          "exact_rate": 0.986328125,
+          "histogram": {
+            "0": 9,
+            "1": 1010,
+            "2": 5
+          },
+          "n": 1024
+        },
+        "box": {
+          "mean": 3.87109375,
+          "std": 0.3350961484573308,
+          "exact_rate": 0.87109375,
+          "histogram": {
+            "3": 132,
+            "4": 892
+          },
+          "n": 1024
+        },
+        "goal": {
+          "mean": 3.9453125,
+          "std": 0.23580294176229016,
+          "exact_rate": 0.94140625,
+          "histogram": {
+            "3": 58,
+            "4": 964,
+            "5": 2
+          },
+          "n": 1024
+        }
+      },
+      "solver_time_total_s": 2.893122499999663,
+      "outcomes": {
+        "n": 500,
+        "counts": {
+          "solved": 280,
+          "unsolvable": 220,
+          "timeout": 0
+        },
+        "solved": {
+          "k": 280,
+          "n": 500,
+          "pct": 56.00000000000001,
+          "ci_lo_pct": 51.619687358631275,
+          "ci_hi_pct": 60.288820555830114
+        },
+        "unsolvable": {
+          "k": 220,
+          "n": 500,
+          "pct": 44.0,
+          "ci_lo_pct": 39.7111794441699,
+          "ci_hi_pct": 48.38031264136874
+        },
+        "timeout": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        }
+      },
+      "solvable_given_valid": {
+        "k": 280,
+        "n": 500,
+        "pct": 56.00000000000001,
+        "ci_lo_pct": 51.619687358631275,
+        "ci_hi_pct": 60.288820555830114
+      },
+      "solvable_overall": {
+        "pct": 46.26562500000001,
+        "ci_lo_pct": 42.443139058590305,
+        "ci_hi_pct": 50.0881109414097,
+        "method": "delta method on P(valid) x P(solvable|valid)"
+      },
+      "solver_cost": {
+        "time_per_level_ms_median": 17.193350000525243,
+        "time_per_level_ms_mean": 60.10053360001257,
+        "nodes_median": 80.0,
+        "nodes_p99": 3241.789999999999
+      },
+      "push_length": {
+        "mean": 11.239285714285714,
+        "std": 4.309030325599807,
+        "median": 11.0,
+        "min": 4,
+        "max": 26
+      },
+      "novelty": {
+        "n": 500,
+        "exact_copy": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        },
+        "novel_pct": 100.0,
+        "symmetry_aware": true,
+        "nn_distance": {
+          "mean": 12.654,
+          "std": 3.3386050979413544,
+          "median": 13.0,
+          "min": 5,
+          "max": 22,
+          "deciles": [
+            5.0,
+            8.0,
+            9.0,
+            11.0,
+            12.0,
+            13.0,
+            14.0,
+            15.0,
+            16.0,
+            17.0,
+            22.0
+          ]
+        }
+      },
+      "diversity": {
+        "mean": 39.010084168336675,
+        "std": 7.493480567463945,
+        "median": 39.0,
+        "n_pairs": 124750,
+        "n": 500
+      },
+      "controllability": {
+        "density": {
+          "bin_accuracy": {
+            "k": 421,
+            "n": 477,
+            "pct": 88.25995807127882,
+            "ci_lo_pct": 85.0609486226873,
+            "ci_hi_pct": 90.84764729896938
+          },
+          "n": 477,
+          "directly_computable_from_grid": true
+        },
+        "clustering": {
+          "bin_accuracy": {
+            "k": 375,
+            "n": 477,
+            "pct": 78.61635220125787,
+            "ci_lo_pct": 74.71586018337858,
+            "ci_hi_pct": 82.05961019090165
+          },
+          "n": 477,
+          "directly_computable_from_grid": true
+        },
+        "connectivity": {
+          "bin_accuracy": {
+            "k": 405,
+            "n": 477,
+            "pct": 84.90566037735849,
+            "ci_lo_pct": 81.41487173424994,
+            "ci_hi_pct": 87.83872399701494
+          },
+          "n": 477,
+          "directly_computable_from_grid": true
+        },
+        "difficulty": {
+          "bin_accuracy": {
+            "k": 197,
+            "n": 477,
+            "pct": 41.299790356394126,
+            "ci_lo_pct": 36.96785399119468,
+            "ci_hi_pct": 45.770739264976534
+          },
+          "n": 477,
+          "directly_computable_from_grid": false
+        },
+        "solution_length": {
+          "n_requested": 477,
+          "n_with_achieved_length": 249,
+          "censoring_rate": 0.4779874213836478,
+          "censoring_note": "Achieved length exists only for solved levels; timeouts and proven-unsolvable levels have none, so this correlation is computed on a subsample biased toward easy levels.",
+          "spearman": 0.5161865982284622,
+          "spearman_p": 2.3352913829898147e-18,
+          "pearson": 0.47783936735719623,
+          "mean_requested": 31.666666666666668,
+          "mean_achieved": 29.80722891566265,
+          "mean_abs_error": 10.164658634538153
+        },
+        "n_samples": 600,
+        "n_invalid_excluded": 123,
+        "invalid_exclusion_rate": 0.205,
+        "note": "Bin accuracy is computed on structurally valid samples only; invalid levels have no well-defined tile statistics. The exclusion rate is reported so the reader can see how much of the sample that removes.",
+        "outcomes": {
+          "n": 477,
+          "counts": {
+            "solved": 249,
+            "unsolvable": 212,
+            "timeout": 16
+          },
+          "solved": {
+            "k": 249,
+            "n": 477,
+            "pct": 52.20125786163522,
+            "ci_lo_pct": 47.718900564802816,
+            "ci_hi_pct": 56.64844331014183
+          },
+          "unsolvable": {
+            "k": 212,
+            "n": 477,
+            "pct": 44.44444444444444,
+            "ci_lo_pct": 40.04720888536962,
+            "ci_hi_pct": 48.930447049293925
+          },
+          "timeout": {
+            "k": 16,
+            "n": 477,
+            "pct": 3.3542976939203357,
+            "ci_lo_pct": 2.0750608143133458,
+            "ci_hi_pct": 5.378842788050404
+          }
+        }
+      },
+      "ood": {
+        "density": {
+          "bin_accuracy": {
+            "k": 33,
+            "n": 36,
+            "pct": 91.66666666666666,
+            "ci_lo_pct": 78.17330875072737,
+            "ci_hi_pct": 97.12513886640066
+          },
+          "n": 36,
+          "directly_computable_from_grid": true
+        },
+        "clustering": {
+          "bin_accuracy": {
+            "k": 27,
+            "n": 36,
+            "pct": 75.0,
+            "ci_lo_pct": 58.92954623327166,
+            "ci_hi_pct": 86.24952233700517
+          },
+          "n": 36,
+          "directly_computable_from_grid": true
+        },
+        "connectivity": {
+          "bin_accuracy": {
+            "k": 27,
+            "n": 36,
+            "pct": 75.0,
+            "ci_lo_pct": 58.92954623327166,
+            "ci_hi_pct": 86.24952233700517
+          },
+          "n": 36,
+          "directly_computable_from_grid": true
+        },
+        "difficulty": {
+          "bin_accuracy": {
+            "k": 8,
+            "n": 36,
+            "pct": 22.22222222222222,
+            "ci_lo_pct": 11.716331975796463,
+            "ci_hi_pct": 38.084702946118185
+          },
+          "n": 36,
+          "directly_computable_from_grid": false
+        },
+        "solution_length": {
+          "n_requested": 36,
+          "n_with_achieved_length": 13,
+          "censoring_rate": 0.6388888888888888,
+          "censoring_note": "Achieved length exists only for solved levels; timeouts and proven-unsolvable levels have none, so this correlation is computed on a subsample biased toward easy levels.",
+          "spearman": 0.39419124842072756,
+          "spearman_p": 0.18259382029437066,
+          "pearson": 0.3701176592001869,
+          "mean_requested": 96.15384615384616,
+          "mean_achieved": 37.69230769230769,
+          "mean_abs_error": 58.46153846153846
+        },
+        "n_samples": 120,
+        "n_invalid_excluded": 84,
+        "invalid_exclusion_rate": 0.7,
+        "note": "Bin accuracy is computed on structurally valid samples only; invalid levels have no well-defined tile statistics. The exclusion rate is reported so the reader can see how much of the sample that removes.",
+        "outcomes": {
+          "n": 36,
+          "counts": {
+            "solved": 13,
+            "unsolvable": 19,
+            "timeout": 4
+          },
+          "solved": {
+            "k": 13,
+            "n": 36,
+            "pct": 36.11111111111111,
+            "ci_lo_pct": 22.47559294651537,
+            "ci_hi_pct": 52.42492451444196
+          },
+          "unsolvable": {
+            "k": 19,
+            "n": 36,
+            "pct": 52.77777777777778,
+            "ci_lo_pct": 37.00593802298759,
+            "ci_hi_pct": 68.01395848482095
+          },
+          "timeout": {
+            "k": 4,
+            "n": 36,
+            "pct": 11.11111111111111,
+            "ci_lo_pct": 4.406640300315648,
+            "ci_hi_pct": 25.314808590364855
+          }
+        }
+      }
+    },
+    "transformer_constrained": {
+      "name": "transformer_constrained",
+      "samples_drawn": 512,
+      "n_valid_seen": 512,
+      "n_evaluated": 500,
+      "reached_target": true,
+      "structural_validity": {
+        "k": 512,
+        "n": 512,
+        "pct": 100.0,
+        "ci_lo_pct": 99.25530242771171,
+        "ci_hi_pct": 100.0
+      },
+      "structural_validity_note": "Sampling stops once the valid target is reached, so this is an inverse-binomial rather than fixed-n proportion; the Wilson interval is a close approximation but not exact.",
+      "generation_time_s": 27.040866999999707,
+      "generation_time_per_sample_ms": 52.81419335937443,
+      "model_params": 10734336,
+      "forcing": {
+        "n_sequences": 1232,
+        "n_sequences_with_forcing": 308,
+        "forced_sequence_rate": 0.25,
+        "mean_forced_tokens_per_level": 0.3782467532467532,
+        "max_forced_tokens_per_level": 5.0,
+        "mean_quota_masked_tokens_per_level": 34.40827922077922
+      },
+      "tile_counts_raw_draws": {
+        "player": {
+          "mean": 1.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "1": 512
+          },
+          "n": 512
+        },
+        "box": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        },
+        "goal": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        }
+      },
+      "solver_time_total_s": 2.138054099999863,
+      "outcomes": {
+        "n": 500,
+        "counts": {
+          "solved": 248,
+          "unsolvable": 252,
+          "timeout": 0
+        },
+        "solved": {
+          "k": 248,
+          "n": 500,
+          "pct": 49.6,
+          "ci_lo_pct": 45.237314911404546,
+          "ci_hi_pct": 53.9687845609647
+        },
+        "unsolvable": {
+          "k": 252,
+          "n": 500,
+          "pct": 50.4,
+          "ci_lo_pct": 46.0312154390353,
+          "ci_hi_pct": 54.762685088595454
+        },
+        "timeout": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        }
+      },
+      "solvable_given_valid": {
+        "k": 248,
+        "n": 500,
+        "pct": 49.6,
+        "ci_lo_pct": 45.237314911404546,
+        "ci_hi_pct": 53.9687845609647
+      },
+      "solvable_overall": {
+        "pct": 49.6,
+        "ci_lo_pct": 45.21744701252797,
+        "ci_hi_pct": 53.98255298747203,
+        "method": "delta method on P(valid) x P(solvable|valid)"
+      },
+      "solver_cost": {
+        "time_per_level_ms_median": 11.62579999981972,
+        "time_per_level_ms_mean": 43.70727620001344,
+        "nodes_median": 66.0,
+        "nodes_p99": 2448.1099999999997
+      },
+      "push_length": {
+        "mean": 11.298387096774194,
+        "std": 3.969601911278643,
+        "median": 10.5,
+        "min": 4,
+        "max": 28
+      },
+      "novelty": {
+        "n": 500,
+        "exact_copy": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        },
+        "novel_pct": 100.0,
+        "symmetry_aware": true,
+        "nn_distance": {
+          "mean": 12.634,
+          "std": 3.4438414597655336,
+          "median": 12.0,
+          "min": 3,
+          "max": 22,
+          "deciles": [
+            3.0,
+            8.0,
+            9.0,
+            10.0,
+            11.0,
+            12.0,
+            14.0,
+            15.0,
+            16.0,
+            17.0,
+            22.0
+          ]
+        }
+      },
+      "diversity": {
+        "mean": 38.85578356713427,
+        "std": 7.64773135033287,
+        "median": 39.0,
+        "n_pairs": 124750,
+        "n": 500
+      },
+      "controllability": {
+        "density": {
+          "bin_accuracy": {
+            "k": 533,
+            "n": 600,
+            "pct": 88.83333333333333,
+            "ci_lo_pct": 86.06207206352195,
+            "ci_hi_pct": 91.11050249108062
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "clustering": {
+          "bin_accuracy": {
+            "k": 458,
+            "n": 600,
+            "pct": 76.33333333333333,
+            "ci_lo_pct": 72.7715735944399,
+            "ci_hi_pct": 79.56004348550519
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "connectivity": {
+          "bin_accuracy": {
+            "k": 480,
+            "n": 600,
+            "pct": 80.0,
+            "ci_lo_pct": 76.61303480740233,
+            "ci_hi_pct": 83.00526313177564
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "difficulty": {
+          "bin_accuracy": {
+            "k": 260,
+            "n": 600,
+            "pct": 43.333333333333336,
+            "ci_lo_pct": 39.423111501886424,
+            "ci_hi_pct": 47.32837784496293
+          },
+          "n": 600,
+          "directly_computable_from_grid": false
+        },
+        "solution_length": {
+          "n_requested": 600,
+          "n_with_achieved_length": 269,
+          "censoring_rate": 0.5516666666666667,
+          "censoring_note": "Achieved length exists only for solved levels; timeouts and proven-unsolvable levels have none, so this correlation is computed on a subsample biased toward easy levels.",
+          "spearman": 0.48363645490744456,
+          "spearman_p": 3.551498025534833e-17,
+          "pearson": 0.4646611419762542,
+          "mean_requested": 32.62081784386617,
+          "mean_achieved": 31.524163568773233,
+          "mean_abs_error": 10.293680297397769
+        },
+        "n_samples": 600,
+        "n_invalid_excluded": 0,
+        "invalid_exclusion_rate": 0.0,
+        "note": "Bin accuracy is computed on structurally valid samples only; invalid levels have no well-defined tile statistics. The exclusion rate is reported so the reader can see how much of the sample that removes.",
+        "outcomes": {
+          "n": 600,
+          "counts": {
+            "solved": 269,
+            "unsolvable": 316,
+            "timeout": 15
+          },
+          "solved": {
+            "k": 269,
+            "n": 600,
+            "pct": 44.83333333333333,
+            "ci_lo_pct": 40.89940104077698,
+            "ci_hi_pct": 48.833003203031275
+          },
+          "unsolvable": {
+            "k": 316,
+            "n": 600,
+            "pct": 52.666666666666664,
+            "ci_lo_pct": 48.6673282698568,
+            "ci_hi_pct": 56.632075991403454
+          },
+          "timeout": {
+            "k": 15,
+            "n": 600,
+            "pct": 2.5,
+            "ci_lo_pct": 1.5207839599852635,
+            "ci_hi_pct": 4.0835776363163045
+          }
+        }
+      },
+      "ood": {
+        "density": {
+          "bin_accuracy": {
+            "k": 104,
+            "n": 120,
+            "pct": 86.66666666666667,
+            "ci_lo_pct": 79.43520342531573,
+            "ci_hi_pct": 91.6233910373127
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "clustering": {
+          "bin_accuracy": {
+            "k": 89,
+            "n": 120,
+            "pct": 74.16666666666667,
+            "ci_lo_pct": 65.67146994175665,
+            "ci_hi_pct": 81.16260368133936
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "connectivity": {
+          "bin_accuracy": {
+            "k": 88,
+            "n": 120,
+            "pct": 73.33333333333333,
+            "ci_lo_pct": 64.7875606138524,
+            "ci_hi_pct": 80.43154495327475
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "difficulty": {
+          "bin_accuracy": {
+            "k": 15,
+            "n": 120,
+            "pct": 12.5,
+            "ci_lo_pct": 7.723497273395374,
+            "ci_hi_pct": 19.60294020800739
+          },
+          "n": 120,
+          "directly_computable_from_grid": false
+        },
+        "solution_length": {
+          "n_requested": 120,
+          "n_with_achieved_length": 48,
+          "censoring_rate": 0.6,
+          "censoring_note": "Achieved length exists only for solved levels; timeouts and proven-unsolvable levels have none, so this correlation is computed on a subsample biased toward easy levels.",
+          "spearman": -0.39393574066868947,
+          "spearman_p": 0.005600107270112424,
+          "pearson": -0.3354286673808427,
+          "mean_requested": 115.83333333333333,
+          "mean_achieved": 29.541666666666668,
+          "mean_abs_error": 86.29166666666667
+        },
+        "n_samples": 120,
+        "n_invalid_excluded": 0,
+        "invalid_exclusion_rate": 0.0,
+        "note": "Bin accuracy is computed on structurally valid samples only; invalid levels have no well-defined tile statistics. The exclusion rate is reported so the reader can see how much of the sample that removes.",
+        "outcomes": {
+          "n": 120,
+          "counts": {
+            "solved": 48,
+            "unsolvable": 70,
+            "timeout": 2
+          },
+          "solved": {
+            "k": 48,
+            "n": 120,
+            "pct": 40.0,
+            "ci_lo_pct": 31.676408120837145,
+            "ci_hi_pct": 48.94397520753693
+          },
+          "unsolvable": {
+            "k": 70,
+            "n": 120,
+            "pct": 58.333333333333336,
+            "ci_lo_pct": 49.38803270016424,
+            "ci_hi_pct": 66.76164785952405
+          },
+          "timeout": {
+            "k": 2,
+            "n": 120,
+            "pct": 1.6666666666666667,
+            "ci_lo_pct": 0.45825645659211406,
+            "ci_hi_pct": 5.87359629721589
+          }
+        }
+      }
+    },
+    "distilgpt2_constrained": {
+      "name": "distilgpt2_constrained",
+      "samples_drawn": 512,
+      "n_valid_seen": 512,
+      "n_evaluated": 500,
+      "reached_target": true,
+      "structural_validity": {
+        "k": 512,
+        "n": 512,
+        "pct": 100.0,
+        "ci_lo_pct": 99.25530242771171,
+        "ci_hi_pct": 100.0
+      },
+      "structural_validity_note": "Sampling stops once the valid target is reached, so this is an inverse-binomial rather than fixed-n proportion; the Wilson interval is a close approximation but not exact.",
+      "generation_time_s": 39.815091100000245,
+      "generation_time_per_sample_ms": 77.76384980468798,
+      "model_params": 43352064,
+      "forcing": {
+        "n_sequences": 1232,
+        "n_sequences_with_forcing": 91,
+        "forced_sequence_rate": 0.07386363636363637,
+        "mean_forced_tokens_per_level": 0.09983766233766234,
+        "max_forced_tokens_per_level": 3.0,
+        "mean_quota_masked_tokens_per_level": 35.56087662337662
+      },
+      "tile_counts_raw_draws": {
+        "player": {
+          "mean": 1.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "1": 512
+          },
+          "n": 512
+        },
+        "box": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        },
+        "goal": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        }
+      },
+      "solver_time_total_s": 3.327457299999878,
+      "outcomes": {
+        "n": 500,
+        "counts": {
+          "solved": 318,
+          "unsolvable": 182,
+          "timeout": 0
+        },
+        "solved": {
+          "k": 318,
+          "n": 500,
+          "pct": 63.6,
+          "ci_lo_pct": 59.29376153133843,
+          "ci_hi_pct": 67.69885640810736
+        },
+        "unsolvable": {
+          "k": 182,
+          "n": 500,
+          "pct": 36.4,
+          "ci_lo_pct": 32.30114359189265,
+          "ci_hi_pct": 40.70623846866158
+        },
+        "timeout": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        }
+      },
+      "solvable_given_valid": {
+        "k": 318,
+        "n": 500,
+        "pct": 63.6,
+        "ci_lo_pct": 59.29376153133843,
+        "ci_hi_pct": 67.69885640810736
+      },
+      "solvable_overall": {
+        "pct": 63.6,
+        "ci_lo_pct": 59.38254634548286,
+        "ci_hi_pct": 67.81745365451715,
+        "method": "delta method on P(valid) x P(solvable|valid)"
+      },
+      "solver_cost": {
+        "time_per_level_ms_median": 17.588200000318466,
+        "time_per_level_ms_mean": 65.10942140002226,
+        "nodes_median": 103.5,
+        "nodes_p99": 4255.919999999991
+      },
+      "push_length": {
+        "mean": 11.421383647798741,
+        "std": 4.789117180497637,
+        "median": 10.0,
+        "min": 4,
+        "max": 28
+      },
+      "novelty": {
+        "n": 500,
+        "exact_copy": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        },
+        "novel_pct": 100.0,
+        "symmetry_aware": true,
+        "nn_distance": {
+          "mean": 12.176,
+          "std": 3.2779603414318483,
+          "median": 12.0,
+          "min": 3,
+          "max": 21,
+          "deciles": [
+            3.0,
+            8.0,
+            9.0,
+            10.0,
+            11.0,
+            12.0,
+            13.0,
+            14.0,
+            15.0,
+            16.0,
+            21.0
+          ]
+        }
+      },
+      "diversity": {
+        "mean": 38.68820841683367,
+        "std": 7.638257549561691,
+        "median": 39.0,
+        "n_pairs": 124750,
+        "n": 500
+      },
+      "controllability": {
+        "density": {
+          "bin_accuracy": {
+            "k": 549,
+            "n": 600,
+            "pct": 91.5,
+            "ci_lo_pct": 88.99600848030501,
+            "ci_hi_pct": 93.47597033555785
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "clustering": {
+          "bin_accuracy": {
+            "k": 517,
+            "n": 600,
+            "pct": 86.16666666666667,
+            "ci_lo_pct": 83.17327039799383,
+            "ci_hi_pct": 88.6998998953485
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "connectivity": {
+          "bin_accuracy": {
+            "k": 513,
+            "n": 600,
+            "pct": 85.5,
+            "ci_lo_pct": 82.45672767842441,
+            "ci_hi_pct": 88.09159154960284
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "difficulty": {
+          "bin_accuracy": {
+            "k": 321,
+            "n": 600,
+            "pct": 53.5,
+            "ci_lo_pct": 49.49944076044091,
+            "ci_hi_pct": 57.4560273324632
+          },
+          "n": 600,
+          "directly_computable_from_grid": false
+        },
+        "solution_length": {
+          "n_requested": 600,
+          "n_with_achieved_length": 373,
+          "censoring_rate": 0.3783333333333333,
+          "censoring_note": "Achieved length exists only for solved levels; timeouts and proven-unsolvable levels have none, so this correlation is computed on a subsample biased toward easy levels.",
+          "spearman": 0.67261647637916,
+          "spearman_p": 1.8657844755646402e-50,
+          "pearson": 0.6336988693958834,
+          "mean_requested": 33.793565683646115,
+          "mean_achieved": 32.09651474530831,
+          "mean_abs_error": 8.924932975871315
+        },
+        "n_samples": 600,
+        "n_invalid_excluded": 0,
+        "invalid_exclusion_rate": 0.0,
+        "note": "Bin accuracy is computed on structurally valid samples only; invalid levels have no well-defined tile statistics. The exclusion rate is reported so the reader can see how much of the sample that removes.",
+        "outcomes": {
+          "n": 600,
+          "counts": {
+            "solved": 373,
+            "unsolvable": 216,
+            "timeout": 11
+          },
+          "solved": {
+            "k": 373,
+            "n": 600,
+            "pct": 62.16666666666667,
+            "ci_lo_pct": 58.22034687931601,
+            "ci_hi_pct": 65.95818506268394
+          },
+          "unsolvable": {
+            "k": 216,
+            "n": 600,
+            "pct": 36.0,
+            "ci_lo_pct": 32.25953492690491,
+            "ci_hi_pct": 39.91859270147871
+          },
+          "timeout": {
+            "k": 11,
+            "n": 600,
+            "pct": 1.8333333333333333,
+            "ci_lo_pct": 1.026730616593822,
+            "ci_hi_pct": 3.2527799143926805
+          }
+        }
+      },
+      "ood": {
+        "density": {
+          "bin_accuracy": {
+            "k": 91,
+            "n": 120,
+            "pct": 75.83333333333333,
+            "ci_lo_pct": 67.44985095256891,
+            "ci_hi_pct": 82.61415878246474
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "clustering": {
+          "bin_accuracy": {
+            "k": 101,
+            "n": 120,
+            "pct": 84.16666666666667,
+            "ci_lo_pct": 76.59066765413198,
+            "ci_hi_pct": 89.62302264058994
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "connectivity": {
+          "bin_accuracy": {
+            "k": 72,
+            "n": 120,
+            "pct": 60.0,
+            "ci_lo_pct": 51.05602479246307,
+            "ci_hi_pct": 68.32359187916286
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "difficulty": {
+          "bin_accuracy": {
+            "k": 14,
+            "n": 120,
+            "pct": 11.666666666666666,
+            "ci_lo_pct": 7.078117807830051,
+            "ci_hi_pct": 18.633351617603886
+          },
+          "n": 120,
+          "directly_computable_from_grid": false
+        },
+        "solution_length": {
+          "n_requested": 120,
+          "n_with_achieved_length": 58,
+          "censoring_rate": 0.5166666666666666,
+          "censoring_note": "Achieved length exists only for solved levels; timeouts and proven-unsolvable levels have none, so this correlation is computed on a subsample biased toward easy levels.",
+          "spearman": -0.2737066410166789,
+          "spearman_p": 0.03761796407129467,
+          "pearson": -0.33622353399584193,
+          "mean_requested": 120.0,
+          "mean_achieved": 30.448275862068964,
+          "mean_abs_error": 89.55172413793103
+        },
+        "n_samples": 120,
+        "n_invalid_excluded": 0,
+        "invalid_exclusion_rate": 0.0,
+        "note": "Bin accuracy is computed on structurally valid samples only; invalid levels have no well-defined tile statistics. The exclusion rate is reported so the reader can see how much of the sample that removes.",
+        "outcomes": {
+          "n": 120,
+          "counts": {
+            "solved": 58,
+            "unsolvable": 60,
+            "timeout": 2
+          },
+          "solved": {
+            "k": 58,
+            "n": 120,
+            "pct": 48.333333333333336,
+            "ci_lo_pct": 39.583644301054434,
+            "ci_hi_pct": 57.18641958700792
+          },
+          "unsolvable": {
+            "k": 60,
+            "n": 120,
+            "pct": 50.0,
+            "ci_lo_pct": 41.19387054110838,
+            "ci_hi_pct": 58.80612945889161
+          },
+          "timeout": {
+            "k": 2,
+            "n": 120,
+            "pct": 1.6666666666666667,
+            "ci_lo_pct": 0.45825645659211406,
+            "ci_hi_pct": 5.87359629721589
+          }
+        }
+      }
+    },
+    "real_boxoban": {
+      "name": "real_boxoban",
+      "samples_drawn": 512,
+      "n_valid_seen": 512,
+      "n_evaluated": 500,
+      "reached_target": true,
+      "structural_validity": {
+        "k": 512,
+        "n": 512,
+        "pct": 100.0,
+        "ci_lo_pct": 99.25530242771171,
+        "ci_hi_pct": 100.0
+      },
+      "structural_validity_note": "Sampling stops once the valid target is reached, so this is an inverse-binomial rather than fixed-n proportion; the Wilson interval is a close approximation but not exact.",
+      "generation_time_s": 0.0031137999994825805,
+      "generation_time_per_sample_ms": 0.006081640623989415,
+      "model_params": null,
+      "forcing": null,
+      "tile_counts_raw_draws": {
+        "player": {
+          "mean": 1.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "1": 512
+          },
+          "n": 512
+        },
+        "box": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        },
+        "goal": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        }
+      },
+      "solver_time_total_s": 2.9230962000001455,
+      "outcomes": {
+        "n": 500,
+        "counts": {
+          "solved": 500,
+          "unsolvable": 0,
+          "timeout": 0
+        },
+        "solved": {
+          "k": 500,
+          "n": 500,
+          "pct": 100.0,
+          "ci_lo_pct": 99.23756595384478,
+          "ci_hi_pct": 100.0
+        },
+        "unsolvable": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        },
+        "timeout": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        }
+      },
+      "solvable_given_valid": {
+        "k": 500,
+        "n": 500,
+        "pct": 100.0,
+        "ci_lo_pct": 99.23756595384478,
+        "ci_hi_pct": 100.0
+      },
+      "solvable_overall": {
+        "pct": 100.0,
+        "ci_lo_pct": 100.0,
+        "ci_hi_pct": 100.0,
+        "method": "delta method on P(valid) x P(solvable|valid)"
+      },
+      "solver_cost": {
+        "time_per_level_ms_median": 33.47490000032849,
+        "time_per_level_ms_mean": 67.06141679998109,
+        "nodes_median": 177.0,
+        "nodes_p99": 2658.039999999998
+      },
+      "push_length": {
+        "mean": 11.738,
+        "std": 3.9695536272986667,
+        "median": 11.0,
+        "min": 4,
+        "max": 26
+      },
+      "novelty": {
+        "n": 500,
+        "exact_copy": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        },
+        "novel_pct": 100.0,
+        "symmetry_aware": true,
+        "nn_distance": {
+          "mean": 11.96,
+          "std": 3.187851941354868,
+          "median": 12.0,
+          "min": 5,
+          "max": 20,
+          "deciles": [
+            5.0,
+            8.0,
+            9.0,
+            10.0,
+            11.0,
+            12.0,
+            13.0,
+            14.0,
+            15.0,
+            16.0,
+            20.0
+          ]
+        }
+      },
+      "diversity": {
+        "mean": 38.76033667334669,
+        "std": 7.8003764082959455,
+        "median": 39.0,
+        "n_pairs": 124750,
+        "n": 500
+      },
+      "controllability": {
+        "density": {
+          "bin_accuracy": {
+            "k": 293,
+            "n": 600,
+            "pct": 48.833333333333336,
+            "ci_lo_pct": 44.85382057569833,
+            "ci_hi_pct": 52.82769006000032
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "clustering": {
+          "bin_accuracy": {
+            "k": 313,
+            "n": 600,
+            "pct": 52.166666666666664,
+            "ci_lo_pct": 48.16859159216232,
+            "ci_hi_pct": 56.13717437011163
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "connectivity": {
+          "bin_accuracy": {
+            "k": 319,
+            "n": 600,
+            "pct": 53.166666666666664,
+            "ci_lo_pct": 49.16646290783818,
+            "ci_hi_pct": 57.12657965240838
+          },
+          "n": 600,
+          "directly_computable_from_grid": true
+        },
+        "difficulty": {
+          "bin_accuracy": {
+            "k": 186,
+            "n": 600,
+            "pct": 31.0,
+            "ci_lo_pct": 27.430033852750412,
+            "ci_hi_pct": 34.811710785770224
+          },
+          "n": 600,
+          "directly_computable_from_grid": false
+        },
+        "solution_length": {
+          "n_requested": 600,
+          "n_with_achieved_length": 593,
+          "censoring_rate": 0.011666666666666714,
+          "censoring_note": "Achieved length exists only for solved levels; timeouts and proven-unsolvable levels have none, so this correlation is computed on a subsample biased toward easy levels.",
+          "spearman": -0.04846193107865418,
+          "spearman_p": 0.23866605944085545,
+          "pearson": -0.051144188453917466,
+          "mean_requested": 35.084317032040474,
+          "mean_achieved": 31.357504215851602,
+          "mean_abs_error": 15.763912310286678
+        },
+        "n_samples": 600,
+        "n_invalid_excluded": 0,
+        "invalid_exclusion_rate": 0.0,
+        "note": "Bin accuracy is computed on structurally valid samples only; invalid levels have no well-defined tile statistics. The exclusion rate is reported so the reader can see how much of the sample that removes.",
+        "outcomes": {
+          "n": 600,
+          "counts": {
+            "solved": 593,
+            "unsolvable": 0,
+            "timeout": 7
+          },
+          "solved": {
+            "k": 593,
+            "n": 600,
+            "pct": 98.83333333333333,
+            "ci_lo_pct": 97.6115989141163,
+            "ci_hi_pct": 99.43374162021226
+          },
+          "unsolvable": {
+            "k": 0,
+            "n": 600,
+            "pct": 0.0,
+            "ci_lo_pct": 0.0,
+            "ci_hi_pct": 0.636170101370071
+          },
+          "timeout": {
+            "k": 7,
+            "n": 600,
+            "pct": 1.1666666666666667,
+            "ci_lo_pct": 0.5662583797877487,
+            "ci_hi_pct": 2.3884010858836873
+          }
+        }
+      },
+      "ood": {
+        "density": {
+          "bin_accuracy": {
+            "k": 57,
+            "n": 120,
+            "pct": 47.5,
+            "ci_lo_pct": 38.78209113791835,
+            "ci_hi_pct": 56.37300469417518
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "clustering": {
+          "bin_accuracy": {
+            "k": 67,
+            "n": 120,
+            "pct": 55.833333333333336,
+            "ci_lo_pct": 46.90452309131966,
+            "ci_hi_pct": 64.40025330046214
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "connectivity": {
+          "bin_accuracy": {
+            "k": 61,
+            "n": 120,
+            "pct": 50.83333333333333,
+            "ci_lo_pct": 42.00253978366605,
+            "ci_hi_pct": 59.612428272302765
+          },
+          "n": 120,
+          "directly_computable_from_grid": true
+        },
+        "difficulty": {
+          "bin_accuracy": {
+            "k": 30,
+            "n": 120,
+            "pct": 25.0,
+            "ci_lo_pct": 18.109821656809565,
+            "ci_hi_pct": 33.441136664125615
+          },
+          "n": 120,
+          "directly_computable_from_grid": false
+        },
+        "solution_length": {
+          "n_requested": 120,
+          "n_with_achieved_length": 119,
+          "censoring_rate": 0.008333333333333304,
+          "censoring_note": "Achieved length exists only for solved levels; timeouts and proven-unsolvable levels have none, so this correlation is computed on a subsample biased toward easy levels.",
+          "spearman": 0.13132709815228447,
+          "spearman_p": 0.15454442036931793,
+          "pearson": 0.0886961494303975,
+          "mean_requested": 116.89075630252101,
+          "mean_achieved": 30.26050420168067,
+          "mean_abs_error": 86.63025210084034
+        },
+        "n_samples": 120,
+        "n_invalid_excluded": 0,
+        "invalid_exclusion_rate": 0.0,
+        "note": "Bin accuracy is computed on structurally valid samples only; invalid levels have no well-defined tile statistics. The exclusion rate is reported so the reader can see how much of the sample that removes.",
+        "outcomes": {
+          "n": 120,
+          "counts": {
+            "solved": 119,
+            "unsolvable": 0,
+            "timeout": 1
+          },
+          "solved": {
+            "k": 119,
+            "n": 120,
+            "pct": 99.16666666666667,
+            "ci_lo_pct": 95.43037087549506,
+            "ci_hi_pct": 99.8527444266658
+          },
+          "unsolvable": {
+            "k": 0,
+            "n": 120,
+            "pct": 0.0,
+            "ci_lo_pct": 0.0,
+            "ci_hi_pct": 3.1019166418703485
+          },
+          "timeout": {
+            "k": 1,
+            "n": 120,
+            "pct": 0.8333333333333334,
+            "ci_lo_pct": 0.14725557333420924,
+            "ci_hi_pct": 4.569629124504967
+          }
+        }
+      }
+    },
+    "transformer_constrained_t0.6": {
+      "name": "transformer_constrained_t0.6",
+      "samples_drawn": 512,
+      "n_valid_seen": 512,
+      "n_evaluated": 500,
+      "reached_target": true,
+      "structural_validity": {
+        "k": 512,
+        "n": 512,
+        "pct": 100.0,
+        "ci_lo_pct": 99.25530242771171,
+        "ci_hi_pct": 100.0
+      },
+      "structural_validity_note": "Sampling stops once the valid target is reached, so this is an inverse-binomial rather than fixed-n proportion; the Wilson interval is a close approximation but not exact.",
+      "generation_time_s": 23.781011500000204,
+      "generation_time_per_sample_ms": 46.4472880859379,
+      "model_params": 10734336,
+      "forcing": null,
+      "tile_counts_raw_draws": {
+        "player": {
+          "mean": 1.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "1": 512
+          },
+          "n": 512
+        },
+        "box": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        },
+        "goal": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        }
+      },
+      "solver_time_total_s": 4.882866999998441,
+      "outcomes": {
+        "n": 500,
+        "counts": {
+          "solved": 306,
+          "unsolvable": 194,
+          "timeout": 0
+        },
+        "solved": {
+          "k": 306,
+          "n": 500,
+          "pct": 61.199999999999996,
+          "ci_lo_pct": 56.8588177086666,
+          "ci_hi_pct": 65.37039706499462
+        },
+        "unsolvable": {
+          "k": 194,
+          "n": 500,
+          "pct": 38.800000000000004,
+          "ci_lo_pct": 34.62960293500537,
+          "ci_hi_pct": 43.14118229133341
+        },
+        "timeout": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        }
+      },
+      "solvable_given_valid": {
+        "k": 306,
+        "n": 500,
+        "pct": 61.199999999999996,
+        "ci_lo_pct": 56.8588177086666,
+        "ci_hi_pct": 65.37039706499462
+      },
+      "solvable_overall": {
+        "pct": 61.199999999999996,
+        "ci_lo_pct": 56.928674749916595,
+        "ci_hi_pct": 65.4713252500834,
+        "method": "delta method on P(valid) x P(solvable|valid)"
+      },
+      "solver_cost": {
+        "time_per_level_ms_median": 11.749049999707495,
+        "time_per_level_ms_mean": 67.58388819999527,
+        "nodes_median": 68.5,
+        "nodes_p99": 3232.5599999999986
+      },
+      "push_length": {
+        "mean": 11.38888888888889,
+        "std": 4.632480603651771,
+        "median": 11.0,
+        "min": 4,
+        "max": 28
+      },
+      "novelty": {
+        "n": 500,
+        "exact_copy": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        },
+        "novel_pct": 100.0,
+        "symmetry_aware": true,
+        "nn_distance": {
+          "mean": 9.974,
+          "std": 3.076576668961786,
+          "median": 10.0,
+          "min": 4,
+          "max": 18,
+          "deciles": [
+            4.0,
+            6.0,
+            7.0,
+            8.0,
+            9.0,
+            10.0,
+            11.0,
+            11.299999999999955,
+            13.0,
+            14.0,
+            18.0
+          ]
+        }
+      },
+      "diversity": {
+        "mean": 35.820689378757514,
+        "std": 10.61429821792404,
+        "median": 36.0,
+        "n_pairs": 124750,
+        "n": 500
+      }
+    },
+    "transformer_constrained_t0.8": {
+      "name": "transformer_constrained_t0.8",
+      "samples_drawn": 512,
+      "n_valid_seen": 512,
+      "n_evaluated": 500,
+      "reached_target": true,
+      "structural_validity": {
+        "k": 512,
+        "n": 512,
+        "pct": 100.0,
+        "ci_lo_pct": 99.25530242771171,
+        "ci_hi_pct": 100.0
+      },
+      "structural_validity_note": "Sampling stops once the valid target is reached, so this is an inverse-binomial rather than fixed-n proportion; the Wilson interval is a close approximation but not exact.",
+      "generation_time_s": 25.299108299999716,
+      "generation_time_per_sample_ms": 49.412320898436946,
+      "model_params": 10734336,
+      "forcing": null,
+      "tile_counts_raw_draws": {
+        "player": {
+          "mean": 1.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "1": 512
+          },
+          "n": 512
+        },
+        "box": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        },
+        "goal": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        }
+      },
+      "solver_time_total_s": 3.2291406000003917,
+      "outcomes": {
+        "n": 500,
+        "counts": {
+          "solved": 269,
+          "unsolvable": 231,
+          "timeout": 0
+        },
+        "solved": {
+          "k": 269,
+          "n": 500,
+          "pct": 53.800000000000004,
+          "ci_lo_pct": 49.4176845283715,
+          "ci_hi_pct": 58.1243704841207
+        },
+        "unsolvable": {
+          "k": 231,
+          "n": 500,
+          "pct": 46.2,
+          "ci_lo_pct": 41.875629515879304,
+          "ci_hi_pct": 50.582315471628505
+        },
+        "timeout": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        }
+      },
+      "solvable_given_valid": {
+        "k": 269,
+        "n": 500,
+        "pct": 53.800000000000004,
+        "ci_lo_pct": 49.4176845283715,
+        "ci_hi_pct": 58.1243704841207
+      },
+      "solvable_overall": {
+        "pct": 53.800000000000004,
+        "ci_lo_pct": 49.42998231216394,
+        "ci_hi_pct": 58.170017687836065,
+        "method": "delta method on P(valid) x P(solvable|valid)"
+      },
+      "solver_cost": {
+        "time_per_level_ms_median": 12.34889999977895,
+        "time_per_level_ms_mean": 56.93621099998927,
+        "nodes_median": 64.5,
+        "nodes_p99": 3510.729999999995
+      },
+      "push_length": {
+        "mean": 11.54275092936803,
+        "std": 4.174964489892957,
+        "median": 11.0,
+        "min": 4,
+        "max": 25
+      },
+      "novelty": {
+        "n": 500,
+        "exact_copy": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        },
+        "novel_pct": 100.0,
+        "symmetry_aware": true,
+        "nn_distance": {
+          "mean": 11.158,
+          "std": 3.3258135846736807,
+          "median": 11.0,
+          "min": 3,
+          "max": 20,
+          "deciles": [
+            3.0,
+            7.0,
+            8.0,
+            9.0,
+            10.0,
+            11.0,
+            12.0,
+            13.0,
+            14.0,
+            16.0,
+            20.0
+          ]
+        }
+      },
+      "diversity": {
+        "mean": 37.344072144288575,
+        "std": 8.884480802447813,
+        "median": 38.0,
+        "n_pairs": 124750,
+        "n": 500
+      }
+    },
+    "transformer_constrained_t1.0": {
+      "name": "transformer_constrained_t1.0",
+      "samples_drawn": 512,
+      "n_valid_seen": 512,
+      "n_evaluated": 500,
+      "reached_target": true,
+      "structural_validity": {
+        "k": 512,
+        "n": 512,
+        "pct": 100.0,
+        "ci_lo_pct": 99.25530242771171,
+        "ci_hi_pct": 100.0
+      },
+      "structural_validity_note": "Sampling stops once the valid target is reached, so this is an inverse-binomial rather than fixed-n proportion; the Wilson interval is a close approximation but not exact.",
+      "generation_time_s": 26.659634699999515,
+      "generation_time_per_sample_ms": 52.06959902343655,
+      "model_params": 10734336,
+      "forcing": null,
+      "tile_counts_raw_draws": {
+        "player": {
+          "mean": 1.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "1": 512
+          },
+          "n": 512
+        },
+        "box": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        },
+        "goal": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        }
+      },
+      "solver_time_total_s": 3.428873899998507,
+      "outcomes": {
+        "n": 500,
+        "counts": {
+          "solved": 257,
+          "unsolvable": 243,
+          "timeout": 0
+        },
+        "solved": {
+          "k": 257,
+          "n": 500,
+          "pct": 51.4,
+          "ci_lo_pct": 47.025151158007205,
+          "ci_hi_pct": 55.75350068870044
+        },
+        "unsolvable": {
+          "k": 243,
+          "n": 500,
+          "pct": 48.6,
+          "ci_lo_pct": 44.24649931129956,
+          "ci_hi_pct": 52.974848841992795
+        },
+        "timeout": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        }
+      },
+      "solvable_given_valid": {
+        "k": 257,
+        "n": 500,
+        "pct": 51.4,
+        "ci_lo_pct": 47.025151158007205,
+        "ci_hi_pct": 55.75350068870044
+      },
+      "solvable_overall": {
+        "pct": 51.4,
+        "ci_lo_pct": 47.01902511671204,
+        "ci_hi_pct": 55.78097488328797,
+        "method": "delta method on P(valid) x P(solvable|valid)"
+      },
+      "solver_cost": {
+        "time_per_level_ms_median": 12.05024999944726,
+        "time_per_level_ms_mean": 63.51567340001566,
+        "nodes_median": 68.0,
+        "nodes_p99": 4305.609999999995
+      },
+      "push_length": {
+        "mean": 11.330739299610896,
+        "std": 4.243964430080239,
+        "median": 11.0,
+        "min": 4,
+        "max": 30
+      },
+      "novelty": {
+        "n": 500,
+        "exact_copy": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        },
+        "novel_pct": 100.0,
+        "symmetry_aware": true,
+        "nn_distance": {
+          "mean": 12.522,
+          "std": 3.2731507756288893,
+          "median": 12.0,
+          "min": 5,
+          "max": 21,
+          "deciles": [
+            5.0,
+            8.0,
+            9.0,
+            11.0,
+            12.0,
+            12.0,
+            13.0,
+            14.0,
+            16.0,
+            17.0,
+            21.0
+          ]
+        }
+      },
+      "diversity": {
+        "mean": 38.86379158316633,
+        "std": 7.668470986264711,
+        "median": 39.0,
+        "n_pairs": 124750,
+        "n": 500
+      }
+    },
+    "transformer_constrained_t1.2": {
+      "name": "transformer_constrained_t1.2",
+      "samples_drawn": 512,
+      "n_valid_seen": 512,
+      "n_evaluated": 500,
+      "reached_target": true,
+      "structural_validity": {
+        "k": 512,
+        "n": 512,
+        "pct": 100.0,
+        "ci_lo_pct": 99.25530242771171,
+        "ci_hi_pct": 100.0
+      },
+      "structural_validity_note": "Sampling stops once the valid target is reached, so this is an inverse-binomial rather than fixed-n proportion; the Wilson interval is a close approximation but not exact.",
+      "generation_time_s": 26.844497999999476,
+      "generation_time_per_sample_ms": 52.430660156248976,
+      "model_params": 10734336,
+      "forcing": null,
+      "tile_counts_raw_draws": {
+        "player": {
+          "mean": 1.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "1": 512
+          },
+          "n": 512
+        },
+        "box": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        },
+        "goal": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        }
+      },
+      "solver_time_total_s": 4.6101883000010275,
+      "outcomes": {
+        "n": 500,
+        "counts": {
+          "solved": 207,
+          "unsolvable": 293,
+          "timeout": 0
+        },
+        "solved": {
+          "k": 207,
+          "n": 500,
+          "pct": 41.4,
+          "ci_lo_pct": 37.164260890980145,
+          "ci_hi_pct": 45.766877764958565
+        },
+        "unsolvable": {
+          "k": 293,
+          "n": 500,
+          "pct": 58.599999999999994,
+          "ci_lo_pct": 54.23312223504144,
+          "ci_hi_pct": 62.83573910901985
+        },
+        "timeout": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        }
+      },
+      "solvable_given_valid": {
+        "k": 207,
+        "n": 500,
+        "pct": 41.4,
+        "ci_lo_pct": 37.164260890980145,
+        "ci_hi_pct": 45.766877764958565
+      },
+      "solvable_overall": {
+        "pct": 41.4,
+        "ci_lo_pct": 37.08262226253018,
+        "ci_hi_pct": 45.71737773746982,
+        "method": "delta method on P(valid) x P(solvable|valid)"
+      },
+      "solver_cost": {
+        "time_per_level_ms_median": 2.8115000004618196,
+        "time_per_level_ms_mean": 63.06962779998503,
+        "nodes_median": 20.5,
+        "nodes_p99": 4550.769999999999
+      },
+      "push_length": {
+        "mean": 12.03864734299517,
+        "std": 4.593468804535602,
+        "median": 11.0,
+        "min": 4,
+        "max": 29
+      },
+      "novelty": {
+        "n": 500,
+        "exact_copy": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        },
+        "novel_pct": 100.0,
+        "symmetry_aware": true,
+        "nn_distance": {
+          "mean": 13.778,
+          "std": 3.432887414407877,
+          "median": 14.0,
+          "min": 2,
+          "max": 23,
+          "deciles": [
+            2.0,
+            9.0,
+            11.0,
+            12.0,
+            13.0,
+            14.0,
+            15.0,
+            16.0,
+            17.0,
+            18.0,
+            23.0
+          ]
+        }
+      },
+      "diversity": {
+        "mean": 38.998396793587176,
+        "std": 6.7653032519652685,
+        "median": 39.0,
+        "n_pairs": 124750,
+        "n": 500
+      }
+    },
+    "transformer_constrained_t1.5": {
+      "name": "transformer_constrained_t1.5",
+      "samples_drawn": 512,
+      "n_valid_seen": 512,
+      "n_evaluated": 500,
+      "reached_target": true,
+      "structural_validity": {
+        "k": 512,
+        "n": 512,
+        "pct": 100.0,
+        "ci_lo_pct": 99.25530242771171,
+        "ci_hi_pct": 100.0
+      },
+      "structural_validity_note": "Sampling stops once the valid target is reached, so this is an inverse-binomial rather than fixed-n proportion; the Wilson interval is a close approximation but not exact.",
+      "generation_time_s": 26.029161500000555,
+      "generation_time_per_sample_ms": 50.838206054688584,
+      "model_params": 10734336,
+      "forcing": null,
+      "tile_counts_raw_draws": {
+        "player": {
+          "mean": 1.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "1": 512
+          },
+          "n": 512
+        },
+        "box": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        },
+        "goal": {
+          "mean": 4.0,
+          "std": 0.0,
+          "exact_rate": 1.0,
+          "histogram": {
+            "4": 512
+          },
+          "n": 512
+        }
+      },
+      "solver_time_total_s": 3.016407799999797,
+      "outcomes": {
+        "n": 500,
+        "counts": {
+          "solved": 174,
+          "unsolvable": 326,
+          "timeout": 0
+        },
+        "solved": {
+          "k": 174,
+          "n": 500,
+          "pct": 34.8,
+          "ci_lo_pct": 30.755030205694755,
+          "ci_hi_pct": 39.07674974433644
+        },
+        "unsolvable": {
+          "k": 326,
+          "n": 500,
+          "pct": 65.2,
+          "ci_lo_pct": 60.92325025566356,
+          "ci_hi_pct": 69.24496979430526
+        },
+        "timeout": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        }
+      },
+      "solvable_given_valid": {
+        "k": 174,
+        "n": 500,
+        "pct": 34.8,
+        "ci_lo_pct": 30.755030205694755,
+        "ci_hi_pct": 39.07674974433644
+      },
+      "solvable_overall": {
+        "pct": 34.8,
+        "ci_lo_pct": 30.62473073059952,
+        "ci_hi_pct": 38.97526926940048,
+        "method": "delta method on P(valid) x P(solvable|valid)"
+      },
+      "solver_cost": {
+        "time_per_level_ms_median": 1.1264499999015243,
+        "time_per_level_ms_mean": 49.50887679997686,
+        "nodes_median": 12.0,
+        "nodes_p99": 4110.859999999988
+      },
+      "push_length": {
+        "mean": 11.373563218390805,
+        "std": 4.4867098707621205,
+        "median": 11.0,
+        "min": 4,
+        "max": 31
+      },
+      "novelty": {
+        "n": 500,
+        "exact_copy": {
+          "k": 0,
+          "n": 500,
+          "pct": 0.0,
+          "ci_lo_pct": 0.0,
+          "ci_hi_pct": 0.7624340461552241
+        },
+        "novel_pct": 100.0,
+        "symmetry_aware": true,
+        "nn_distance": {
+          "mean": 14.588,
+          "std": 3.2628600950699678,
+          "median": 15.0,
+          "min": 6,
+          "max": 23,
+          "deciles": [
+            6.0,
+            10.0,
+            12.0,
+            13.0,
+            14.0,
+            15.0,
+            16.0,
+            17.0,
+            18.0,
+            19.0,
+            23.0
+          ]
+        }
+      },
+      "diversity": {
+        "mean": 38.025058116232465,
+        "std": 6.23661029426678,
+        "median": 38.0,
+        "n_pairs": 124750,
+        "n": 500
+      }
+    }
+  },
+  "reference_distributions": {
+    "n": 500,
+    "novelty": {
+      "n": 500,
+      "exact_copy": {
+        "k": 0,
+        "n": 500,
+        "pct": 0.0,
+        "ci_lo_pct": 0.0,
+        "ci_hi_pct": 0.7624340461552241
+      },
+      "novel_pct": 100.0,
+      "symmetry_aware": true,
+      "nn_distance": {
+        "mean": 11.916,
+        "std": 3.2755066783629063,
+        "median": 12.0,
+        "min": 3,
+        "max": 21,
+        "deciles": [
+          3.0,
+          8.0,
+          9.0,
+          10.0,
+          11.0,
+          12.0,
+          13.0,
+          14.0,
+          15.0,
+          16.0,
+          21.0
+        ]
+      }
+    },
+    "diversity": {
+      "mean": 38.81048496993988,
+      "std": 7.718851028986758,
+      "median": 39.0,
+      "n_pairs": 124750,
+      "n": 500
+    }
+  },
+  "comparisons": {
+    "transformer_constrained__vs__open_room": {
+      "metric": "solvable_given_valid",
+      "a": "transformer_constrained",
+      "b": "open_room",
+      "a_k": 248,
+      "a_n": 500,
+      "b_k": 117,
+      "b_n": 500,
+      "z": 8.604744923968292,
+      "p_value": 0.0,
+      "diff_pct": 26.200000000000003
+    },
+    "transformer_constrained__vs__rule_based": {
+      "metric": "solvable_given_valid",
+      "a": "transformer_constrained",
+      "b": "rule_based",
+      "a_k": 248,
+      "a_n": 500,
+      "b_k": 2,
+      "b_n": 500,
+      "z": 17.965299886169447,
+      "p_value": 0.0,
+      "diff_pct": 49.2
+    },
+    "transformer_constrained__vs__transformer_unconstrained": {
+      "metric": "solvable_given_valid",
+      "a": "transformer_constrained",
+      "b": "transformer_unconstrained",
+      "a_k": 248,
+      "a_n": 500,
+      "b_k": 280,
+      "b_n": 500,
+      "z": -2.027038594802199,
+      "p_value": 0.04265846580617727,
+      "diff_pct": -6.400000000000006
+    },
+    "transformer_unconstrained__vs__vae_sample": {
+      "metric": "solvable_given_valid",
+      "a": "transformer_unconstrained",
+      "b": "vae_sample",
+      "a_k": 280,
+      "a_n": 500,
+      "b_k": 150,
+      "b_n": 500,
+      "z": 8.303700885051974,
+      "p_value": 0.0,
+      "diff_pct": 26.000000000000007
+    },
+    "transformer_constrained__vs__real_boxoban": {
+      "metric": "solvable_given_valid",
+      "a": "transformer_constrained",
+      "b": "real_boxoban",
+      "a_k": 248,
+      "a_n": 500,
+      "b_k": 500,
+      "b_n": 500,
+      "z": -18.354792173215287,
+      "p_value": 0.0,
+      "diff_pct": -50.4
+    },
+    "vae_repaired__vs__vae_argmax": {
+      "metric": "solvable_given_valid",
+      "a": "vae_repaired",
+      "b": "vae_argmax",
+      "a_k": 383,
+      "a_n": 500,
+      "b_k": 0,
+      "b_n": 0,
+      "z": null,
+      "p_value": null
+    }
+  },
+  "row_order": [
+    "random_placement",
+    "open_room",
+    "rule_based",
+    "retrieval",
+    "gan_raw",
+    "gan_repaired",
+    "vae_argmax",
+    "vae_sample",
+    "vae_repaired",
+    "transformer_unconstrained",
+    "transformer_constrained",
+    "distilgpt2_constrained",
+    "real_boxoban",
+    "transformer_constrained_t0.6",
+    "transformer_constrained_t0.8",
+    "transformer_constrained_t1.0",
+    "transformer_constrained_t1.2",
+    "transformer_constrained_t1.5"
+  ],
+  "total_eval_time_s": 1337.5858398,
+  "seed_policy": "3 seeds on the main transformer config only; every other row is single-seed and declared as such."
+}
