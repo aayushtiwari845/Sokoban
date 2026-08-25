@@ -1,0 +1,79 @@
+# Master configuration.  Every value marked UNTUNED is an admitted default
+# (paper honesty tier 3): it was chosen once and never swept.  Inventing a
+# justification for 3e-4 when 1e-4 was never tried is what gets caught in a viva.
+
+seed: 1337
+
+paths:
+  levels_root: data_raw/boxoban-levels
+  solutions_root: data_raw/astar-solutions
+  data_dir: data
+  results_dir: results
+  figures_dir: figures
+  checkpoints_dir: checkpoints
+
+data:
+  n_train: 100000        # from unfiltered/train
+  n_val: 5000            # from the OFFICIAL unfiltered/valid split
+  n_test: 1000           # unfiltered/test, frozen
+
+solver:
+  node_cap: 200000
+  time_cap_s: 10.0
+  cost_mode: pushes      # solvability verdicts
+  # Achieved solution length for the controllability metric uses cost_mode
+  # "moves": captions are in move units, and Phase 2 measured the reconstructed
+  # move length to be +40.5% over move-optimal on average, which would badly
+  # distort the correlation.  Exact mode costs ~114 ms/level, which is affordable.
+  length_cost_mode: moves
+
+transformer:
+  d_model: 384
+  n_layers: 6
+  n_heads: 6
+  d_ff: 1536
+  dropout: 0.1           # UNTUNED
+  tie_embeddings: true
+  lr: 3.0e-4             # UNTUNED
+  weight_decay: 0.01     # UNTUNED
+  warmup_steps: 200      # UNTUNED
+  batch_size: 64
+  epochs: 3              # UNTUNED
+  grad_clip: 1.0         # UNTUNED
+  precision: bf16
+
+distilgpt2:
+  # Ablation: does NL pretraining transfer to a domain with zero shared
+  # vocabulary?  Requires discarding the 50257x768 embedding matrix and tied LM
+  # head and re-initialising them for our 48-symbol vocabulary.
+  lr: 3.0e-4             # UNTUNED, same schedule as the from-scratch model
+  batch_size: 32         # halved: 82M params vs 10.7M on a 6GB card
+  epochs: 3              # UNTUNED
+
+vae:
+  latent_dim: 32
+  hidden: 512
+  free_bits: 0.05        # nats per dimension, prevents posterior collapse
+  lr: 1.0e-3             # UNTUNED
+  batch_size: 128
+  epochs: 20             # UNTUNED
+  kl_weight: 1.0
+
+gan:
+  z_dim: 64
+  hidden: 512
+  lr: 2.0e-4             # UNTUNED (DCGAN convention)
+  betas: [0.5, 0.999]
+  batch_size: 128
+  epochs: 20             # UNTUNED
+  label_smoothing: 0.9   # one-sided
+  gumbel_tau_start: 1.0
+  gumbel_tau_end: 0.3
+  time_box_hours: 3.0    # hard stop; a poorly trained GAN still makes the point
+
+evaluation:
+  n_valid_target: 500       # collect this many structurally valid levels
+  max_samples_drawn: 100000 # hard cap on samples drawn to reach the target
+  min_denominator_flag: 30  # flag "solvable | valid" below this denominator
+  temperatures: [0.6, 0.8, 1.0, 1.2, 1.5]
+  main_seeds: [1337, 1338, 1339]   # 3 seeds on the main transformer only

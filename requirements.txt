@@ -1,0 +1,21 @@
+# Pinned to the exact versions used for every number in the paper.
+# Verified environment: Python 3.13.x, Windows 11, single RTX 3050 6GB
+# (Ampere sm_86 -- bf16 is native, so no loss scaling is used).
+#
+# PyTorch is installed from the CUDA 12.8 index:
+#   pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cu128
+
+torch==2.11.0+cu128
+numpy==2.5.2
+scipy==1.18.1
+pandas==3.0.5
+matplotlib==3.11.1
+huggingface_hub==1.28.0
+PyYAML==6.0.3
+tqdm==4.70.0
+pytest==9.1.1
+
+# Only needed for the DistilGPT-2 pretraining ablation (scripts/03_train.py
+# --model distilgpt2).  The primary transformer is written from scratch and
+# uses no HuggingFace code; the 48-symbol vocabulary is hand-written.
+transformers==5.15.1
