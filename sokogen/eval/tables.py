@@ -136,8 +136,11 @@ def markdown_main_table(ev: Dict, results_dir: str) -> str:
         "Distance is cell-wise Hamming over the 100 tiles; novelty is "
         "symmetry-aware over all 8 dihedral transforms.",
         "",
-        "Single-seed unless stated otherwise; 3 seeds are run on the main "
-        "transformer configuration only.",
+        "The intervals above capture **sampling** variation only. **Every row "
+        "is a single training run.** The primary transformer configuration was "
+        "additionally retrained with three seeds, giving a +/- 7.0 point spread "
+        "on solvability, so differences below roughly 15 points between "
+        "single-seed rows are not established. See the seed-variance section.",
     ]
     flags = [f"- **{r['display']}**: {r['flag']}" for r in rows if r["flag"]]
     if flags:
@@ -151,10 +154,13 @@ def latex_main_table(ev: Dict, results_dir: str) -> str:
         r"\begin{table*}[t]",
         r"\centering",
         r"\caption{Structural validity and solver-verified solvability across "
-        r"model families. Percentages carry Wilson 95\% confidence intervals. "
-        r"Structural validity and solvability are reported separately and never "
-        r"merged. All rows are single-seed except the main transformer "
-        r"configuration, which is run with three seeds.}",
+        r"model families. Percentages carry Wilson 95\% confidence intervals, "
+        r"which capture sampling variation only. Structural validity and "
+        r"solvability are reported separately and never merged. \textbf{Every "
+        r"row is a single training run.} The primary transformer configuration "
+        r"was additionally retrained with three seeds, giving a $\pm 7.0$ point "
+        r"spread on solvability; differences below roughly 15 points between "
+        r"single-seed rows are therefore not established.}",
         r"\label{tab:main}",
         r"\setlength{\tabcolsep}{4pt}",
         # resizebox guarantees the nine-column table fits \textwidth in the

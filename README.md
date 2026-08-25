@@ -43,7 +43,7 @@ Reference distributions on 500 held-out real levels: nearest-neighbour distance 
 
 Distance is cell-wise Hamming over the 100 tiles; novelty is symmetry-aware over all 8 dihedral transforms.
 
-Single-seed unless stated otherwise; 3 seeds are run on the main transformer configuration only.
+The intervals above capture **sampling** variation only. **Every row is a single training run.** The primary transformer configuration was additionally retrained with three seeds, giving a +/- 7.0 point spread on solvability, so differences below roughly 15 points between single-seed rows are not established. See the seed-variance section.
 
 **Flags:**
 - **Conditional VAE (argmax)**: DENOMINATOR 0 < 30: this percentage is noise, not signal
