@@ -163,22 +163,43 @@ def figure_validity_vs_solvability(ev: Dict, out_dir: str) -> List[str]:
     ax1.set_axisbelow(True)
     ax1.set_title("Structural validity and solvability are different axes",
                   fontsize=10)
-    ax1.legend(fontsize=7.5, loc="lower right", framealpha=0.9)
+    # Every row spans the full width, so an inset legend would cover a bar.
+    ax1.legend(fontsize=7.5, loc="upper center", bbox_to_anchor=(0.5, -0.10),
+               ncol=2, frameon=False)
 
+    # Most conditions sit at exactly 100% validity, so labels collide badly if
+    # placed naively.  Anchor labels to the left for points on the right edge
+    # and stagger vertically whenever two points are close.
+    pts = []
     for n in names:
         c = ev["conditions"][n]
         v = c["structural_validity"]["pct"]
         s = c["solvable_given_valid"]["pct"]
         if s is None or s != s:
             continue
+        pts.append((v, s, n))
+    pts.sort(key=lambda p: (-p[1], p[0]))
+
+    placed: List[tuple] = []
+    for v, s, n in pts:
         ax2.scatter(v, s, s=70, color=FAMILY_COLOURS[_family(n)],
                     edgecolor="white", linewidth=0.8, zorder=3)
-        ax2.annotate(DISPLAY_NAMES[n], (v, s), fontsize=6.3,
-                     xytext=(4, 4), textcoords="offset points", color="#333")
+        right_edge = v > 90
+        dy = 5.0
+        # Nudge downward until this label clears the ones already placed.
+        while any(abs(s + dy - py) < 6.5 and abs(v - px) < 12
+                  for px, py in placed):
+            dy -= 6.5
+        ax2.annotate(DISPLAY_NAMES[n], (v, s), fontsize=6.2,
+                     xytext=(-6 if right_edge else 6, dy),
+                     textcoords="offset points", color="#333",
+                     ha="right" if right_edge else "left", va="center")
+        placed.append((v, s + dy))
+
     ax2.set_xlabel("structural validity %", fontsize=9)
     ax2.set_ylabel("solvable | valid %", fontsize=9)
-    ax2.set_xlim(-4, 112)
-    ax2.set_ylim(-4, 112)
+    ax2.set_xlim(-8, 118)
+    ax2.set_ylim(-12, 115)
     ax2.grid(alpha=0.25, linewidth=0.6)
     ax2.set_axisbelow(True)
     ax2.set_title("Counting vs spatial structure", fontsize=10)
@@ -195,8 +216,10 @@ def figure_validity_vs_solvability(ev: Dict, out_dir: str) -> List[str]:
 def figure_tile_counts(ev: Dict, out_dir: str,
                        families: Optional[Sequence[str]] = None) -> List[str]:
     if families is None:
-        families = [n for n in ("transformer_unconstrained", "vae_sample",
-                                "gan_raw", "real_boxoban")
+        # vae_argmax is included even though it yields no valid level: its
+        # near-empty histogram is the clearest picture of marginal collapse.
+        families = [n for n in ("transformer_unconstrained", "vae_argmax",
+                                "vae_sample", "gan_raw", "real_boxoban")
                     if n in ev["conditions"]]
     tiles = [("box", 4), ("goal", 4), ("player", 1)]
     fig, axes = plt.subplots(len(tiles), len(families),
@@ -242,24 +265,37 @@ def figure_qualitative(gen_dir: str, out_dir: str, ev: Dict,
                             "vae_sample", "vae_repaired", "gan_repaired",
                             "open_room", "real_boxoban")
                 if n in ev["conditions"]]
+    def pick(path: str) -> List[Dict]:
+        """Choose samples spanning distinct captions, not just the first few."""
+        if not os.path.exists(path):
+            return []
+        by_caption: Dict[str, Dict] = {}
+        with open(path, "r", encoding="utf-8") as fh:
+            for line in fh:
+                s = json.loads(line)
+                by_caption.setdefault(s["caption_text"], s)
+        ordered = sorted(by_caption.values(),
+                         key=lambda s: (s["requested"]["difficulty"],
+                                        s["requested"]["density"],
+                                        s["caption_text"]))
+        if len(ordered) <= n_cols:
+            return ordered
+        # Even spread across the sorted captions.
+        idx = [round(i * (len(ordered) - 1) / (n_cols - 1)) for i in range(n_cols)]
+        return [ordered[i] for i in idx]
+
     rows = []
     for name in families:
-        path = os.path.join(gen_dir, f"{name}.jsonl")
-        if not os.path.exists(path):
-            continue
-        samples = []
-        with open(path, "r", encoding="utf-8") as fh:
-            for i, line in enumerate(fh):
-                if i >= n_cols:
-                    break
-                samples.append(json.loads(line))
+        samples = pick(os.path.join(gen_dir, f"{name}.jsonl"))
         if samples:
             rows.append((name, samples))
 
     if not rows:
         return []
+    cell = 1.45
     fig, axes = plt.subplots(len(rows), n_cols,
-                             figsize=(1.5 * n_cols, 1.62 * len(rows)),
+                             figsize=(cell * n_cols + 1.4,
+                                      cell * len(rows) + 0.7),
                              squeeze=False)
     for r, (name, samples) in enumerate(rows):
         for c in range(n_cols):
@@ -267,14 +303,17 @@ def figure_qualitative(gen_dir: str, out_dir: str, ev: Dict,
             if c < len(samples):
                 draw_grid(ax, samples[c]["grid"])
                 if r == 0:
-                    ax.set_title(samples[c]["caption_text"].split(",")[0],
-                                 fontsize=6.2, pad=2)
+                    parts = samples[c]["caption_text"].split(", ")
+                    ax.set_title(f"{parts[0]}, {parts[1]}\n{parts[2]}",
+                                 fontsize=5.8, pad=3)
             else:
                 ax.axis("off")
-        axes[r][0].set_ylabel(DISPLAY_NAMES.get(name, name), fontsize=6.8,
-                              rotation=0, ha="right", va="center", labelpad=42)
-    fig.suptitle("Generated levels, one row per family", fontsize=10, y=1.005)
-    fig.tight_layout()
+        axes[r][0].set_ylabel(DISPLAY_NAMES.get(name, name), fontsize=6.6,
+                              rotation=0, ha="right", va="center", labelpad=46)
+    fig.suptitle("Generated levels, one row per family "
+                 "(columns share a conditioning caption)", fontsize=9.5)
+    fig.subplots_adjust(hspace=0.06, wspace=0.06, top=0.93, left=0.22,
+                        right=0.99, bottom=0.01)
     return _save(fig, out_dir, "fig4_qualitative")
 
 

@@ -1,5 +1,11 @@
 """Phase 8b -- solve every condition, compute every metric, write every table.
 
+This module deliberately imports **no torch**.  Windows uses spawn for
+multiprocessing, so every solver worker re-imports this file as ``__mp_main__``;
+importing torch here would make each of ~19 workers load the CUDA DLLs, which is
+both wasteful and flaky, and the resulting contention corrupts the very
+per-level solver timings this script reports.
+
     python scripts/05_evaluate.py --config configs/main.yaml --out results/
 
 Produces ``results/evaluation.json`` (the single source for all tables and
@@ -26,8 +32,20 @@ import yaml
 from sokogen.data.captions import CaptionBins
 from sokogen.eval import metrics as M
 from sokogen.eval.harness import (evaluate_condition, load_samples, solve_many)
-from sokogen.models.common import load_jsonl
 from sokogen.provenance import stamp, write_artifact
+
+
+def load_jsonl(path):
+    """Local, dependency-free reader.
+
+    Deliberately not imported from ``sokogen.data.build``: that module pulls in
+    pandas, and every spawned solver worker would pay for it on startup.
+    """
+    rows = []
+    with open(path, "r", encoding="utf-8") as fh:
+        for line in fh:
+            rows.append(json.loads(line))
+    return rows
 
 # Order of rows in the main results table (spec 11).
 ROW_ORDER = [
@@ -47,6 +65,30 @@ def hr(title: str) -> None:
     print("=" * 78)
 
 
+def emit_tables_and_figures(args, cfg) -> None:
+    """Render every table, figure and the README from ``evaluation.json``.
+
+    Kept separate so it can be rerun with ``--tables-only`` after a formatting
+    fix, without repeating the solver sweep that produced the numbers.
+    """
+    hr("Tables and figures")
+    from sokogen.eval import figures as F
+    from sokogen.eval import tables as T
+    from sokogen.eval.report import write_readme
+
+    results_dir = os.path.dirname(args.out)
+    tables_dir = os.path.join(results_dir, "tables")
+    for name, path in T.write_all(args.out, tables_dir, results_dir).items():
+        print(f"  table  {name:<28} -> {path}")
+    for name, paths in F.write_all(args.out, args.gen_dir,
+                                   cfg["paths"]["figures_dir"],
+                                   results_dir).items():
+        print(f"  figure {name:<28} -> {paths[0]}")
+    readme = write_readme(args.out, results_dir, "README.md",
+                          os.path.join(results_dir, "solver_validation.json"))
+    print(f"  readme {'(regenerated from artifacts)':<28} -> {readme}")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", default="configs/main.yaml")
@@ -57,6 +99,10 @@ def main() -> None:
     ap.add_argument("--workers", type=int, default=None)
     ap.add_argument("--max-train-nn", type=int, default=100000,
                     help="training levels used for nearest-neighbour novelty")
+    ap.add_argument("--tables-only", action="store_true",
+                    help="regenerate tables, figures and README from an "
+                         "existing evaluation.json without re-running the "
+                         "solver sweep")
     args = ap.parse_args()
 
     with open(args.config, "r", encoding="utf-8") as fh:
@@ -68,6 +114,10 @@ def main() -> None:
     time_cap = cfg["solver"]["time_cap_s"]
     length_mode = cfg["solver"].get("length_cost_mode", "moves")
     min_denom = cfg["evaluation"]["min_denominator_flag"]
+
+    if args.tables_only:
+        emit_tables_and_figures(args, cfg)
+        return
 
     with open(args.manifest, "r", encoding="utf-8") as fh:
         manifest = json.load(fh)["conditions"]
@@ -183,21 +233,7 @@ def main() -> None:
                     "nodes_expanded": r["nodes"],
                     "solver_time_s": r["time_s"]}) + "\n")
 
-    # -- tables and figures, regenerated from the JSON we just wrote --------
-    hr("Tables and figures")
-    from sokogen.eval import figures as F
-    from sokogen.eval import tables as T
-
-    results_dir = os.path.dirname(args.out)
-    tables_dir = os.path.join(results_dir, "tables")
-    written = T.write_all(args.out, tables_dir, results_dir)
-    for name, path in written.items():
-        print(f"  table  {name:<28} -> {path}")
-
-    figs = F.write_all(args.out, args.gen_dir, cfg["paths"]["figures_dir"],
-                       results_dir)
-    for name, paths in figs.items():
-        print(f"  figure {name:<28} -> {paths[0]}")
+    emit_tables_and_figures(args, cfg)
 
     hr("DONE")
     print(f"  evaluation    -> {args.out}")

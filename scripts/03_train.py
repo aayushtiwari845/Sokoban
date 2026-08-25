@@ -104,7 +104,8 @@ def train_lm(args, cfg, dev) -> Dict:
     step = 0
     rng = np.random.default_rng(args.seed)
     t0 = time.perf_counter()
-    ckpt_path = os.path.join(cfg["paths"]["checkpoints_dir"], f"{args.model}.pt")
+    ckpt_path = os.path.join(cfg["paths"]["checkpoints_dir"],
+                             f"{args.model}{args.suffix}.pt")
 
     model.train()
     for epoch in range(epochs):
@@ -247,6 +248,9 @@ def main() -> None:
                     choices=["transformer", "distilgpt2", "vae", "gan"])
     ap.add_argument("--config", default="configs/main.yaml")
     ap.add_argument("--seed", type=int, default=None)
+    ap.add_argument("--suffix", default="",
+                    help="appended to the checkpoint and artifact names, so "
+                         "multi-seed runs do not overwrite each other")
     args = ap.parse_args()
 
     with open(args.config, "r", encoding="utf-8") as fh:
@@ -269,7 +273,8 @@ def main() -> None:
     payload = {"provenance": stamp({"model": args.model, "config": args.config},
                                    args.seed),
                "model": args.model, **out}
-    path = os.path.join(cfg["paths"]["results_dir"], f"train_{args.model}.json")
+    path = os.path.join(cfg["paths"]["results_dir"],
+                        f"train_{args.model}{args.suffix}.json")
     write_artifact(path, payload)
 
     hr("DONE")

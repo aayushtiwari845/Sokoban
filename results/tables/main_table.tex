@@ -1,0 +1,24 @@
+\begin{table*}[t]
+\centering
+\caption{Structural validity and solver-verified solvability across model families. Percentages carry Wilson 95\% confidence intervals. Structural validity and solvability are reported separately and never merged. All rows are single-seed except the main transformer configuration, which is run with three seeds.}
+\label{tab:main}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+Model & Valid \% & Solv. \% & Solv.\,$|$\,valid \% & Timeout \% & Draws & Novel \% & Diversity & Params \\
+\midrule
+Random placement & 100.0 [99.3, 100.0] & 0.0 [0.0, 0.0] & 0.0 [0.0, 0.8] & 0.0 & 512 & 100.0 & 39.20 & -- \\
+Open room & 100.0 [99.3, 100.0] & 23.4 [19.7, 27.1] & 23.4 [19.9, 27.3] & 0.0 & 512 & 100.0 & 16.22 & -- \\
+Rule-based & 100.0 [99.3, 100.0] & 0.4 [0.0, 1.0] & 0.4 [0.1, 1.4] & 0.0 & 512 & 100.0 & 38.14 & -- \\
+Retrieval & 100.0 [99.3, 100.0] & 100.0 [100.0, 100.0] & 100.0 [99.2, 100.0] & 0.0 & 512 & 0.0 & 38.73 & -- \\
+Conditional GAN (raw) & 8.6 [8.0, 9.4] & 4.3 [3.8, 4.9] & 50.2 [45.8, 54.6] & 0.0 & 6,144 & 100.0 & 34.18 & 1,082,357 \\
+Conditional GAN (repaired) & 100.0 [99.3, 100.0] & 40.2 [35.9, 44.5] & 40.2 [36.0, 44.6] & 0.0 & 512 & 100.0 & 36.79 & 1,082,357 \\
+Conditional VAE (argmax) & 0.0 [0.0, 0.0] & -- & -- & -- & 100,000 & -- & -- & 1,098,292 \\
+Conditional VAE (sampled) & 1.7 [1.6, 1.9] & 0.5 [0.4, 0.6] & 30.0 [26.1, 34.2] & 0.0 & 29,184 & 100.0 & 38.54 & 1,098,292 \\
+Conditional VAE (repaired) & 100.0 [99.3, 100.0] & 76.6 [72.9, 80.3] & 76.6 [72.7, 80.1] & 0.0 & 512 & 100.0 & 37.82 & 1,098,292 \\
+Transformer (unconstrained) & 82.6 [80.2, 84.8] & 46.3 [42.4, 50.1] & 56.0 [51.6, 60.3] & 0.0 & 1,024 & 100.0 & 39.01 & 10,734,336 \\
+Transformer (constrained) & 100.0 [99.3, 100.0] & 49.6 [45.2, 54.0] & 49.6 [45.2, 54.0] & 0.0 & 512 & 100.0 & 38.86 & 10,734,336 \\
+DistilGPT-2 (constrained, ablation) & 100.0 [99.3, 100.0] & 63.6 [59.4, 67.8] & 63.6 [59.3, 67.7] & 0.0 & 512 & 100.0 & 38.69 & 43,352,064 \\
+Real Boxoban levels & 100.0 [99.3, 100.0] & 100.0 [100.0, 100.0] & 100.0 [99.2, 100.0] & 0.0 & 512 & 100.0 & 38.76 & -- \\
+\bottomrule
+\end{tabular}
+\end{table*}

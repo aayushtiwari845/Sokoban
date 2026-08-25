@@ -196,6 +196,7 @@ def evaluate_condition(name: str, gen_dir: str, manifest: Dict,
         "generation_time_s": man.get("generation_time_s"),
         "generation_time_per_sample_ms": man.get("generation_time_per_sample_ms"),
         "model_params": man.get("model_params"),
+        "temperature": man.get("temperature"),
         "forcing": man.get("forcing"),
         "tile_counts_raw_draws": tile_count_stats(raw),
     }

@@ -171,6 +171,24 @@ def latex_main_table(ev: Dict, results_dir: str) -> str:
     return "\n".join(out).replace("_", r"\_")
 
 
+MIN_CORR_N = 30
+
+
+def _spearman_cell(sl: Dict) -> str:
+    """Spearman with an inline flag when the denominator is too small.
+
+    A correlation on a handful of levels is noise a reader will misread as
+    signal, exactly like a percentage on a tiny denominator.
+    """
+    n = sl.get("n_with_achieved_length") or 0
+    val = _num(sl.get("spearman"), 3)
+    if val == "--":
+        return "--"
+    if n < MIN_CORR_N:
+        return f"{val} (n={n}, NOISE)"
+    return val
+
+
 def markdown_controllability_table(ev: Dict) -> str:
     """Per attribute, never as one number (spec 10.2)."""
     lines = [
@@ -190,10 +208,13 @@ def markdown_controllability_table(ev: Dict) -> str:
             f"{_pct(ctrl.get('density', {}).get('bin_accuracy'))} | "
             f"{_pct(ctrl.get('connectivity', {}).get('bin_accuracy'))} | "
             f"{_pct(ctrl.get('clustering', {}).get('bin_accuracy'))} | "
-            f"{_num(sl.get('spearman'), 3)} | "
+            f"{_spearman_cell(sl)} | "
             f"{_num(100 * sl['censoring_rate'] if sl.get('censoring_rate') is not None else None, 1)} | "
             f"{sl.get('n_with_achieved_length', '--')} |")
     lines += [
+        "",
+        f"Correlations computed on fewer than {MIN_CORR_N} levels are marked "
+        "NOISE inline; they are reported for completeness, not as evidence.",
         "",
         "Wall density, connectivity and box clustering are computable directly "
         "from the grid, so a model that reproduces surface statistics will "
@@ -223,7 +244,7 @@ def markdown_ood_table(ev: Dict) -> str:
         sl = ood.get("solution_length", {})
         any_row = True
         lines.append(
-            f"| {DISPLAY_NAMES.get(name, name)} | {_num(sl.get('spearman'), 3)} | "
+            f"| {DISPLAY_NAMES.get(name, name)} | {_spearman_cell(sl)} | "
             f"{_num(100 * sl['censoring_rate'] if sl.get('censoring_rate') is not None else None, 1)} | "
             f"{_num(sl.get('mean_requested'), 1)} | "
             f"{_num(sl.get('mean_achieved'), 1)} | "
@@ -288,10 +309,18 @@ def markdown_temperature_table(ev: Dict) -> str:
     for name, c in ev["conditions"].items():
         if not name.startswith("transformer_constrained_t"):
             continue
-        rows.append((c.get("temperature", name), c))
+        temp = c.get("temperature")
+        if temp is None:
+            # Fall back to the condition name, so results written before the
+            # temperature was recorded in the manifest still render.
+            try:
+                temp = float(name.rsplit("_t", 1)[1])
+            except (IndexError, ValueError):
+                continue
+        rows.append((float(temp), c))
     if not rows:
         return ""
-    rows.sort(key=lambda x: float(x[0]) if x[0] is not None else 0.0)
+    rows.sort(key=lambda x: x[0])
     lines = ["| Temperature | Solvable \\| valid % | Diversity | Novel % |",
              "|---|---|---|---|"]
     for temp, c in rows:
