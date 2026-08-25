@@ -1,0 +1,11 @@
+{
+  "difficulty_terciles": [
+    26.0,
+    35.0
+  ],
+  "density_median": 0.5,
+  "degree_median": 2.888888888888889,
+  "clustering_median": 3.5,
+  "length_min": 4.0,
+  "length_max": 130.0
+}
