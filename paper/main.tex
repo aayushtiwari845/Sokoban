@@ -45,7 +45,10 @@ copies training levels maximises it at zero novelty. Two results cut against the
 simple story: repairing the VAE's counting errors yields $76.6\%$ solvability,
 \emph{above} the transformer, locating the autoregressive advantage in counting
 rather than in spatial structure; and every family fails to extrapolate,
-producing $\sim\!30$-move levels when asked for $\sim\!116$. We argue the results table must be read as a joint constraint over
+producing $\sim\!30$-move levels when asked for $\sim\!116$. Measuring across
+three training seeds per configuration rather than one turns out to be
+essential: solvability moves by $\pm 7$ points across seeds while validation
+loss moves by $\pm 0.005$. We argue the results table must be read as a joint constraint over
 solvability, difficulty control and novelty. This work replicates and extends
 Todd et al.~\cite{todd2023level}; the data-scaling and tokenization findings are
 theirs, and we claim neither.
@@ -514,35 +517,52 @@ to state it plainly rather than lean on a single favourable run:
 \item The comparison against the baselines survives easily. Even the worst of
       the three seeds ($34.6\%$) is far above open room ($23.4\%$) and
       rule-based ($0.4\%$).
-\item The comparison against DistilGPT-2 does \textbf{not} survive. Its
-      $63.6\%$ sits roughly three standard deviations above the from-scratch
-      mean, but it is a \emph{single} run being compared against a distribution
-      with $\pm 7$ point spread, and we did not train it three times.
+\item The comparison against DistilGPT-2 also survives, but only because we
+      retrained that model three times as well rather than trusting its single
+      run (Section~\ref{sec:pretrain}).
 \item The constrained-versus-unconstrained gap ($6.4$ points) is smaller than
       the seed spread. It is a within-checkpoint decoding comparison, so
       training-seed variance does not apply to it directly, but it is measured
       on one model and should be treated as indicative.
 \end{itemize}
 
-Every other row in this paper is single-seed and its caption says so. Given a
-$\pm 7$ point spread on the headline metric, no row-to-row difference under
-about $15$ points should be read as established.
+Every remaining row in this paper is single-seed and its caption says so. Given
+a $\pm 7$ point spread on the headline metric, no row-to-row difference under
+about $15$ points should be read as established without repeated runs.
 
-\subsection{Pretraining appears to transfer across a vocabulary boundary}
+\subsection{Pretraining transfers across a vocabulary boundary}
+\label{sec:pretrain}
 The DistilGPT-2 ablation discards the $50257 \times 768$ embedding matrix and
-the tied LM head, so nothing lexical can transfer. It nonetheless reaches
-$63.6\%$ [$59.3$, $67.7$] solvability against the from-scratch model's $49.6\%$,
-needs less rescuing from the constrained decoder ($7.4\%$ of levels against
-$25.0\%$), and controls solution length better ($\rho = 0.673$ against
-$0.484$). The suggestion is that pretrained sequence-modelling machinery
-transfers to a domain with zero shared vocabulary.
+the tied LM head and re-initialises both for our $48$-symbol vocabulary, so
+nothing lexical can transfer --- only the attention and MLP blocks survive.
+Because the from-scratch model's own seed spread is $\pm 7.0$ points, a
+single-run comparison would prove nothing, so we trained the ablation three
+times as well.
 
-We report this as suggestive, not established. The ablation is single-seed and
-the from-scratch model's own seed spread is $\pm 7$ points
-(Section~\ref{sec:seeds}), so a $14$-point difference between one run of each is
-not conclusive. The cost side is unambiguous: $4.0\times$ the parameters
-($43.4$M against $10.7$M) and $6.8\times$ the training time ($4479$\,s against
-$661$\,s).
+Across three seeds it reaches $\mathbf{64.2\% \pm 1.8}$ solvability against the
+from-scratch model's $42.7\% \pm 7.0$ --- a $21.5$-point gap. The two sets of
+runs do not overlap at all ($62.8$--$66.2$ against $34.6$--$47.0$), which is the
+strongest separation obtainable from three runs per arm: the exact permutation
+test returns $p = 0.05$, its floor at this sample size, and a Welch $t$-test
+gives $t = 5.12$, $p = 0.028$. It also needs less rescuing from the constrained
+decoder ($10.0\% \pm 3.4$ of levels against $33.7\% \pm 18.9$) and controls
+solution length better ($\rho = 0.673$ against $0.484$). Pretrained
+sequence-modelling machinery therefore does transfer to a domain that shares no
+vocabulary with the pretraining corpus.
+
+A second, unplanned observation is arguably more interesting than the mean
+shift: the pretrained model is far more \textbf{stable} across seeds, with a
+standard deviation of $1.8$ points against $7.0$, a $4.0\times$ reduction. We
+flag this as an observation rather than a result --- with three runs per arm a
+variance test has almost no power, and Levene's test is unsurprisingly
+inconclusive ($p = 0.50$). If it holds up at larger $n$, it would suggest that
+what pretraining buys in this setting is partly a better-conditioned
+initialisation rather than transferred knowledge, which would be worth
+separating.
+
+The cost is unambiguous: $4.0\times$ the parameters ($43.4$M against $10.7$M)
+and $6.8\times$ the training time ($3897$\,s against $573$\,s, averaged over the
+same three runs).
 
 \subsection{Temperature trades solvability against diversity}
 Figure~\ref{fig:pareto} shows a clean monotone trade-off: solvability falls from
@@ -623,11 +643,13 @@ worth making depends on which column of the table the application cares about.
 \item \textbf{A single game at a single fixed size}: $10\times10$, four boxes,
       four goals. Nothing here shows the finding generalises to other tile games
       or other grid sizes.
-\item \textbf{Large seed variance, single-seed ablations.} The main
-      transformer configuration was run with three seeds and its
-      solvability spread is $\pm 7.0$ points (Section~\ref{sec:seeds}); every
-      other row is a single run. Differences smaller than roughly $15$ points
-      between single-seed rows are not established.
+\item \textbf{Large seed variance.} The transformer and the DistilGPT-2
+      ablation were each run with three seeds; the transformer's solvability
+      spread is $\pm 7.0$ points (Section~\ref{sec:seeds}). Every remaining row
+      --- the VAE, the GAN and all baselines --- is a single run, and
+      differences smaller than roughly $15$ points between those rows are not
+      established. Three runs per arm is also too few to test the variance
+      reduction we observed under pretraining.
 \item \textbf{Untuned hyperparameters.} Learning rate, batch size and epoch count
       were chosen once and never swept, for any model (Tier 3). We did not try
       $1\mathrm{e}{-4}$ before settling on $3\mathrm{e}{-4}$.
@@ -677,9 +699,14 @@ autoregressive advantage in counting rather than in spatial understanding.
 
 We also measured how far these numbers can be trusted. Retraining the primary
 configuration with three seeds moves solvability by $\pm 7.0$ points while
-validation loss moves by $\pm 0.005$, so validation loss is a poor proxy for the
-property being evaluated, and single-seed comparisons between nearby rows ---
-including our own DistilGPT-2 ablation --- should not be read as settled.
+validation loss moves by only $\pm 0.005$, so validation loss is a poor proxy
+for the property being evaluated and single-seed comparisons between nearby rows
+should not be read as settled. Repeating the pretraining ablation three times
+under the same protocol does settle it: a DistilGPT-2 body with a
+re-initialised $48$-symbol vocabulary reaches $64.2\% \pm 1.8$ against
+$42.7\% \pm 7.0$, with no overlap between the two sets of runs. Pretrained
+sequence-modelling machinery transfers even when no vocabulary does --- and, on
+this evidence, makes training markedly more stable.
 
 The most interesting negative result is the controllability split. Attributes
 computable from the grid are controlled well; solution length, which requires

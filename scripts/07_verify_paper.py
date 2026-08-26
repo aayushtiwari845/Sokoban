@@ -239,6 +239,55 @@ def main() -> None:
     c.check("seed diversity sd", 0.31, ss["diversity"]["sd"], 0.02)
     c.check("seed val_loss sd", 0.005, ss["val_loss"]["sd"], 0.001)
 
+    # -- three-seed pretraining ablation ----------------------------------
+    dseeds = load("seed_variance_distilgpt2.json")
+    ds = dseeds["summary"]
+    tvals = ss["solvable_given_valid_pct"]["values"]
+    dvals = ds["solvable_given_valid_pct"]["values"]
+    c.check("distilgpt2 seed mean", 64.2, ds["solvable_given_valid_pct"]["mean"])
+    c.check("distilgpt2 seed sd", 1.8, ds["solvable_given_valid_pct"]["sd"])
+    c.check("ablation gap pp", 21.5,
+            ds["solvable_given_valid_pct"]["mean"]
+            - ss["solvable_given_valid_pct"]["mean"])
+    c.check("distilgpt2 seed min", 62.8, min(dvals))
+    c.check("distilgpt2 seed max", 66.2, max(dvals))
+    c.check("transformer seed min", 34.6, min(tvals))
+    c.check("transformer seed max", 47.0, max(tvals))
+    c.check("ranges disjoint", True, min(dvals) > max(tvals))
+    c.check("sd ratio", 4.0,
+            ss["solvable_given_valid_pct"]["sd"]
+            / ds["solvable_given_valid_pct"]["sd"], 0.05)
+    c.check("distilgpt2 forcing mean %", 10.0, ds["forced_sequence_rate"]["mean"])
+    c.check("distilgpt2 forcing sd", 3.4, ds["forced_sequence_rate"]["sd"])
+    c.check("transformer forcing mean %", 33.7, ss["forced_sequence_rate"]["mean"])
+    c.check("transformer forcing sd", 18.9, ss["forced_sequence_rate"]["sd"])
+
+    import itertools
+
+    import numpy as np
+    from scipy import stats
+    w = stats.ttest_ind(dvals, tvals, equal_var=False)
+    c.check("Welch t", 5.12, float(w.statistic), 0.01)
+    c.check("Welch p", 0.028, float(w.pvalue), 0.001)
+    allv = list(dvals) + list(tvals)
+    obs = np.mean(dvals) - np.mean(tvals)
+    ge = sum(1 for comb in itertools.combinations(range(6), 3)
+             if np.mean([allv[i] for i in comb])
+             - np.mean([allv[i] for i in range(6) if i not in comb]) >= obs)
+    c.check("exact permutation p", 0.05, ge / 20, 0.001)
+    c.check("Levene p", 0.50, float(stats.levene(dvals, tvals).pvalue), 0.01)
+
+    import glob
+    tt = [json.load(open(f, encoding="utf-8"))["train_time_s"]
+          for f in sorted(glob.glob(os.path.join(args.results,
+                                                 "train_transformer*.json")))]
+    dt = [json.load(open(f, encoding="utf-8"))["train_time_s"]
+          for f in sorted(glob.glob(os.path.join(args.results,
+                                                 "train_distilgpt2*.json")))]
+    c.check("transformer mean train s", 573, round(float(np.mean(tt))), 1)
+    c.check("distilgpt2 mean train s", 3897, round(float(np.mean(dt))), 1)
+    c.check("mean time ratio", 6.8, float(np.mean(dt) / np.mean(tt)), 0.05)
+
     for temp, want in ((0.6, 61.2), (1.5, 34.8)):
         c.check(f"temperature {temp} solvable %", want,
                 solv(f"transformer_constrained_t{temp}"))

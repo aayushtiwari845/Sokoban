@@ -151,6 +151,7 @@ single run, so this is what says which of its differences are real.
 | Model | Struct. valid % | Solvable \| valid % | Diversity | Validation loss |
 |---|---|---|---|---|
 | Transformer (primary) | 100.0 +/- 0.0 <br><sub>100.0, 100.0, 100.0</sub> | 42.7 +/- 7.0 <br><sub>46.6, 34.6, 47.0</sub> | 38.59 +/- 0.31 <br><sub>38.92, 38.30, 38.57</sub> | 0.3565 +/- 0.0049 <br><sub>0.3546, 0.3621, 0.3529</sub> |
+| DistilGPT-2 (ablation) | 100.0 +/- 0.0 <br><sub>100.0, 100.0, 100.0</sub> | 64.2 +/- 1.8 <br><sub>63.6, 62.8, 66.2</sub> | 38.72 +/- 0.11 <br><sub>38.84, 38.68, 38.63</sub> | 0.3414 +/- 0.0006 <br><sub>0.3415, 0.3407, 0.3418</sub> |
 
 Structural validity is perfectly stable, because constrained decoding guarantees
 it. Solvability is **not**: for the primary transformer it moves by
