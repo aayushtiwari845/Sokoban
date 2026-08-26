@@ -223,10 +223,28 @@ def write_readme(evaluation_json: str, results_dir: str, out_path: str,
     parts = [HEADER, "\n## Main results\n",
              T.markdown_main_table(ev, results_dir)]
 
+    if os.path.exists(os.path.join("figures", "fig2_validity_vs_solvability.png")):
+        parts += [
+            "\n![Structural validity vs solvability]"
+            "(figures/fig2_validity_vs_solvability.png)\n",
+            "Structural validity and solvability are different axes. The "
+            "one-shot families fail on the left axis (counting) while sitting "
+            "at respectable values on the right axis (spatial structure), which "
+            "is why the two are never merged into one number.",
+        ]
+
     tile = T.markdown_tile_count_table(ev)
     if tile:
         parts += ["\n## Tile counts: the counting-constraint claim, directly\n",
                   tile]
+        if os.path.exists(os.path.join("figures", "fig3_tile_counts.png")):
+            parts += [
+                "\n![Tile-count histograms](figures/fig3_tile_counts.png)\n",
+                "The transformer's box count is a spike at four. The VAE under "
+                "argmax collapses to a near-empty room. VAE sampling recovers "
+                "the right marginal rate with the wrong joint -- the right "
+                "*average* number of boxes, the wrong *number per level*.",
+            ]
 
     ctrl = T.markdown_controllability_table(ev)
     if ctrl:

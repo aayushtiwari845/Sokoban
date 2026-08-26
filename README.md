@@ -48,6 +48,10 @@ The intervals above capture **sampling** variation only. **Every row is a single
 **Flags:**
 - **Conditional VAE (argmax)**: DENOMINATOR 0 < 30: this percentage is noise, not signal
 
+![Structural validity vs solvability](figures/fig2_validity_vs_solvability.png)
+
+Structural validity and solvability are different axes. The one-shot families fail on the left axis (counting) while sitting at respectable values on the right axis (spatial structure), which is why the two are never merged into one number.
+
 ## Tile counts: the counting-constraint claim, directly
 
 | Model | Boxes (mean +/- sd) | Exactly 4 boxes % | Goals (mean +/- sd) | Exactly 4 goals % | Players (mean) | Exactly 1 player % |
@@ -67,6 +71,10 @@ The intervals above capture **sampling** variation only. **Every row is a single
 | Real Boxoban levels | 4.00 +/- 0.00 | 100.0 | 4.00 +/- 0.00 | 100.0 | 1.00 | 100.0 |
 
 Computed over **raw draws**, valid or not: restricting to valid levels would define the counting failure away.  A valid level needs exactly one player, four boxes and four goals.
+
+![Tile-count histograms](figures/fig3_tile_counts.png)
+
+The transformer's box count is a spike at four. The VAE under argmax collapses to a near-empty room. VAE sampling recovers the right marginal rate with the wrong joint -- the right *average* number of boxes, the wrong *number per level*.
 
 ## Controllability, per attribute
 
