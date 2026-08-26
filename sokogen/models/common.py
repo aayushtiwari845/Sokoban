@@ -36,7 +36,10 @@ class DeviceConfig:
 
 def setup_device(prefer_bf16: bool = True, verbose: bool = True) -> DeviceConfig:
     """Pick the device and autocast dtype, verifying bf16 support explicitly."""
-    if not torch.cuda.is_available():
+    # device_count() is checked too: with CUDA_VISIBLE_DEVICES="" the runtime
+    # reports itself available while exposing no device, and querying device 0
+    # then raises rather than falling back.
+    if not torch.cuda.is_available() or torch.cuda.device_count() == 0:
         if verbose:
             print("  [device] CUDA unavailable -- running on CPU in float32")
         return DeviceConfig(torch.device("cpu"), torch.float32, False, "cpu")
