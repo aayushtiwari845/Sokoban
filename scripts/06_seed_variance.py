@@ -1,14 +1,22 @@
-"""Seed variance on the main transformer configuration (spec 10.4).
+"""Seed variance for an autoregressive configuration (spec 10.4).
 
-Three independent *training* runs of the primary configuration, each sampled and
-solved identically, reported as mean +/- sd.  Every other row in the paper is
-single-seed and its table caption says so; this script is what licenses that
-statement.
+Independent *training* runs differing only in seed, each sampled and solved
+identically, reported as mean +/- sd.  This is what licenses -- or refuses --
+every row-to-row comparison in the paper: measured on the primary transformer,
+solvability moves by +/- 7 points across seeds while validation loss moves by
++/- 0.005, so a single run is not evidence of a ranking.
 
     python scripts/03_train.py --model transformer --seed 1337
     python scripts/03_train.py --model transformer --seed 1338 --suffix _s1338
     python scripts/03_train.py --model transformer --seed 1339 --suffix _s1339
     python scripts/06_seed_variance.py
+
+The same applies to the pretraining ablation, whose single-run advantage is
+otherwise inside the noise band:
+
+    python scripts/03_train.py --model distilgpt2 --seed 1338 --suffix _s1338
+    python scripts/03_train.py --model distilgpt2 --seed 1339 --suffix _s1339
+    python scripts/06_seed_variance.py --model distilgpt2
 
 Sampling uses the GPU and solving uses the CPU, so the two phases are run
 strictly one after the other (spec 0).
@@ -38,22 +46,28 @@ def hr(title: str) -> None:
     print("=" * 78)
 
 
-def sample_one_seed(ckpt: str, prompts, target_valid: int, seed: int) -> Dict:
+def sample_one_seed(ckpt: str, prompts, target_valid: int, seed: int,
+                    model_kind: str = "transformer") -> Dict:
     """Generate constrained samples from one checkpoint (GPU phase)."""
     import torch
     from sokogen.decoding.constrained import ForcingStats
     from sokogen.eval.generate import (PromptSampler, collect,
                                        transformer_drawer)
     from sokogen.models.common import load_checkpoint, setup_device
-    from sokogen.models.transformer import SokobanLM, TransformerConfig
 
     dev = setup_device(verbose=False)
     sd, meta = load_checkpoint(ckpt, map_location=dev.device)
     c = meta.get("config", {})
-    model = SokobanLM(TransformerConfig(
-        d_model=c.get("d_model", 384), n_layers=c.get("n_layers", 6),
-        n_heads=c.get("n_heads", 6), d_ff=c.get("d_ff", 1536),
-        dropout=c.get("dropout", 0.1)))
+    if model_kind == "transformer":
+        from sokogen.models.transformer import SokobanLM, TransformerConfig
+        model = SokobanLM(TransformerConfig(
+            d_model=c.get("d_model", 384), n_layers=c.get("n_layers", 6),
+            n_heads=c.get("n_heads", 6), d_ff=c.get("d_ff", 1536),
+            dropout=c.get("dropout", 0.1)))
+    else:
+        from sokogen.data.vocab import VOCAB_SIZE
+        from sokogen.models.distilgpt2 import build_distilgpt2
+        model = build_distilgpt2(VOCAB_SIZE)
     model.load_state_dict(sd)
     model = model.to(dev.device).eval()
 
@@ -80,10 +94,16 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", default="configs/main.yaml")
     ap.add_argument("--suite", default="configs/prompt_suite.json")
-    ap.add_argument("--out", default="results/seed_variance.json")
+    ap.add_argument("--out", default=None,
+                    help="defaults to results/seed_variance[_<model>].json")
+    ap.add_argument("--model", default="transformer",
+                    choices=["transformer", "distilgpt2"])
     ap.add_argument("--target-valid", type=int, default=500)
     ap.add_argument("--workers", type=int, default=None)
     args = ap.parse_args()
+    if args.out is None:
+        suffix = "" if args.model == "transformer" else f"_{args.model}"
+        args.out = f"results/seed_variance{suffix}.json"
 
     with open(args.config, "r", encoding="utf-8") as fh:
         cfg = yaml.safe_load(fh)
@@ -96,8 +116,8 @@ def main() -> None:
     ck = cfg["paths"]["checkpoints_dir"]
     paths = []
     for i, s in enumerate(seeds):
-        p = os.path.join(ck, "transformer.pt" if i == 0
-                         else f"transformer_s{s}.pt")
+        p = os.path.join(ck, f"{args.model}.pt" if i == 0
+                         else f"{args.model}_s{s}.pt")
         if not os.path.exists(p):
             print(f"  missing checkpoint for seed {s}: {p}")
             continue
@@ -112,7 +132,8 @@ def main() -> None:
     sampled = {}
     for s, p in paths:
         t = time.perf_counter()
-        sampled[s] = sample_one_seed(p, prompts, args.target_valid, s)
+        sampled[s] = sample_one_seed(p, prompts, args.target_valid, s,
+                                     model_kind=args.model)
         print(f"  seed {s}: {len(sampled[s]['grids'])} valid from "
               f"{sampled[s]['samples_drawn']:,} draws  "
               f"val_loss={sampled[s]['val_loss']:.4f}  "
@@ -146,7 +167,7 @@ def main() -> None:
               f"diversity={per_seed[s]['diversity']['mean']:.2f}")
 
     # -- aggregate ---------------------------------------------------------
-    hr("Seed variance on the main transformer configuration")
+    hr(f"Seed variance: {args.model}")
 
     def agg(fn):
         vals = [fn(per_seed[s]) for s, _ in paths]
@@ -173,9 +194,10 @@ def main() -> None:
         "n_seeds": len(paths),
         "per_seed": {str(k): v for k, v in per_seed.items()},
         "summary": summary,
-        "note": ("Three independent training runs of the primary transformer "
-                 "configuration. Every other row in the paper is single-seed "
-                 "and its caption says so."),
+        "model": args.model,
+        "note": (f"Independent training runs of the {args.model} configuration, "
+                 "differing only in seed. Every other row in the paper is a "
+                 "single run and its caption says so."),
     })
     print(f"\n  artifact -> {args.out}")
 

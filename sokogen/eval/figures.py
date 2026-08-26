@@ -464,6 +464,62 @@ def figure_training_curves(results_dir: str, out_dir: str) -> List[str]:
     return _save(fig, out_dir, "figB_training_curves")
 
 
+def figure_vae_interpolation(checkpoint: str, out_dir: str, suite_path: str,
+                             n_steps: int = 7, n_rows: int = 4,
+                             seed: int = 1337) -> List[str]:
+    """Repo-only: walk the VAE latent between two samples (spec 12).
+
+    Each row interpolates ``z`` linearly between two draws from the prior while
+    holding the caption vector fixed, decoding by argmax at every step.  It is a
+    direct picture of the marginal-collapse failure: the whole path stays a
+    near-empty room, because the argmax of a product of per-cell marginals
+    almost never selects a rare tile anywhere along it.
+    """
+    if not os.path.exists(checkpoint):
+        return []
+    try:
+        import torch
+
+        from ..models.common import load_checkpoint, tiles_to_grid
+        from ..models.vae import ConditionalVAE
+    except ImportError:  # pragma: no cover - torch is optional for figures
+        return []
+
+    sd, meta = load_checkpoint(checkpoint, map_location="cpu")
+    hp = meta.get("config", {})
+    model = ConditionalVAE(latent_dim=hp.get("latent_dim", 32),
+                           hidden=hp.get("hidden", 512))
+    model.load_state_dict(sd)
+    model.eval()
+
+    with open(suite_path, "r", encoding="utf-8") as fh:
+        suite = json.load(fh)["in_distribution"]
+
+    g = torch.Generator().manual_seed(seed)
+    fig, axes = plt.subplots(n_rows, n_steps,
+                             figsize=(1.25 * n_steps + 0.5, 1.25 * n_rows + 0.6),
+                             squeeze=False)
+    with torch.no_grad():
+        for r in range(n_rows):
+            cond = torch.tensor(
+                [suite[(r * 7) % len(suite)]["caption_vec"]], dtype=torch.float32)
+            z0 = torch.randn(1, model.latent_dim, generator=g)
+            z1 = torch.randn(1, model.latent_dim, generator=g)
+            for c in range(n_steps):
+                t = c / (n_steps - 1)
+                z = (1 - t) * z0 + t * z1
+                tiles = model.decode(z, cond).argmax(dim=1)[0].numpy()
+                draw_grid(axes[r][c], tiles_to_grid(tiles))
+                if r == 0:
+                    axes[r][c].set_title(f"t={t:.2f}", fontsize=6.5, pad=2)
+
+    fig.suptitle("VAE latent interpolation (argmax decoding)\n"
+                 "the whole path is a near-empty room: rare tiles never win "
+                 "the per-cell argmax", fontsize=9)
+    fig.subplots_adjust(hspace=0.06, wspace=0.06, top=0.84)
+    return _save(fig, out_dir, "figC_vae_interpolation")
+
+
 def write_all(evaluation_json: str, gen_dir: str, out_dir: str,
               results_dir: str) -> Dict[str, List[str]]:
     with open(evaluation_json, "r", encoding="utf-8") as fh:
@@ -477,4 +533,7 @@ def write_all(evaluation_json: str, gen_dir: str, out_dir: str,
     made["figA_node_cap"] = figure_node_cap(
         os.path.join(results_dir, "solver_validation.json"), out_dir)
     made["figB_training_curves"] = figure_training_curves(results_dir, out_dir)
+    made["figC_vae_interpolation"] = figure_vae_interpolation(
+        os.path.join("checkpoints", "vae.pt"), out_dir,
+        os.path.join("configs", "prompt_suite.json"))
     return {k: v for k, v in made.items() if v}
