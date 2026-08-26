@@ -1,19 +1,20 @@
 """Figures generated from ``results/evaluation.json``.
 
-Five paper figures (spec 12), no more -- seven figures in a 6-8 page two-column
-IEEE paper is roughly two pages of figures and would squeeze the Method section
-into uselessness:
+All seven figures are written here; the paper carries the three that are
+load-bearing and the rest are repository-only.
 
- 1. Pipeline architecture.
- 2. Structural validity vs solvability, three families side by side (the money
-    figure).
- 3. Tile-count histograms per family against the real distribution.
- 4. Qualitative grid of generated levels, one row per family.
- 5. Temperature Pareto: solvability vs diversity.
+**In the paper** (spec 12 caps the paper at five figures; measured against the
+6-8 page limit, five came to nine pages and three fit in eight, so the two most
+redundant with prose were moved to the repository):
 
-Three further figures are written for the repository only and are cut from the
-paper under page pressure: node-cap sensitivity, GAN training curves and VAE
-latent interpolation.
+ 1. Structural validity vs solvability -- the money figure.
+ 2. Tile-count histograms per family against the real distribution, which
+    carries the counting-constraint claim more convincingly than any percentage.
+ 3. Temperature Pareto: solvability vs diversity.
+
+**Repository only**: pipeline architecture (a schematic that the Method section
+already states in full), the qualitative sample grid, node-cap sensitivity, GAN
+and transformer training curves, and VAE latent interpolation.
 
 Each figure is saved as PDF (for the paper) and PNG (for the README).
 """

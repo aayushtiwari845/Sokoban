@@ -9,6 +9,17 @@
 \usepackage{xcolor}
 \usepackage[hidelinks]{hyperref}
 
+% Default float parameters make LaTeX defer floats aggressively; with five
+% figures plus a full-width table they all pile up at the end, leaving pages
+% two-thirds empty. Allowing more float area per page packs them next to the
+% text that references them.
+\renewcommand{\topfraction}{0.92}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.06}
+\renewcommand{\floatpagefraction}{0.8}
+\setcounter{topnumber}{3}
+\setcounter{totalnumber}{4}
+
 \newcommand{\tierone}[1]{#1}
 
 \begin{document}
@@ -165,14 +176,13 @@ We verified rather than assumed every property the representation depends on
 $\{\texttt{\#}, \texttt{@}, \texttt{\$}, \texttt{.}, \texttt{\textvisiblespace}\}$;
 in particular \textbf{neither \texttt{*} (box on goal) nor \texttt{+} (player on
 goal) occurs anywhere}, so a box never \emph{starts} on a goal. That single fact
-is what makes the five-channel one-hot tensor, the six-symbol grid vocabulary,
-and the "exactly four \texttt{\$} and four \texttt{.}" constraint all
-well-defined; had it failed, each would have broken silently. Over $10{,}000$
-levels, every grid is $10\times10$ with a complete wall border and exactly one
-player, four boxes and four goals, with zero violations. Files use CRLF line
-endings, which the specification did not anticipate and the parser normalises.
-There are zero exact collisions between the training levels and either the test
-or validation split.
+is what makes the five-channel tensor, the six-symbol vocabulary and the
+"exactly four \texttt{\$} and four \texttt{.}" constraint well-defined; had it
+failed, each would have broken silently. Over $10{,}000$ levels every grid is
+$10\times10$ with a complete wall border and exactly one player, four boxes and
+four goals, with zero violations, and there are zero collisions between train
+and either held-out split. Files use CRLF endings, which the parser
+normalises.
 
 \subsection{Solution lengths count moves, not pushes}
 The solution set stores an action string over $\{0,1,2,3\}$ = Up, Right, Down,
@@ -251,24 +261,20 @@ measure of how well the model learned to count unaided.
 
 \subsection{Conditional VAE}
 An MLP encoder and decoder over a $5\times10\times10$ one-hot tensor, latent
-dimension $32$, $1{,}098{,}292$ parameters. We use MLPs rather than convolutions
-because $10\times10$ does not factor cleanly for strided convolutions and at
-$100$ cells convolutions buy nothing while costing shape bugs. The
-reconstruction loss is \textbf{per-cell categorical cross-entropy over the
-channel dimension}, not MSE: MSE on one-hot tiles treats a categorical axis as a
-metric space, and is a common and wrong default. Posterior collapse is prevented
-with free bits~\cite{kingma2016freebits}, clamping per-dimension KL at a
+dimension $32$, $1{,}098{,}292$ parameters. MLPs rather than convolutions:
+$10\times10$ does not factor cleanly for strided convolutions and at $100$ cells
+convolutions buy nothing while costing shape bugs. The reconstruction loss is
+\textbf{per-cell categorical cross-entropy over the channel dimension}, not MSE,
+which treats a categorical axis as a metric space and is a common wrong default.
+Posterior collapse is prevented with free bits~\cite{kingma2016freebits} at a
 $0.05$-nat floor.
 
-We report \textbf{two decoding protocols, both mandatory}. The decoder emits an
-independent categorical per cell, and boxes occupy $4/100$ cells, goals $4/100$
-and the player $1/100$. Under argmax, floor or wall therefore wins almost
-everywhere and the output is a near-empty room: the argmax of a product of
-marginals is not the mode of the joint, and rare tiles are exactly what gets
-annihilated. That is a correct and interesting result, but reporting argmax alone
-would be an unfair protocol, so we also report per-cell sampling, which preserves
-marginal tile rates and produces roughly the right \emph{number} of boxes in the
-wrong \emph{places} --- a different failure signature.
+We report \textbf{two decoding protocols, both mandatory}. Under argmax, floor
+or wall wins almost everywhere, because the argmax of a product of marginals is
+not the mode of the joint and rare tiles are exactly what gets annihilated.
+Reporting argmax alone would be an unfair protocol, so we also report per-cell
+sampling, which preserves marginal tile rates and gives roughly the right
+\emph{number} of boxes in the wrong \emph{places}.
 
 \subsection{Conditional GAN}
 An MLP generator and discriminator, $1{,}082{,}357$ parameters combined, with
@@ -294,13 +300,12 @@ the GAN is bad at Sokoban or merely bad at arithmetic.
 
 \subsection{Baselines}
 Random placement (uniform interior walls at the training-median density, then
-random specials) is the floor. \textbf{Open room} --- border walls only, zero
-interior walls --- is the baseline that can invalidate the headline number, since
-an empty room has no interior walls to freeze a box against. Rule-based
-generation adds a floor-connectivity check and places boxes and goals only on
-live squares. \textbf{Retrieval} samples a training level verbatim, and exists to
-make the complementary point: solvability alone is a degenerate objective,
-maximised by copying. Real held-out Boxoban levels give the ceiling row.
+random specials) is the floor. \textbf{Open room} --- border walls only --- can
+invalidate the headline number, since an empty room has no interior walls to
+freeze a box against. Rule-based generation adds a floor-connectivity check and
+places boxes and goals only on live squares. \textbf{Retrieval} samples a
+training level verbatim, making the complementary point that solvability alone is
+maximised by copying. Held-out Boxoban levels give the ceiling row.
 
 \subsection{Comparison protocol}
 The transformer is reported \textbf{both with and without} constrained decoding,
@@ -344,22 +349,20 @@ any budget is hit. Every cap hit is \texttt{timeout}.
 
 \subsection{Validation}
 On all $1{,}000$ real test levels the solver achieves a \textbf{100.00\% solve
-rate} with zero \texttt{unsolvable} verdicts and zero timeouts (Tier 1). Every
-one of the $1{,}000$ returned solutions replays to a solved state under an
-independent simulator. Against the published solutions, our push-optimal length
-is $\leq$ theirs on $926/926$ comparable levels and our reconstructed move length
-is $\geq$ their move-optimal length on $926/926$, both as theory requires.
+rate} with zero \texttt{unsolvable} verdicts and zero timeouts (Tier 1), and
+every returned solution replays to a solved state under an independent
+simulator. Against the published solutions our push-optimal length is $\leq$
+theirs on $926/926$ comparable levels and our reconstructed move length is
+$\geq$ their move-optimal length on $926/926$, both as theory requires.
 
 The \textbf{soundness ablation} reruns a $200$-level sample with both prunes
-disabled and a $10\times$ node cap: \textbf{zero verdict disagreements and zero
-length disagreements}. We extended this to $450$ levels drawn from the three
-baseline generators, whose wall densities and failure modes differ sharply from
-real levels, again with zero disagreements. Median expansions are $176$ (p99
-$3{,}458$) and median wall time $75$\,ms (p99 $2.0$\,s).
-
-Solve rate reaches $100\%$ at a node cap of $10{,}000$ and is flat to
-$1{,}000{,}000$, so the reported numbers are converged rather than
-budget-limited.
+disabled and a $10\times$ node cap: \textbf{zero verdict and zero length
+disagreements}. We extended it to $450$ levels from the three baseline
+generators, whose wall densities and failure modes differ sharply from real
+levels, again with zero disagreements. Median expansions are $176$ (p99
+$3{,}458$), median wall time $75$\,ms (p99 $2.0$\,s). Solve rate reaches $100\%$
+at a node cap of $10{,}000$ and is flat to $1{,}000{,}000$, so the numbers are
+converged rather than budget-limited.
 
 \subsection{Move length is an upper bound}
 Because push-optimal search discards the player's exact position, the move length
@@ -374,15 +377,14 @@ rather than with the cheap reconstruction.
 \section{Experiments}
 \label{sec:experiments}
 
-For each condition we draw samples until $500$ structurally valid levels are
-collected or a hard cap of $100{,}000$ draws is reached, and we report
-\textbf{samples drawn} as its own column. Only valid samples are handed to the
-solver, so drawing tens of thousands of one-shot samples costs seconds and no
-solver time. Where a family cannot reach $500$ valid levels within the cap we
-report the count obtained and state the shortfall; we never report a
-"solvable given valid" percentage on a denominator below $30$ without flagging it
-inline, because a family at $2\%$ validity yields roughly ten levels and a
-percentage there is noise a reader will misread as signal.
+For each condition we draw until $500$ structurally valid levels are collected
+or a hard cap of $100{,}000$ draws is reached, reporting \textbf{samples drawn}
+as its own column. Only valid samples reach the solver, so drawing tens of
+thousands of one-shot samples costs seconds. Where a family cannot reach $500$
+valid levels we report the count obtained and state the shortfall, and we never
+report a "solvable given valid" percentage on a denominator below $30$ without
+flagging it inline --- at $2\%$ validity that is ten levels, and a percentage
+there is noise a reader will misread as signal.
 
 All proportions carry Wilson score intervals~\cite{wilson1927probable}, which
 behave correctly near $0\%$ and $100\%$. Pairwise comparisons use two-proportion
@@ -403,6 +405,17 @@ percentile is $67$ moves, the $99.9$th is $87$, and the maximum is $130$.
 
 \input{../results/tables/main_table.tex}
 
+\begin{figure*}[!tb]
+\centering
+\includegraphics[width=0.86\textwidth]{../figures/fig2_validity_vs_solvability.pdf}
+\caption{Left: structural validity (solid) and solvability given validity
+(hatched) are different axes, and a family can be strong on one and weak on the
+other. Right: the same data as a scatter. The one-shot families sit at the far
+left --- they cannot count --- while reaching solvability comparable to the
+transformer once they are valid.}
+\label{fig:money}
+\end{figure*}
+
 The main results appear in Table~\ref{tab:main}. We read them as five findings.
 
 \subsection{Autoregressive models can count; one-shot decoders cannot}
@@ -421,9 +434,8 @@ $0.01 \pm 0.12$ goals: the per-cell argmax of a product of marginals picks floor
 or wall almost everywhere, because boxes occupy $4/100$ cells and goals $4/100$.
 Per-cell \emph{sampling} restores the marginal rates almost exactly --- mean
 $3.95 \pm 1.72$ boxes, $4.05 \pm 1.85$ goals --- but only $21.8\%$ of samples
-carry exactly four boxes. That is the signature of the failure: the one-shot
-decoder gets the right \emph{average} number of boxes and the wrong
-\emph{joint}, because its per-cell outputs are conditionally independent given
+carry exactly four boxes: the right \emph{average} number and the wrong
+\emph{joint}, because the per-cell outputs are conditionally independent given
 the latent.
 
 Constrained decoding closes the gap deterministically at $100\%$ validity, and
@@ -439,19 +451,16 @@ and placing boxes only on live squares. Interior walls are what kill them: at
 the training-median density the floor becomes a maze of narrow corridors, and a
 box pushed into one freezes against the walls.
 
-The \textbf{open-room} baseline is the row that constrains how the headline
-number may be read. With no interior walls at all it is solvable $23.4\%$
-[$19.9$, $27.3$] of the time. The transformer's $49.6\%$ is significantly higher
-($+26.2$ percentage points, $z = 8.60$, $p < 10^{-16}$), so the headline is not
-an artifact of the task being easy --- but a reader given only ``$49.6\%$
-solvable'' without the open-room row would substantially overestimate what has
-been shown.
-
-The \textbf{retrieval} baseline makes the complementary point: $100\%$ solvable,
-$0\%$ novel, nearest-neighbour distance exactly $0.00$ to the training set.
-Solvability alone is a degenerate objective, maximised by copying. The table has
-to be read as a joint constraint over solvability, difficulty control and
-novelty; no single column of it is an objective.
+The \textbf{open-room} baseline constrains how the headline number may be read.
+With no interior walls at all it is solvable $23.4\%$ [$19.9$, $27.3$] of the
+time. The transformer's $49.6\%$ is significantly higher ($+26.2$ points,
+$z = 8.60$, $p < 10^{-16}$), so the headline is not an artifact of an easy task
+--- but a reader given only ``$49.6\%$ solvable'' would substantially
+overestimate what has been shown. The \textbf{retrieval} baseline makes the
+complementary point: $100\%$ solvable, $0\%$ novel, nearest-neighbour distance
+exactly $0.00$. Solvability alone is degenerate, maximised by copying, so the
+table must be read as a joint constraint over solvability, difficulty control
+and novelty.
 
 \subsection{Repair separates counting from spatial understanding}
 The most surprising row is the repaired VAE. Projecting its invalid output onto
@@ -460,13 +469,12 @@ the nearest valid grid yields $76.6\%$ [$72.7$, $80.1$] solvability, well
 real-level reference ($38.8$) and no exact copies. The repaired GAN reaches
 $40.2\%$.
 
-This is exactly what the repair experiment was for. The VAE is not bad at
-Sokoban; it is bad at arithmetic. Its per-cell marginals encode where boxes and
-goals plausibly go, and repair reads those marginals off and places the right
-number of tiles at the most probable positions. What autoregressive generation
-buys is the ability to satisfy a counting constraint \emph{while sampling}, not
-a better model of spatial structure. Merging structural validity and solvability
-into one number would have hidden this result completely.
+The VAE is not bad at Sokoban; it is bad at arithmetic. Its per-cell marginals
+already encode where boxes and goals plausibly go, and repair reads them off and
+places the right number of tiles at the most probable positions. What
+autoregressive generation buys is the ability to satisfy a counting constraint
+\emph{while sampling}, not a better model of spatial structure --- a result that
+merging validity and solvability into one number would have hidden entirely.
 
 A second, smaller inversion points the same way: the \emph{unconstrained}
 transformer is more solvable given validity ($56.0\%$) than the constrained one
@@ -571,23 +579,25 @@ $35.8$ to a peak of $39.0$ at $T = 1.2$. $T = 1.5$ is Pareto-dominated --- it
 loses solvability without buying diversity back. At $T = 1.0$ the model already
 matches the real-level diversity reference ($38.9$ against $38.8$).
 
-\begin{figure}[t]
+\begin{figure*}[!tb]
 \centering
-\includegraphics[width=\columnwidth]{../figures/fig3_tile_counts.pdf}
+\includegraphics[width=0.88\textwidth]{../figures/fig3_tile_counts.pdf}
 \caption{Tile counts per generated level over raw draws, valid or not. The
 dashed line marks the required count. The transformer's distribution is a spike
 at four; the VAE under argmax collapses to a near-empty room; VAE sampling
 recovers the right marginal rate with the wrong joint.}
 \label{fig:tiles}
-\end{figure}
+\end{figure*}
 
-\begin{figure}[t]
+\begin{figure}[!tb]
 \centering
-\includegraphics[width=\columnwidth]{../figures/fig5_temperature_pareto.pdf}
+\includegraphics[width=0.98\columnwidth]{../figures/fig5_temperature_pareto.pdf}
 \caption{Solvability against diversity for the constrained transformer across
 sampling temperatures. Bars are Wilson 95\% intervals.}
 \label{fig:pareto}
 \end{figure}
+
+
 
 \section{Failure Analysis}
 \paragraph{Extrapolation fails completely}
@@ -620,12 +630,6 @@ than one point. The levels die after the first push, not before it. Real Boxoban
 levels reach $100\%$ at the same wall density only because they are built by
 reverse play from an already-solved state, which is a fundamentally different
 construction from sampling walls and then dropping boxes onto them.
-
-\paragraph{Constrained decoding has a measurable cost}
-As reported above, forcing validity onto samples the model would otherwise have
-botched lowers solvability-given-validity by $6.4$ points. Constrained decoding
-is not free; it trades sample quality for a guarantee. Whether that trade is
-worth making depends on which column of the table the application cares about.
 
 \section{Limitations}
 
@@ -671,57 +675,51 @@ personal content.
 The one substantive risk is misreading the verification claim.
 "Solver-verified" is a strong guarantee \emph{only} within stated bounds --- a
 $10\times10$ grid, four boxes, a $200{,}000$-node cap and a $10$-second
-wall-clock cap. Outside those bounds a timeout proves nothing, which is exactly
-why timeouts are reported as a separate column rather than folded into
-"unsolvable". Presenting a bounded decision procedure as an unbounded guarantee
-would be the failure mode to avoid, and it is one that generative-model
-evaluation is generally prone to.
+wall-clock cap. Outside them a timeout proves nothing, which is why timeouts are
+a separate column rather than folded into "unsolvable". Presenting a bounded
+decision procedure as an unbounded guarantee is the failure mode to avoid.
 
 \section{Conclusion}
-We evaluated three generative model families on text-conditioned Sokoban level
-generation using an exhaustive A* solver as a decision procedure rather than a
-proxy, reporting solved, proven-unsolvable and timed-out separately. The solver
-itself is validated first --- $100.00\%$ solve rate on $1{,}000$ real levels,
-zero false proofs of unsolvability, every returned solution replaying to a
-solved state, and a soundness ablation with zero verdict disagreements across
-four distinct level distributions.
+We evaluated three generative model families using an exhaustive A* solver as a
+decision procedure rather than a proxy, reporting solved, proven-unsolvable and
+timed-out separately, on a solver validated first: $100.00\%$ solve rate on
+$1{,}000$ real levels, zero false proofs of unsolvability, and zero verdict
+disagreements in a soundness ablation across four level distributions.
 
-On that footing, three claims hold. Autoregressive generation satisfies hard
-counting constraints that one-shot decoders cannot: $82.6\%$ structural validity
-unaided against \emph{zero} valid levels in $100{,}000$ draws from a VAE under
-argmax, with constrained decoding closing the gap deterministically for a mean
-of $0.378$ forced tokens per level. Solvability does not follow from validity,
-and the open-room baseline at $23.4\%$ shows how much of a headline solvability
-number can come from the task rather than from the model. And the two axes come
-apart in the other direction as well: once its counting errors are repaired, the
-VAE is \emph{more} solvable than the transformer, which locates the
-autoregressive advantage in counting rather than in spatial understanding.
+Three claims hold. Autoregressive generation satisfies counting constraints that
+one-shot decoders cannot ($82.6\%$ validity unaided against \emph{zero} valid
+levels in $100{,}000$ VAE draws). Solvability does not follow from validity, and
+the open-room baseline at $23.4\%$ bounds how much of a headline number comes
+from the task rather than the model. And the two axes come apart the other way
+as well: once its counting errors are repaired the VAE is \emph{more} solvable
+than the transformer, locating the autoregressive advantage in counting rather
+than in spatial understanding.
 
-We also measured how far these numbers can be trusted. Retraining the primary
-configuration with three seeds moves solvability by $\pm 7.0$ points while
-validation loss moves by only $\pm 0.005$, so validation loss is a poor proxy
-for the property being evaluated and single-seed comparisons between nearby rows
-should not be read as settled. Repeating the pretraining ablation three times
-under the same protocol does settle it: a DistilGPT-2 body with a
-re-initialised $48$-symbol vocabulary reaches $64.2\% \pm 1.8$ against
-$42.7\% \pm 7.0$, with no overlap between the two sets of runs. Pretrained
-sequence-modelling machinery transfers even when no vocabulary does --- and, on
-this evidence, makes training markedly more stable.
+Measuring across seeds proved essential. Solvability moves by $\pm 7.0$ points
+across three runs of one configuration while validation loss moves by
+$\pm 0.005$, so validation loss is a poor proxy for the evaluated property.
+Repeating the pretraining ablation under the same protocol settles it:
+$64.2\% \pm 1.8$ against $42.7\% \pm 7.0$, with no overlap between the two sets
+of runs, so pretrained sequence-modelling machinery transfers even when no
+vocabulary does.
 
 The most interesting negative result is the controllability split. Attributes
 computable from the grid are controlled well; solution length, which requires
-search to evaluate, is controlled weakly ($\rho = 0.484$, on a censored
-subsample) and not at all out of distribution. A model conditioned on ``hard''
-learns what hard levels \emph{look like}, not what makes them hard --- and that
-gap is invisible to any metric that does not run the game.
+search to evaluate, is controlled weakly ($\rho = 0.484$, censored) and not at
+all out of distribution. A model conditioned on ``hard'' learns what hard levels
+\emph{look like}, not what makes them hard --- and that gap is invisible to any
+metric that does not run the game.
 
 \section*{Reproducibility}
 
 All code, configurations, checkpoints, generated levels with per-level solver
-verdicts, and result JSON artifacts are released. Every artifact embeds its
-configuration, random seed and git commit; every table in this paper is
-regenerated from those artifacts by a single command, and no number was typed by
-hand.
+verdicts and result JSON artifacts are released, along with four further figures
+kept out of the paper for space: the pipeline schematic, a qualitative grid of
+generated levels for every family, the node-cap sensitivity curve and the VAE
+latent interpolation. Every artifact embeds its
+configuration, seed and git commit; every table here is regenerated from them by
+one command, and a checked-in script re-derives all $108$ numbers quoted in the
+prose from the same artifacts.
 
 \bibliographystyle{IEEEtran}
 \bibliography{refs}
