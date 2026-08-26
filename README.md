@@ -144,26 +144,24 @@ Out-of-distribution requests ask for solution lengths of 90, 110 and 150 moves. 
 
 ## Seed variance, and what it licenses
 
-The primary transformer configuration was trained **three times**, changing only
-the seed, then sampled and solved identically. Every other row in this
-repository is a single run.
+Each configuration below was trained **three times**, changing only the seed,
+then sampled and solved identically. Every row of the main table above is a
+single run, so this is what says which of its differences are real.
 
-| Metric | Mean +/- sd | Per-seed |
-|---|---|---|
-| Structural validity % | 100.0 +/- 0.0 | 100.0, 100.0, 100.0 |
-| Solvable \| valid % | 42.7 +/- 7.0 | 46.6, 34.6, 47.0 |
-| Diversity | 38.59 +/- 0.31 | 38.92, 38.30, 38.57 |
-| Validation loss | 0.3565 +/- 0.0049 | 0.3546, 0.3621, 0.3529 |
+| Model | Struct. valid % | Solvable \| valid % | Diversity | Validation loss |
+|---|---|---|---|---|
+| Transformer (primary) | 100.0 +/- 0.0 <br><sub>100.0, 100.0, 100.0</sub> | 42.7 +/- 7.0 <br><sub>46.6, 34.6, 47.0</sub> | 38.59 +/- 0.31 <br><sub>38.92, 38.30, 38.57</sub> | 0.3565 +/- 0.0049 <br><sub>0.3546, 0.3621, 0.3529</sub> |
 
 Structural validity is perfectly stable, because constrained decoding guarantees
-it. Solvability is **not**: it moves by +/- 7.0 points across seeds while
-validation loss moves by only +/- 0.0049, so **validation loss is a poor
-proxy for the property actually being evaluated**.
+it. Solvability is **not**: for the primary transformer it moves by
++/- 7.0 points across seeds while validation loss moves by only
++/- 0.0049. **Validation loss is a poor proxy for the property actually
+being evaluated.**
 
-That spread bounds what the main table can support. The gap over the baselines
-survives easily (even the worst seed beats open room by a wide margin), but no
-difference smaller than roughly 15 points between two single-seed rows should be
-read as established -- including our own DistilGPT-2 ablation.
+That spread is the threshold for reading the main table. The gap over the
+baselines survives easily -- even the worst seed beats open room by a wide
+margin -- but differences of a few points between single-run rows are not
+evidence of a ranking.
 
 
 ## Solver validation (GATE 2)

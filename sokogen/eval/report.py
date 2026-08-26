@@ -168,51 +168,70 @@ def _fmt_solver(solver_json: str) -> str:
         t_med=1000 * s["time_median_s"], t_p99=s["time_p99_s"])
 
 
-SEED_SECTION = """
+SEED_HEADER = """
 ## Seed variance, and what it licenses
 
-The primary transformer configuration was trained **three times**, changing only
-the seed, then sampled and solved identically. Every other row in this
-repository is a single run.
+Each configuration below was trained **three times**, changing only the seed,
+then sampled and solved identically. Every row of the main table above is a
+single run, so this is what says which of its differences are real.
 
-| Metric | Mean +/- sd | Per-seed |
-|---|---|---|
-| Structural validity % | {sv_mean:.1f} +/- {sv_sd:.1f} | {sv_vals} |
-| Solvable \\| valid % | {so_mean:.1f} +/- {so_sd:.1f} | {so_vals} |
-| Diversity | {dv_mean:.2f} +/- {dv_sd:.2f} | {dv_vals} |
-| Validation loss | {vl_mean:.4f} +/- {vl_sd:.4f} | {vl_vals} |
-
-Structural validity is perfectly stable, because constrained decoding guarantees
-it. Solvability is **not**: it moves by +/- {so_sd:.1f} points across seeds while
-validation loss moves by only +/- {vl_sd:.4f}, so **validation loss is a poor
-proxy for the property actually being evaluated**.
-
-That spread bounds what the main table can support. The gap over the baselines
-survives easily (even the worst seed beats open room by a wide margin), but no
-difference smaller than roughly 15 points between two single-seed rows should be
-read as established -- including our own DistilGPT-2 ablation.
+| Model | Struct. valid % | Solvable \\| valid % | Diversity | Validation loss |
+|---|---|---|---|---|
 """
 
+SEED_FOOTER = """
+Structural validity is perfectly stable, because constrained decoding guarantees
+it. Solvability is **not**: for the primary transformer it moves by
++/- {so_sd:.1f} points across seeds while validation loss moves by only
++/- {vl_sd:.4f}. **Validation loss is a poor proxy for the property actually
+being evaluated.**
 
-def _fmt_seeds(seed_json: str) -> str:
+That spread is the threshold for reading the main table. The gap over the
+baselines survives easily -- even the worst seed beats open room by a wide
+margin -- but differences of a few points between single-run rows are not
+evidence of a ranking.
+"""
+
+_SEED_LABELS = {"transformer": "Transformer (primary)",
+                "distilgpt2": "DistilGPT-2 (ablation)"}
+
+
+def _seed_row(seed_json: str) -> tuple:
     with open(seed_json, "r", encoding="utf-8") as fh:
         d = json.load(fh)
     s = d["summary"]
+    model = d.get("model", "transformer")
 
-    def vals(key, nd):
-        return ", ".join(f"{v:.{nd}f}" for v in s[key]["values"])
+    def cell(key, nd):
+        a = s[key]
+        vals = ", ".join(f"{v:.{nd}f}" for v in a["values"])
+        return f"{a['mean']:.{nd}f} +/- {a['sd']:.{nd}f} <br><sub>{vals}</sub>"
 
-    return SEED_SECTION.format(
-        sv_mean=s["structural_validity_pct"]["mean"],
-        sv_sd=s["structural_validity_pct"]["sd"],
-        sv_vals=vals("structural_validity_pct", 1),
-        so_mean=s["solvable_given_valid_pct"]["mean"],
-        so_sd=s["solvable_given_valid_pct"]["sd"],
-        so_vals=vals("solvable_given_valid_pct", 1),
-        dv_mean=s["diversity"]["mean"], dv_sd=s["diversity"]["sd"],
-        dv_vals=vals("diversity", 2),
-        vl_mean=s["val_loss"]["mean"], vl_sd=s["val_loss"]["sd"],
-        vl_vals=vals("val_loss", 4))
+    row = (f"| {_SEED_LABELS.get(model, model)} | "
+           f"{cell('structural_validity_pct', 1)} | "
+           f"{cell('solvable_given_valid_pct', 1)} | "
+           f"{cell('diversity', 2)} | {cell('val_loss', 4)} |")
+    return row, s, model
+
+
+def _fmt_seeds(results_dir: str) -> str:
+    rows, primary = [], None
+    for name in ("seed_variance.json", "seed_variance_distilgpt2.json"):
+        path = os.path.join(results_dir, name)
+        if not os.path.exists(path):
+            continue
+        row, summary, model = _seed_row(path)
+        rows.append(row)
+        if model == "transformer":
+            primary = summary
+    if not rows:
+        return ""
+    if primary is None:
+        primary = _seed_row(os.path.join(results_dir, "seed_variance.json"))[1]
+    return (SEED_HEADER + "\n".join(rows) + "\n"
+            + SEED_FOOTER.format(
+                so_sd=primary["solvable_given_valid_pct"]["sd"],
+                vl_sd=primary["val_loss"]["sd"]))
 
 
 def write_readme(evaluation_json: str, results_dir: str, out_path: str,
@@ -262,9 +281,9 @@ def write_readme(evaluation_json: str, results_dir: str, out_path: str,
     if comp:
         parts += ["\n## Pairwise significance\n", comp]
 
-    seed_json = os.path.join(results_dir, "seed_variance.json")
-    if os.path.exists(seed_json):
-        parts.append(_fmt_seeds(seed_json))
+    seeds = _fmt_seeds(results_dir)
+    if seeds:
+        parts.append(seeds)
 
     if solver_json and os.path.exists(solver_json):
         parts.append(_fmt_solver(solver_json))
