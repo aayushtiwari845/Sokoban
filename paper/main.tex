@@ -42,8 +42,8 @@ generation and evaluate them with an exhaustive A* solver rather than a learned
 or heuristic proxy. Because the state space of a $10\times10$ Sokoban level is
 bounded and every prune we use is sound, exhausting the search is a
 \emph{proof} of unsolvability: the verifier is a decision procedure, not a
-one-sided test. We therefore report three outcomes --- solved, proven
-unsolvable, and timed out --- rather than two. Our central finding is that
+one-sided test. We therefore report three outcomes (solved, proven
+unsolvable, and timed out) rather than two. Our central finding is that
 autoregressive generation satisfies hard counting constraints that one-shot
 generators cannot: a $10.7$M-parameter decoder-only transformer emitting a level
 cell by cell reaches $82.6\%$ structural validity unaided, while a conditional
@@ -54,7 +54,7 @@ constraints are about. Constrained decoding closes the counting gap
 deterministically, at $100\%$ validity. Solvability, however, does not follow
 from validity: an empty-room baseline with no interior walls is solvable
 $23.4\%$ of the time against the transformer's $49.6\%$, so the gap is real but
-solvability alone is not a sufficient objective --- a retrieval baseline that
+solvability alone is not a sufficient objective: a retrieval baseline that
 copies training levels maximises it at zero novelty. Two results cut against the
 simple story: repairing the VAE's counting errors yields $76.6\%$ solvability,
 \emph{above} the transformer, locating the autoregressive advantage in counting
@@ -78,9 +78,9 @@ verification, Sokoban
 Evaluating a generative model is usually a matter of proxies. Perplexity does
 not tell you whether a program runs; a discriminator score does not tell you
 whether a level can be finished. The situation is better than it is sometimes
-described --- HumanEval executes unit tests~\cite{chen2021codex}, Lean checks
+described, since HumanEval executes unit tests~\cite{chen2021codex}, Lean checks
 proofs~\cite{demoura2021lean}, and text-to-SQL is scored by execution
-accuracy~\cite{yu2018spider} --- so it is simply false that no metric can tell
+accuracy~\cite{yu2018spider}, so it is simply false that no metric can tell
 you whether a generated artifact works.
 
 What those verifiers share is that they are \emph{sound but incomplete}. A unit
@@ -90,8 +90,8 @@ reliably and "no" only provisionally.
 
 Sokoban is unusual in admitting the other kind of verifier. The state space of a
 $10\times10$ level with four boxes is finite and small enough to exhaust. Given
-pruning rules that are \emph{sound} --- they discard only states from which no
-solution exists --- running the open set to empty is a constructive proof that
+pruning rules that are \emph{sound}, meaning they discard only states from which
+no solution exists, running the open set to empty is a constructive proof that
 no solution exists. The verifier is a \textbf{decision procedure}. This is why
 we report a three-way outcome; collapsing "timed out" into "unsolvable" would
 convert an absence of evidence into a false proof, in a direction that
@@ -111,8 +111,8 @@ constraint is met and whether the resulting level is any good.
 \item An exhaustive, validated A* Sokoban solver used as a decision procedure,
       with a soundness ablation and a node-cap convergence curve
       (Section~\ref{sec:solver}).
-\item A three-family comparison --- from-scratch transformer, conditional VAE,
-      conditional GAN --- at roughly comparable parameter counts, with
+\item A three-family comparison (from-scratch transformer, conditional VAE,
+      conditional GAN) at roughly comparable parameter counts, with
       constrained decoding and repair reported as separate rows so that
       \emph{counting} and \emph{spatial understanding} are measured separately
       (Sections~\ref{sec:method},~\ref{sec:results}).
@@ -138,7 +138,7 @@ work; \textbf{the data-scaling result, the solvability-versus-conditioning
 setup, and the tokenization finding are theirs}, and we claim none of them.
 MarioGPT~\cite{sudhakaran2023mariogpt} conditions level generation on natural
 language for Super Mario Bros., where playability is checked by an $A^*$ agent
-that is a sound but incomplete verifier --- it can confirm a level is playable
+that is a sound but incomplete verifier: it can confirm a level is playable
 but cannot prove one is not.
 
 \paragraph{Our delta}
@@ -200,7 +200,7 @@ sets the units of every caption and of the controllability metric.
 \subsection{A data-quality finding}
 The solution set documents rows whose action field is
 \texttt{SEARCH\_STATE\_FAILED} or \texttt{NOT\_FOUND}. We additionally found rows
-that \emph{look} well-formed --- a plain digit string --- but \textbf{do not
+that \emph{look} well-formed, a plain digit string, but \textbf{do not
 replay to a solved state}: $63/1000$ ($6.3\%$) of \texttt{unfiltered\_test} and
 approximately $0.7\%$ of \texttt{unfiltered\_train}. They fail by walking into a
 wall or making an impossible push part-way through, and treating blocked moves
@@ -237,7 +237,7 @@ conditioning; we state this rather than claim otherwise.
 \subsection{Transformer (primary)}
 A decoder-only transformer written from scratch: $d_{\text{model}}=384$, $6$
 layers, $6$ heads, $d_{\text{ff}}=1536$, learned positional embeddings,
-pre-norm, GELU, dropout $0.1$, tied input/output embeddings --- $10{,}734{,}336$
+pre-norm, GELU, dropout $0.1$, tied input/output embeddings, for $10{,}734{,}336$
 parameters. We deliberately do \emph{not} use a fine-tuned pretrained model as
 the primary system, so that the family comparison is roughly parameter-fair
 ($10.7$M against $1.1$M and $1.1$M) rather than $82$M against $1$M. The
@@ -303,7 +303,7 @@ the GAN is bad at Sokoban or merely bad at arithmetic.
 
 \subsection{Baselines}
 Random placement (uniform interior walls at the training-median density, then
-random specials) is the floor. \textbf{Open room} --- border walls only --- can
+random specials) is the floor. \textbf{Open room}, border walls only, can
 invalidate the headline number, since an empty room has no interior walls to
 freeze a box against. Rule-based generation adds a floor-connectivity check and
 places boxes and goals only on live squares. \textbf{Retrieval} samples a
@@ -323,7 +323,7 @@ schemes rather than model families.
 \subsection{Design}
 Levels are represented as integer bitmasks (walls, goals, boxes) plus a player
 cell index. Successors are \textbf{pushes}, not single steps. For hashing, the
-player's exact cell is irrelevant --- only its reachable region matters --- so
+player's exact cell is irrelevant and only its reachable region matters, so
 the state key is (minimum reachable cell, box mask). Without this
 canonicalisation, states differing only by player position within one region are
 distinct and the search inflates by roughly the region size; measured on the
@@ -333,7 +333,7 @@ $22.5$, maximum $46$).
 The heuristic precomputes, per goal, a backward BFS map of the minimum pushes to
 bring a box to that goal, ignoring other boxes but respecting walls, and takes
 the minimum-cost assignment of boxes to goals~\cite{kuhn1955hungarian}. It is
-admissible --- each push moves one box one cell --- and strictly tighter than
+admissible, since each push moves one box one cell, and strictly tighter than
 sum-of-Manhattan because it respects walls.
 
 \subsection{Two sound prunes, and nothing else}
@@ -386,7 +386,7 @@ as its own column. Only valid samples reach the solver, so drawing tens of
 thousands of one-shot samples costs seconds. Where a family cannot reach $500$
 valid levels we report the count obtained and state the shortfall, and we never
 report a "solvable given valid" percentage on a denominator below $30$ without
-flagging it inline --- at $2\%$ validity that is ten levels, and a percentage
+flagging it inline: at $2\%$ validity that is ten levels, and a percentage
 there is noise a reader will misread as signal.
 
 All proportions carry Wilson score intervals~\cite{wilson1927probable}, which
@@ -414,7 +414,7 @@ percentile is $67$ moves, the $99.9$th is $87$, and the maximum is $130$.
 \caption{Left: structural validity (solid) and solvability given validity
 (hatched) are different axes, and a family can be strong on one and weak on the
 other. Right: the same data as a scatter. The one-shot families sit at the far
-left --- they cannot count --- while reaching solvability comparable to the
+left, because they cannot count, while reaching solvability comparable to the
 transformer once they are valid.}
 \label{fig:money}
 \end{figure*}
@@ -435,8 +435,8 @@ transformer's box-count distribution is a spike at four ($87.1\%$ exactly four,
 mean $3.87 \pm 0.34$). The VAE under argmax has mean $1.38 \pm 1.23$ boxes and
 $0.01 \pm 0.12$ goals: the per-cell argmax of a product of marginals picks floor
 or wall almost everywhere, because boxes occupy $4/100$ cells and goals $4/100$.
-Per-cell \emph{sampling} restores the marginal rates almost exactly --- mean
-$3.95 \pm 1.72$ boxes, $4.05 \pm 1.85$ goals --- but only $21.8\%$ of samples
+Per-cell \emph{sampling} restores the marginal rates almost exactly, at mean
+$3.95 \pm 1.72$ boxes and $4.05 \pm 1.85$ goals, but only $21.8\%$ of samples
 carry exactly four boxes: the right \emph{average} number and the wrong
 \emph{joint}, because the per-cell outputs are conditionally independent given
 the latent.
@@ -457,8 +457,8 @@ box pushed into one freezes against the walls.
 The \textbf{open-room} baseline constrains how the headline number may be read.
 With no interior walls at all it is solvable $23.4\%$ [$19.9$, $27.3$] of the
 time. The transformer's $49.6\%$ is significantly higher ($+26.2$ points,
-$z = 8.60$, $p < 10^{-16}$), so the headline is not an artifact of an easy task
---- but a reader given only ``$49.6\%$ solvable'' would substantially
+$z = 8.60$, $p < 10^{-16}$), so the headline is not an artifact of an easy task,
+but a reader given only ``$49.6\%$ solvable'' would substantially
 overestimate what has been shown. The \textbf{retrieval} baseline makes the
 complementary point: $100\%$ solvable, $0\%$ novel, nearest-neighbour distance
 exactly $0.00$. Solvability alone is degenerate, maximised by copying, so the
@@ -476,7 +476,7 @@ The VAE is not bad at Sokoban; it is bad at arithmetic. Its per-cell marginals
 already encode where boxes and goals plausibly go, and repair reads them off and
 places the right number of tiles at the most probable positions. What
 autoregressive generation buys is the ability to satisfy a counting constraint
-\emph{while sampling}, not a better model of spatial structure --- a result that
+\emph{while sampling}, not a better model of spatial structure, a result that
 merging validity and solvability into one number would have hidden entirely.
 
 A second, smaller inversion points the same way: the \emph{unconstrained}
@@ -486,15 +486,15 @@ $82.6\%$ of levels the model got right unaided, which are its more typical and
 more solvable outputs; constrained decoding additionally rescues the levels it
 would have botched, and those are worse levels. This is the distribution shift
 predicted in Section~\ref{sec:constrained} appearing as a measurable cost, and
-it is why both rows are reported. On the overall rate --- solvable out of all
-samples drawn --- constrained decoding still wins, $49.6\%$ against $46.3\%$.
+it is why both rows are reported. On the overall rate, solvable out of all
+samples drawn, constrained decoding still wins, $49.6\%$ against $46.3\%$.
 
 \subsection{Controllability splits along a predictable line}
 Control is reported per attribute, never as one number, and the split is sharp.
 The transformer hits the caption's wall-density bin $88.8\%$ of the time,
 connectivity $80.0\%$ and box clustering $76.3\%$, against a $50\%$ chance rate
 confirmed by two unconditioned controls (real levels score $48.8\%$, $53.2\%$
-and $52.2\%$). But difficulty --- the binned solution length --- is hit only
+and $52.2\%$). But difficulty, the binned solution length, is hit only
 $43.3\%$ of the time against a $33\%$ chance rate, and the rank correlation
 between requested and achieved solution length is $\rho = 0.484$.
 
@@ -507,15 +507,15 @@ about its pixels, and it is the one the model controls worst.
 
 That correlation is also \textbf{censored}: $55.2\%$ of suite samples have no
 achieved length, because they were proven unsolvable, and the surviving
-subsample is biased toward easy levels --- the direction that inflates $\rho$.
+subsample is biased toward easy levels, the direction that inflates $\rho$.
 The honest reading is that $0.484$ is an upper bound on a weak effect.
 
 \subsection{Seed variance is large, and it bounds what can be claimed}
 \label{sec:seeds}
 We trained the primary transformer configuration three times, changing only the
 seed, and sampled and solved each identically. Structural validity is perfectly
-stable at $100.0\% \pm 0.0$ --- unsurprisingly, since constrained decoding
-guarantees it --- and diversity is stable at $38.60 \pm 0.31$. But
+stable at $100.0\% \pm 0.0$, unsurprisingly, since constrained decoding
+guarantees it, and diversity is stable at $38.60 \pm 0.31$. But
 solvability-given-validity is \textbf{not}: $46.6\%$, $34.6\%$ and $47.0\%$,
 giving $42.7\% \pm 7.0$. Validation loss barely moves across the same three runs
 ($0.357 \pm 0.005$), so validation loss is a poor predictor of the quantity we
@@ -545,13 +545,13 @@ about $15$ points should be read as established without repeated runs.
 \label{sec:pretrain}
 The DistilGPT-2 ablation discards the $50257 \times 768$ embedding matrix and
 the tied LM head and re-initialises both for our $48$-symbol vocabulary, so
-nothing lexical can transfer --- only the attention and MLP blocks survive.
+nothing lexical can transfer: only the attention and MLP blocks survive.
 Because the from-scratch model's own seed spread is $\pm 7.0$ points, a
 single-run comparison would prove nothing, so we trained the ablation three
 times as well.
 
 Across three seeds it reaches $\mathbf{64.2\% \pm 1.8}$ solvability against the
-from-scratch model's $42.7\% \pm 7.0$ --- a $21.5$-point gap. The two sets of
+from-scratch model's $42.7\% \pm 7.0$, a $21.5$-point gap. The two sets of
 runs do not overlap at all ($62.8$--$66.2$ against $34.6$--$47.0$), which is the
 strongest separation obtainable from three runs per arm: the exact permutation
 test returns $p = 0.05$, its floor at this sample size, and a Welch $t$-test
@@ -564,7 +564,7 @@ vocabulary with the pretraining corpus.
 A second, unplanned observation is arguably more interesting than the mean
 shift: the pretrained model is far more \textbf{stable} across seeds, with a
 standard deviation of $1.8$ points against $7.0$, a $4.0\times$ reduction. We
-flag this as an observation rather than a result --- with three runs per arm a
+flag this as an observation rather than a result: with three runs per arm a
 variance test has almost no power, and Levene's test is unsurprisingly
 inconclusive ($p = 0.50$). If it holds up at larger $n$, it would suggest that
 what pretraining buys in this setting is partly a better-conditioned
@@ -578,7 +578,7 @@ same three runs).
 \subsection{Temperature trades solvability against diversity}
 Figure~\ref{fig:pareto} shows a clean monotone trade-off: solvability falls from
 $61.2\%$ at $T = 0.6$ to $34.8\%$ at $T = 1.5$, while diversity rises from
-$35.8$ to a peak of $39.0$ at $T = 1.2$. $T = 1.5$ is Pareto-dominated --- it
+$35.8$ to a peak of $39.0$ at $T = 1.2$. $T = 1.5$ is Pareto-dominated: it
 loses solvability without buying diversity back. At $T = 1.0$ the model already
 matches the real-level diversity reference ($38.9$ against $38.8$).
 
@@ -610,7 +610,7 @@ maximum is $130$. Every family ignores the request. The constrained transformer
 produces levels averaging $29.5$ achieved moves when asked for $115.8$, with a
 rank correlation of $-0.394$; the repaired VAE averages $42.3$. Real Boxoban
 levels sampled against the same captions average $30.3$, which is the correct
-null --- they are not conditioned at all. Models reproduce the training length
+null, since they are not conditioned at all. Models reproduce the training length
 distribution regardless of what the caption asks. Length conditioning learned
 in-distribution does not extend past the data.
 
@@ -623,7 +623,7 @@ histograms in aggregate would not obviously flag this, which is a small argument
 for verification over proxies.
 
 \paragraph{Hand-written domain knowledge is not a shortcut}
-The rule-based generator --- connectivity checks plus live-square placement ---
+The rule-based generator, with connectivity checks plus live-square placement,
 achieves $0.4\%$ solvability, \emph{worse} than an empty room. We checked two
 alternative explanations before accepting that number. It is not an unsound
 prune: re-solving $450$ baseline levels with deadlock pruning disabled at a
@@ -653,7 +653,7 @@ construction from sampling walls and then dropping boxes onto them.
 \item \textbf{Large seed variance.} The transformer and the DistilGPT-2
       ablation were each run with three seeds; the transformer's solvability
       spread is $\pm 7.0$ points (Section~\ref{sec:seeds}). Every remaining row
-      --- the VAE, the GAN and all baselines --- is a single run, and
+      (the VAE, the GAN and all baselines) is a single run, and
       differences smaller than roughly $15$ points between those rows are not
       established. Three runs per arm is also too few to test the variance
       reduction we observed under pretraining.
@@ -676,7 +676,7 @@ Boxoban corpus is procedurally generated and contains no human-authored or
 personal content.
 
 The one substantive risk is misreading the verification claim.
-"Solver-verified" is a strong guarantee \emph{only} within stated bounds --- a
+"Solver-verified" is a strong guarantee \emph{only} within stated bounds: a
 $10\times10$ grid, four boxes, a $200{,}000$-node cap and a $10$-second
 wall-clock cap. Outside them a timeout proves nothing, which is why timeouts are
 a separate column rather than folded into "unsolvable". Presenting a bounded
@@ -710,7 +710,7 @@ The most interesting negative result is the controllability split. Attributes
 computable from the grid are controlled well; solution length, which requires
 search to evaluate, is controlled weakly ($\rho = 0.484$, censored) and not at
 all out of distribution. A model conditioned on ``hard'' learns what hard levels
-\emph{look like}, not what makes them hard --- and that gap is invisible to any
+\emph{look like}, not what makes them hard, and that gap is invisible to any
 metric that does not run the game.
 
 \section*{Reproducibility}
