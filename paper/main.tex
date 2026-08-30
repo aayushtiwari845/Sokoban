@@ -85,15 +85,15 @@ you whether a generated artifact works.
 
 What those verifiers share is that they are \emph{sound but incomplete}. A unit
 test that passes does not prove a program correct, and a test suite cannot prove
-a program wrong: it can only fail to find a witness. The verifier answers "yes"
-reliably and "no" only provisionally.
+a program wrong: it can only fail to find a witness. The verifier answers ``yes''
+reliably and ``no'' only provisionally.
 
 Sokoban is unusual in admitting the other kind of verifier. The state space of a
 $10\times10$ level with four boxes is finite and small enough to exhaust. Given
 pruning rules that are \emph{sound}, meaning they discard only states from which
 no solution exists, running the open set to empty is a constructive proof that
 no solution exists. The verifier is a \textbf{decision procedure}. This is why
-we report a three-way outcome; collapsing "timed out" into "unsolvable" would
+we report a three-way outcome; collapsing ``timed out'' into ``unsolvable'' would
 convert an absence of evidence into a false proof, in a direction that
 flatters the numbers.
 
@@ -180,7 +180,7 @@ $\{\texttt{\#}, \texttt{@}, \texttt{\$}, \texttt{.}, \texttt{\textvisiblespace}\
 in particular \textbf{neither \texttt{*} (box on goal) nor \texttt{+} (player on
 goal) occurs anywhere}, so a box never \emph{starts} on a goal. That single fact
 is what makes the five-channel tensor, the six-symbol vocabulary and the
-"exactly four \texttt{\$} and four \texttt{.}" constraint well-defined; had it
+``exactly four \texttt{\$} and four \texttt{.}'' constraint well-defined; had it
 failed, each would have broken silently. Over $10{,}000$ levels every grid is
 $10\times10$ with a complete wall border and exactly one player, four boxes and
 four goals, with zero violations, and there are zero collisions between train
@@ -254,7 +254,7 @@ quota is exhausted is masked. The rule that matters is \textbf{feasibility
 forcing}: letting $r=(1-n_{\text{player}})+(4-n_{\text{box}})+(4-n_{\text{goal}})$
 be the specials still owed and $\ell$ the interior cells remaining, when
 $\ell \leq r$ we mask \texttt{\#} and space so that only specials can be emitted.
-Masking upper bounds alone enforces "at most four boxes", not "exactly four".
+Masking upper bounds alone enforces ``at most four boxes'', not ``exactly four''.
 With nine specials in $64$ interior cells this rule rarely binds, which is
 precisely the trap: an implementation without it looks correct on a handful of
 samples and fails in the tail.
@@ -385,7 +385,7 @@ or a hard cap of $100{,}000$ draws is reached, reporting \textbf{samples drawn}
 as its own column. Only valid samples reach the solver, so drawing tens of
 thousands of one-shot samples costs seconds. Where a family cannot reach $500$
 valid levels we report the count obtained and state the shortfall, and we never
-report a "solvable given valid" percentage on a denominator below $30$ without
+report a ``solvable given valid'' percentage on a denominator below $30$ without
 flagging it inline: at $2\%$ validity that is ten levels, and a percentage
 there is noise a reader will misread as signal.
 
@@ -676,10 +676,10 @@ Boxoban corpus is procedurally generated and contains no human-authored or
 personal content.
 
 The one substantive risk is misreading the verification claim.
-"Solver-verified" is a strong guarantee \emph{only} within stated bounds: a
+``Solver-verified'' is a strong guarantee \emph{only} within stated bounds: a
 $10\times10$ grid, four boxes, a $200{,}000$-node cap and a $10$-second
 wall-clock cap. Outside them a timeout proves nothing, which is why timeouts are
-a separate column rather than folded into "unsolvable". Presenting a bounded
+a separate column rather than folded into ``unsolvable''. Presenting a bounded
 decision procedure as an unbounded guarantee is the failure mode to avoid.
 
 \section{Conclusion}
